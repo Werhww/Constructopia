@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "lottie-web-vue": "^2.0.6",
+    "moment": "^2.29.4",
     "vue-dragscroll": "^4.0.5"
   }
 }
