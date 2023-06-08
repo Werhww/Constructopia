@@ -16,13 +16,13 @@
 
         <div class="build-buttons" v-if="!isEditing">
             <BuildOpenLikeButton v-if="!owner" :liked="false" v-on:like="like"/>
-            <BuildOpenIconButton text="3d editor" icon="3d-icon.svg" @click="emit('3d-editor')"/>
-            <BuildOpenIconButton text="share" icon="share-icon.svg" @click="emit('share')"/>
-            <BuildOpenIconButton v-if="owner" text="edit" icon="edit-icon.svg" @click="changeEditState"/>
+            <BuildOpenIconButton text="3d editor" :icon="threeD_icon" @click="emit('3d-editor')"/>
+            <BuildOpenIconButton text="share" :icon="share_icon" @click="emit('share')"/>
+            <BuildOpenIconButton v-if="owner" text="edit" :icon="edit_icon" @click="changeEditState"/>
         </div>
         <div class="edit-buttons" v-if="owner && isEditing">
-            <BuildOpenIconButton text="delete" icon="delete-icon.svg" color="#C11212"  @click="deleteBuild"/>
-            <BuildOpenIconButton text="save" icon="save-icon.svg" @click="saveBuild"/>
+            <BuildOpenIconButton text="delete" :icon="delete_icon" color="#C11212"  @click="deleteBuild"/>
+            <BuildOpenIconButton text="save" :icon="save_icon" @click="saveBuild"/>
         </div>
     </div>
 </section>
@@ -30,6 +30,15 @@
 
 <script setup lang="ts">
 import moment from 'moment'
+
+/* Image imports */
+import threeD_icon from '/icons/build/3d-icon.svg'
+import share_icon from '/icons/build/share-icon.svg'
+import edit_icon from '/icons/build/edit-icon.svg'
+import delete_icon from '/icons/build/delete-icon.svg'
+import save_icon from '/icons/build/save-icon.svg'
+
+
 
 /* swich userid with id form auth */
 const userID = '1'

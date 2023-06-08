@@ -16,7 +16,7 @@
   }" :inventory="[
     {
       amount: 550,
-      block_image: '/src/assets/blocks/Cobblestone.png'
+      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/6/67/Cobblestone.png'
     }, 
     {
       amount: 1550,

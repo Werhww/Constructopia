@@ -1,7 +1,7 @@
 <template>
 <div class="dropdown">
     <p @click="isOpen = !isOpen">/{{ difficulty }}</p>
-    <img @click="isOpen = !isOpen" src="../../assets/dropdown-arrow.svg">
+    <img @click="isOpen = !isOpen" src="/icons/global/dropdown-arrow.svg">
     <div class="dropdown-content" v-if="isOpen">
         <p v-for="text in dropdown_content" @click="changeDifficulty(text)">{{ text }}</p>
     </div>

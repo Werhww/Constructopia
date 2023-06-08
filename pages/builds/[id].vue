@@ -1,7 +1,5 @@
 <template>
-<div>
-    <p>Builds id {{ id }}</p>
-</div>
+<BuildListProfile title="Test"/>
 </template>
 
 <script setup lang="ts">

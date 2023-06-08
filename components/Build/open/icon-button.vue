@@ -1,6 +1,6 @@
 <template>
 <div class="icon-button">
-    <img :src="'/src/assets/' + icon" alt="icon" />
+    <img v-bind:src="icon" alt="icon" />
     <p>{{ text }}</p>
 </div>
 </template>

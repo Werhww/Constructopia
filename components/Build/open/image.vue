@@ -24,7 +24,7 @@ function mouseOver(e:MouseEvent) {
     width: 42.5rem;
     height: 37.5rem;
     overflow: hidden;
-    cursor: url('/src/assets/3d-icon-bigger.svg'), auto;
+    cursor: url('/icons/build/3d-icon-bigger.svg'), auto;
     user-select: none;
     filter: drop-shadow(0px 0px 0.5rem rgba(0, 0, 0, 0.5));
 }

@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import air from '/icons/build/air.png'
+
 const prop = defineProps<{
     inventory: {
         amount: {
@@ -23,7 +25,7 @@ const inventoryFixed = computed(() => {
             amount: number
             stacks: boolean
         }
-        block_image: string
+        block_image: any
     }[] = []
 
     if (inventory.length == 9) {
@@ -38,7 +40,7 @@ const inventoryFixed = computed(() => {
                         amount: 0,
                         stacks: false
                     },
-                    block_image: '/src/assets/blocks/air.png'
+                    block_image: air
                 })
             }
         }
