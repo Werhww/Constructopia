@@ -10,10 +10,7 @@ const prop = defineProps<{
 
 <template>
 <div class="wrapper">
-    <NuxtLink v-if="!isLink" :to="{ 
-        path:to,
-        }" 
-        class="text">{{ text }}</NuxtLink>
+    <NuxtLink v-if="!isLink" :to="to" class="text">{{ text }}</NuxtLink>
     <p class="text" v-if="isLink">{{ text }}</p>
     <div>
         <img v-bind:src="image">

@@ -43,7 +43,7 @@ function search() {
 
 <template>
 <div>
-  <img @click="openInput" :class="{'img-ani': isAni}" class="img-transition" src="~/public/icons/Header/search-icon.svg">
+  <img @click="openInput" :class="{'img-ani': isAni}" class="img-transition" src="/icons/Header/search-icon.svg">
   <Transition name="slide"
     @after-enter="InputFocus"
     @after-leave="aniActive = false" 

@@ -1,6 +1,6 @@
 <template>
 <header>
-    <h1>{{ title }}</h1>
+    <h1 class="title">{{ title }}</h1>
     <nav class="buttons">
         <HSearch />
         <HDropdown ref="dropdown" v-on:open="emit_open"/>
@@ -41,7 +41,7 @@ header {
     color: var(--white-2);
 }
 
-h1 {
+.title {
     font: var(--title);
 }
 

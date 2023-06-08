@@ -6,7 +6,7 @@
 <script setup lang="ts">
 const route = useRoute()
 definePageMeta({
-  title: 'MineSweeper'
+  title: 'Constructopia'
 })
 
 useHead({

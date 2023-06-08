@@ -14,6 +14,10 @@ watch(() => router.currentRoute.value.meta.title, (value) => {
     console.log(value)
     title.value = value as string
 })
+
+onMounted(() => {
+    title.value = router.currentRoute.value.meta.title as string
+})
 </script>
 
 <style scoped>

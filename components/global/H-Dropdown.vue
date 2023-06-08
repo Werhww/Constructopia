@@ -2,11 +2,11 @@
 import { ref } from 'vue';
 
 /* Dropdown images */
-import userDropdown from '~/public/icons/Header/user-icon-dropdown.svg'
-import buildDropdown from '~/public/icons/Header/build-icon.svg'
-import starDropdown from '~/public/icons/Header/star-icon.svg'
-import newDocumentDropdown from '~/public/icons/Header/new-document-icon.svg'
-import logoutDropdown from '~/public/icons/Header/logout-icon.svg'
+import userDropdown from '/icons/Header/user-icon-dropdown.svg'
+import buildDropdown from '/icons/Header/build-icon.svg'
+import starDropdown from '/icons/Header/star-icon.svg'
+import newDocumentDropdown from '/icons/Header/new-document-icon.svg'
+import logoutDropdown from '/icons/Header/logout-icon.svg'
 
 defineExpose({
   open
@@ -28,7 +28,7 @@ function open() {
 
 <template>
 <nav class="header-dropdown">
-  <img @click="open" src="~/public/icons/Header/user-icon.svg">
+  <img @click="open" src="/icons/Header/user-icon.svg">
   <Transition name="dropdown">
     <nav v-if="isOpen" class="dropdown">
       <HDropdownItem text="Profile" :image="userDropdown" to="/profile"/>
@@ -55,7 +55,7 @@ img {
 .dropdown {
   display: flex;
   flex-direction: column;
-  align-items: end;
+  align-items: flex-end;
   padding: .5rem 0.688rem;
   border-radius: 0 0 1rem 1rem;
 
