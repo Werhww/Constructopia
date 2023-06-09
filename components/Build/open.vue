@@ -177,7 +177,7 @@ function saveBuild() {
 
 .build-buttons, .edit-buttons {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     gap: 2rem;
 }
 </style>
