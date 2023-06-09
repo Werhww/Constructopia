@@ -6,11 +6,18 @@
         <div class="build-undertitel">
             <BuildOpenDifficulty v-model="difficulty" :white="true" /> 
             <div class="build-file-import">
-                <img src="" >
+                <img src="/icons/build/import-build.svg">
                 <p>build file</p>
                 <p>?</p>
             </div>
+            <div class="build-open-3d">
+                <img src="/icons/build/3d-icon-inverted.svg">
+                <p>open 3d editor</p>
+            </div>
         </div>
+    </div>
+    <div>
+        
     </div>
 </section>
 </template>
@@ -38,12 +45,26 @@ const difficulty = ref('easy')
 
 .build-undertitel {
     display: flex;
-    gap: 0.4rem;
+    gap: 1.2rem;
 }
 
-.build-file-import {
+.build-file-import, .build-open-3d{
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    font: var(--undertitle);
+    color: var(--white);
+    cursor: pointer;
+}
+
+.build-file-import p:last-child{
+    text-decoration: underline;
+    text-underline-offset: 0.3rem;
+    cursor: help;
+}
+
+.build-open-3d {
+    text-decoration: underline;
+    text-underline-offset: 0.3rem;
 }
 </style>
