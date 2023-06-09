@@ -1,6 +1,6 @@
 <template>
 <div>
-    <input class="input" type="text" :value="modelValue" @input="updateValue" />
+    <input class="input" :placeholder="placeholder" type="text" :value="modelValue" @input="updateValue" :maxlength="maxlength" />
     <div class="underline"><!-- Underline --></div>
 </div>
 </template>
@@ -8,10 +8,15 @@
 <script setup lang="ts">
 const prop = defineProps<{
     modelValue: string
-    width?: number
+    placeholder?: string
+    width?: string
+    font_size?: string
+    maxlength?: number
 }>()
 
 const emit = defineEmits(['update:modelValue'])
+
+const haveConstantWidth = ref(false)
 
 function updateValue(event: any) {
     emit('update:modelValue', event.target?.value)
@@ -20,22 +25,31 @@ function updateValue(event: any) {
 }
 
 const inputWidth = ref(5)
+const usedWidth = ref('5rem')
+const usedFont_size = ref('1.125rem')
 
 function updateWidth(text: string) {
+    if (haveConstantWidth.value) return
+
     if (text.length <= 7) {
         inputWidth.value = 7
-        return
     } else {
         inputWidth.value = text.length * 0.4 + 7
-        return
-    } 
+    }
+
+    usedWidth.value = `${inputWidth.value}rem`
 }
 
 
 if (prop.width) {
-    inputWidth.value = prop.width
+    haveConstantWidth.value = true
+    usedWidth.value = prop.width
 } else {
     updateWidth(prop.modelValue)    
+}
+
+if (prop.font_size) {
+    usedFont_size.value = prop.font_size
 }
 </script>
 
@@ -46,7 +60,7 @@ div {
 
     transition: width 0.2s ease-in-out;
 
-    width: v-bind(inputWidth + 'rem');
+    width: v-bind(usedWidth);
 }
 
 .input {
@@ -58,6 +72,12 @@ div {
     
     color: var(--white);
     font: var(--text);
+    font-size: v-bind(usedFont_size);
+}
+
+.input::placeholder {
+    color: var(--white);
+    font-size: v-bind(usedFont_size);
 }
 
 .underline {

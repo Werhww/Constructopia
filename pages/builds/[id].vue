@@ -1,7 +1,7 @@
 <template>
 <div class="filter_order">
-  <Filter @change="changeFilter"/>
-  <ComponentDropdownFilter label="Order:" :items="fullListItems" :withDirection="true"/>
+  <ComponentDropdownFilter v-on:change="changeFilter" label="Filter:" :items="FilterDropdown" :withDirection="false"/>
+  <ComponentDropdownFilter v-on:change="changeOrder" v-on:change-direction="changeDirection" label="Order:" :items="OrderDropdown" :withDirection="true"/>
 </div>
 <div class="Builds">
   <BuildCard
@@ -27,7 +27,7 @@ definePageMeta({
   title: 'Builds'
 })
 
-const fullListItems = [
+const OrderDropdown = [
   {
     label: "views",
     index: 0
@@ -42,6 +42,25 @@ const fullListItems = [
   },
   {
     label: "created",
+    index: 3
+  },
+]
+
+const FilterDropdown = [
+  {
+    label: "all",
+    index: 0
+  },
+  {
+    label: "easy",
+    index: 1
+  },
+  {
+    label: "medium",
+    index: 2
+  },
+  {
+    label: "hard",
     index: 3
   },
 ]

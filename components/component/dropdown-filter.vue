@@ -2,6 +2,7 @@
 const emit = defineEmits(['change', 'change-direction'])
 
 const props = defineProps<{
+    
     label: string
     items: {
         label: string
@@ -24,10 +25,10 @@ const openItem = ref<{
 const isOpen = ref(false)
 
 function changeItem(i:number) {
+    fixList(i)
     if (isOpen.value) {
         emit('change', openItem.value.label)
     }
-    fixList(i)
     toggle()
 }
 
@@ -58,7 +59,7 @@ function changeDirection() {
     <div @click="toggle" class="hover">
         <p>{{ openItem.label }}</p>
     </div>
-    <img @click="toggle" src="../../assets/dropdown-arrow.svg" class="arrow hover" :class="{'arrow-ani': isOpen}">
+    <img @click="toggle" src="/icons/global/dropdown-arrow.svg" class="arrow hover" :class="{'arrow-ani': isOpen}">
     <Transition name="slide">
         <div v-if="isOpen" class="dropdown">
             <p class="hover" v-for="item in items" @click="changeItem(item.index)">
@@ -79,14 +80,14 @@ function changeDirection() {
     z-index: 1;
 }
 
-.dropdown p {
+.filter p {
     font: var(--undertitle);
     color: var(--white);
     user-select: none;
 }
 
 .filter-title {
-    color: var(--lower-tone);
+    color: var(--lower-tone)!important;
 }
 
 .hover {
@@ -108,7 +109,7 @@ function changeDirection() {
 
     position: absolute;
     top: 1.4rem;
-    left: 4.6rem;
+    right: 0;
 
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
     background-color: var(--background);

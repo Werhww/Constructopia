@@ -1,7 +1,7 @@
 <template>
 <div class="dropdown">
     <p @click="isOpen = !isOpen">/{{ difficulty }}</p>
-    <img @click="isOpen = !isOpen" src="/icons/global/dropdown-arrow.svg">
+    <img :class="{'arrow': arrowFilter}" @click="isOpen = !isOpen" src="/icons/global/dropdown-arrow.svg">
     <div class="dropdown-content" v-if="isOpen">
         <p v-for="text in dropdown_content" @click="changeDifficulty(text)">{{ text }}</p>
     </div>
@@ -11,6 +11,7 @@
 <script setup lang="ts">
 const prop = defineProps<{
     modelValue: string
+    white?: boolean
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -30,6 +31,13 @@ function changeDifficulty(click_difficulty: string) {
 }
 
 changeDifficulty(prop.modelValue) /* set initial difficulty */
+
+const color = ref('var(--lower-tone)')
+const arrowFilter = ref(true)
+if (prop.white) {
+    color.value = 'var(--white)'
+    arrowFilter.value = false
+}
 </script>
 
 
@@ -41,10 +49,10 @@ changeDifficulty(prop.modelValue) /* set initial difficulty */
     gap: 0.5rem;
     cursor: pointer;
     font: var(--undertitle);
-    color: var(--lower-tone);
+    color: v-bind(color);
 }
 
-.dropdown > img {
+.arrow {
     filter: invert(40%) sepia(6%) saturate(246%) hue-rotate(314deg) brightness(90%) contrast(95%);
 }
 

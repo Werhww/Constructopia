@@ -9,8 +9,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-
 const prop = defineProps<{
     title: string
 }>()
