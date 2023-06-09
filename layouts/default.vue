@@ -4,7 +4,7 @@
     <slot />
 
     <TheFooter />
-</template>¨
+</template>
 
 <script setup lang="ts">
 const router = useRouter()

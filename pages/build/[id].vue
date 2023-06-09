@@ -4,7 +4,7 @@
   v-on:3d-editor="open3dEditor"
 
   :build="{
-    userId: '1',
+    userId: '123',
     image: 'https://i.pinimg.com/736x/f5/c0/a2/f5c0a23a575e40913a2056441a30412b.jpg',
     title: 'The Ultimate Survival Base',
     date: '2023-05-18T15:00:00',
@@ -13,7 +13,7 @@
     description: 'This is a description',
     blocks: 5,
     views: 100 
-    }" 
+  }" 
     
   :inventory="[
     {
@@ -26,12 +26,18 @@
     }   
   ]" 
 />
+
+<BuildListRecommended title="Recommended" />
 </template>
 
 <script setup lang="ts">
 definePageMeta({
   title: 'Build'
 })
+
+/* Change to auth id for prod */
+const userId = '123'
+
 const { id } = useRoute().params
 
 function share() {
