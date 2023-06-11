@@ -23,7 +23,11 @@
     {
       amount: 1550,
       block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/2/2f/Dirt.png'
-    }   
+    },
+    {
+      amount: 100,
+      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/71/Sand_JE5_BE3.png'
+    }
   ]" 
 />
 
