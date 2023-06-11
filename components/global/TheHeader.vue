@@ -1,6 +1,6 @@
 <template>
 <header>
-    <h1 class="title">{{ title }}</h1>
+    <h1 class="title" @click="router.push('/')">{{ title }}</h1>
     <nav class="buttons">
         <HSearch />
         <HDropdown ref="dropdown" v-on:open="emit_open"/>
@@ -9,6 +9,8 @@
 </template>
 
 <script setup lang="ts">
+const router = useRouter()
+
 const prop = defineProps<{
     title: string
 }>()
@@ -41,6 +43,7 @@ header {
 
 .title {
     font: var(--title);
+    cursor: default;
 }
 
 .buttons {

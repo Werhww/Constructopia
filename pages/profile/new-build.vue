@@ -1,13 +1,13 @@
 <template>
 <section>
     <div class="new-build">
-        <ComponentImageImport />
+        <ComponentImageImport v-on:image-imported="asignThumbnail"/>
         <div class="build-details">
             <ComponentInput v-model="title" class="build-title" placeholder="title" font_size="2.5rem" width="100%" :maxlength="35"/>
             <div class="build-undertitel">
                 <BuildOpenDifficulty v-model="difficulty" :white="true" /> 
-                <ComponentLitematicImport />
-                <div class="build-open-3d">
+                <ComponentLitematicImport v-on:litematic-imported="asignLitematic"/>
+                <div v-if="isLitematicImported" class="build-open-3d">
                     <img src="/icons/build/3d-icon-inverted.svg">
                     <p>open 3d editor</p>
                 </div>
@@ -16,20 +16,15 @@
         </div>
     </div>
     <div class="buttons">
-        <ComponentButton @click="cancel" label="cancel" bg_color="var(--inventory-item-background)"  color="var(--white)" />
-        <ComponentButton label="save" bg_color="#21611B" color="var(--white)"/>
+        <ComponentButton @click="router.back()" label="cancel" bg_color="var(--inventory-item-background)"  color="var(--white)" />
+        <ComponentButton @click="createBuild" label="save" bg_color="#21611B" color="var(--white)"/>
     </div>
 </section>
 </template>
 
 <script setup lang="ts">
 const router = useRouter()
-const litematicInput = ref()
-
-function litematicImport(){
-    litematicInput.value.click()
-}
-
+const isLitematicImported = ref(false)
 
 definePageMeta({
     title: 'New Build'
@@ -37,9 +32,20 @@ definePageMeta({
 const title = ref('')
 const difficulty = ref('easy')
 const description = ref('')
+const thumbnail = ref()
+const litematic = ref()
 
-function cancel(){
-    router.back()
+function asignThumbnail(image: any){
+    thumbnail.value = image
+}
+
+function asignLitematic(file: any){
+    litematic.value = file
+    isLitematicImported.value = true
+}
+
+function createBuild(){
+    console.log(title.value, difficulty.value, description.value, thumbnail.value, litematic.value)
 }
 </script>
 

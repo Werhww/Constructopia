@@ -9,6 +9,10 @@
 </template>
 
 <script setup lang="ts">
+import { emit } from 'process';
+
+const emit = defineEmits(['image-imported'])
+
 const previewOpen = ref(false)
 const preview = ref()
 
@@ -25,6 +29,7 @@ function importImage(event: any){
     }
 
     reader.readAsDataURL(event.target.files[0]);
+    emit('image-imported', event.target.files[0])
 
     previewOpen.value = true
 }
