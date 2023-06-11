@@ -5,9 +5,9 @@
     <p @click="litematicImport">{{ build_name }}</p>
     <p class="import-info">?</p>
     <div class="descripton">
+        We take use of the <a href="https://www.curseforge.com/minecraft/mc-mods/litematica" target="_blank" rel="noopener noreferrer">litematica mod</a> to import builds.
         Litematic is a file format that contains a Minecraft build.
-        With the use of the <a href="https://www.curseforge.com/minecraft/mc-mods/litematica" target="_blank" rel="noopener noreferrer">Litematica mod</a>.
-        <span><NuxtLink to="/litematica">Learn more</NuxtLink></span>
+        <span><NuxtLink to="/build/litematica">Learn more</NuxtLink></span>
     </div>
 </div>
 </template>
@@ -64,7 +64,7 @@ function importLitematic(){
     animation: fade-in 0.3s ease-in-out forwards;
 
     position: absolute;
-    top: 1.7rem;
+    top: 1.5rem;
     left: 0;
 
     width: 30rem;
@@ -95,7 +95,6 @@ function importLitematic(){
 
 .descripton > span{
     display: block;
-    margin-top: -1.3rem;
     font-size: 1rem;
     width: 100%;
     text-align: right;
@@ -104,5 +103,4 @@ function importLitematic(){
 .descripton > span > a{
     color: var(--white);
 }
-
 </style>

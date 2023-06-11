@@ -29,6 +29,7 @@ const isLitematicImported = ref(false)
 definePageMeta({
     title: 'New Build'
 })
+
 const title = ref('')
 const difficulty = ref('easy')
 const description = ref('')

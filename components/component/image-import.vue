@@ -1,20 +1,27 @@
 <template>
 <div :class="{'image-import': true, 'image-imported': previewOpen}">
-    <input v-on:change="importImage" ref="imageInput" type="file" accept="image/apng, image/avif, image/jpeg, image/png, image/webp, image/svg+xmllø">
+    <input v-on:change="importImage" ref="imageInput" type="file" accept="image/apng, image/avif, image/jpeg, image/png, image/webp, image/svg+xmllø" multiple>
     <img v-if="!previewOpen" class="import-image" src="/icons/components/import-image.svg" @click="openImport">
-    <div v-if="!previewOpen" @click="openImport"><!-- Background color with blur --></div>
+    <div v-if="!previewOpen" @click="openImport" class="background_with_blur"><!-- Background color with blur --></div>
 
-    <img v-if="previewOpen" class="preview-image" :src="preview" @click="openImport">
+    <img v-if="previewOpen" class="preview-image" :src="thumbnail_preview" @click="openImport">
+</div>
+<div class="preview-carousel" v-dragscroll.y>
+    <img v-for="item in preview_images" @click="changePreviewImage(item.index)" :src="item.image" :class="{'preview-carousel-current': item.current, 'preview-carousel-item': true}">
 </div>
 </template>
 
 <script setup lang="ts">
-import { emit } from 'process';
-
 const emit = defineEmits(['image-imported'])
 
 const previewOpen = ref(false)
-const preview = ref()
+const thumbnail_preview = ref()
+const preview_images = ref<{
+    image:string
+    current:boolean
+    index:number
+
+}[]>([])
 
 const imageInput = ref()
 
@@ -23,15 +30,60 @@ function openImport(){
 }
 
 function importImage(event: any){
-    var reader = new FileReader();
-    reader.onload = (e:any) => {
-        preview.value = e.target.result;
-    }
-
-    reader.readAsDataURL(event.target.files[0]);
-    emit('image-imported', event.target.files[0])
+    readThumbnail(event.target.files[0])
+    readImages(event.target.files)
+    emit('image-imported', preview_images.value)
 
     previewOpen.value = true
+}
+
+function readThumbnail(thumbnail: any) {
+    const reader = new FileReader();
+    reader.onload = (e:any) => {
+        thumbnail_preview.value = e.target.result;
+    }
+    reader.readAsDataURL(thumbnail)
+}
+
+async function readImages(images: any) {
+    preview_images.value = []
+    let current_index = 0
+
+    for (let i = 0; i < images.length; i++) {
+        const reader = new FileReader();
+
+
+        reader.onload = (e: any) => {
+            if (i == 0) {
+                preview_images.value.push({
+                    image: e.target.result,
+                    current: true,
+                    index: current_index
+                });
+                current_index ++
+                return
+            }
+
+            preview_images.value.push({
+                image: e.target.result,
+                current: false,
+                index: current_index
+            });
+            current_index ++
+
+
+        };
+
+        reader.readAsDataURL(images[i]);
+    }
+}
+
+function changePreviewImage(index: number){
+    preview_images.value.forEach((item) => {
+        item.current = false
+    })
+    preview_images.value[index].current = true
+    thumbnail_preview.value = preview_images.value[index].image
 }
 </script>
 
@@ -39,7 +91,6 @@ function importImage(event: any){
 .image-import {
     width: 18.75rem;
     height: 18.75rem;
-    position: relative;
     overflow: hidden;
     cursor: pointer;
 
@@ -55,7 +106,7 @@ function importImage(event: any){
     border-radius: 0.625rem;
 }
 
-.image-import > div{
+.background_with_blur{
     width: 100%;
     height: 100%;
 
@@ -85,5 +136,32 @@ function importImage(event: any){
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.preview-carousel {
+    overflow: hidden;
+
+    height: 37.5rem;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.preview-carousel-item{
+    width: 6.25rem;
+    height: 5.625rem;
+    object-fit: cover;
+    border-radius: 0.3125rem;
+
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(0.5);
+    cursor: pointer;
+
+    transition: filter 0.2s ease;
+}
+
+.preview-carousel-current {
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(1);
 }
 </style>
