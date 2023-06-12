@@ -6,7 +6,7 @@
     <div class="item-data" @mousedown="mouseDownX = $event.clientX" @mouseup="open_build_check">
         <h1 class="title">{{ title }}</h1>
         <div class="meta-data">
-            <p>{{ formatedDate }}</p>
+            <p>{{ formatDate(prop.date, 2) }}</p>
             <p>@{{ user }}</p>
             <p>/{{ difficulty }}</p>
         </div>
@@ -22,8 +22,6 @@
 </template>
 
 <script setup lang="ts">
-import moment from 'moment'
-
 const router = useRouter()
 
 const prop = defineProps<{
@@ -37,10 +35,6 @@ const prop = defineProps<{
     views: string
     liked: boolean
 }>()
-
-const formatedDate = computed(() => {
-    return moment(prop.date).format('YYYY MMMM Do')
-})
 
 let mouseDownX = 0
 let mouseUpX = 0

@@ -5,7 +5,7 @@
         <h1 v-if="!isEditing">{{ build.title }}</h1>
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
         <div class="metadata">
-            <p>{{ formattedDate }}</p>
+            <p>{{ formatDate(prop.build.date, 1) }}</p>
             <p>@{{ build.user }}</p>
             <p v-if="!isEditing">/{{ build.difficulty }}</p>
             <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
@@ -15,7 +15,7 @@
         <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
 
         <div class="build-buttons" v-if="!isEditing">
-            <BuildOpenLikeButton v-if="!owner" :liked="false" v-on:like="like"/>
+            <BuildOpenLikeButton v-if="!owner" :liked="favorite" v-on:like="like"/>
             <BuildOpenIconButton text="3d editor" :icon="threeD_icon" @click="emit('3d-editor')"/>
             <BuildOpenIconButton text="share" :icon="share_icon" @click="emit('share')"/>
             <BuildOpenIconButton v-if="owner" text="edit" :icon="edit_icon" @click="changeEditState"/>
@@ -29,16 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import moment from 'moment'
-
 /* Image imports */
 import threeD_icon from '/icons/build/3d-icon.svg'
 import share_icon from '/icons/build/share-icon.svg'
 import edit_icon from '/icons/build/edit-icon.svg'
 import delete_icon from '/icons/build/delete-icon.svg'
 import save_icon from '/icons/build/save-icon.svg'
-
-
 
 /* swich userid with id form auth */
 const userID = '123'
@@ -56,6 +52,8 @@ const prop = defineProps<{
         views: number
     }
 
+    favorite: boolean
+
     inventory: {
         amount: number
         block_image: string
@@ -72,7 +70,6 @@ const owner = computed(() => {
         return false
     }
 })
-const formattedDate = moment(prop.build.date).format('YYYY.MM.DD')
 
 const isEditing = ref(false)
 const editData = ref({
@@ -87,6 +84,7 @@ function changeEditState() {
 
 function like(liked: boolean) {
     console.log('liked: ', liked)
+
     /* firebase function */
 }
 

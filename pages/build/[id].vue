@@ -13,7 +13,9 @@
     description: 'This is a description',
     blocks: 5,
     views: 100 
-  }" 
+  }"
+
+  :favorite="true"
     
   :inventory="[
     {
@@ -27,6 +29,10 @@
     {
       amount: 100,
       block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/71/Sand_JE5_BE3.png'
+    },
+    {
+      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/3/3e/Glass_JE4_BE2.png',
+      amount: 100
     }
   ]" 
 />
