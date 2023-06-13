@@ -45,7 +45,7 @@ function readThumbnail(thumbnail: any) {
     reader.readAsDataURL(thumbnail)
 }
 
-async function readImages(images: any) {
+function readImages(images: any) {
     preview_images.value = []
     let current_index = 0
 

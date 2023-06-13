@@ -1,6 +1,9 @@
 <template>
 <section class="open-build">
-    <BuildOpenImage :image_link="build.image"/>
+    <BuildOpenImage :image_link="shown_image"/>
+    <div class="image-carousel" v-dragscroll.y>
+        <img v-for="item in all_images" @click="changeShownImage(item.index)" :src="item.image" :class="{'image-carousel-current': item.current, 'image-carousel-item': true}">
+    </div>
     <div class="build-info">
         <h1 v-if="!isEditing">{{ build.title }}</h1>
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
@@ -15,7 +18,7 @@
         <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
 
         <div class="build-buttons" v-if="!isEditing">
-            <BuildOpenLikeButton v-if="!owner" :liked="favorite" v-on:like="like"/>
+            <BuildOpenLikeButton v-if="!owner" :liked="favorite" v-on:like="likeBuild(favorite, build.userId)"/>
             <BuildOpenIconButton text="3d editor" :icon="threeD_icon" @click="emit('3d-editor')"/>
             <BuildOpenIconButton text="share" :icon="share_icon" @click="emit('share')"/>
             <BuildOpenIconButton v-if="owner" text="edit" :icon="edit_icon" @click="changeEditState"/>
@@ -42,7 +45,8 @@ const userID = '123'
 const prop = defineProps<{
     build: {
         userId: string
-        image: string
+        thumbnail: string
+        images: string[]
         title: string
         date: string
         user: string
@@ -82,12 +86,6 @@ function changeEditState() {
     isEditing.value = !isEditing.value
 }
 
-function like(liked: boolean) {
-    console.log('liked: ', liked)
-
-    /* firebase function */
-}
-
 function deleteBuild() {
     /* firebase function */
     console.log('delete')
@@ -98,6 +96,34 @@ function saveBuild() {
     console.log('save')
     console.log(editData.value)
     changeEditState()
+}
+
+const shown_image = ref()
+const all_images = ref<{
+    image:string
+    current:boolean
+    index:number
+
+}[]>([])
+
+onMounted(() => {
+    const images = prop.build.images.map((item, index) => {
+        return {
+            image: item,
+            current: index === 0 ? true : false,
+            index: index
+        }
+    })
+    shown_image.value = images[0].image
+    all_images.value = images
+})
+
+function changeShownImage(index: number){
+    all_images.value.forEach((item) => {
+        item.current = false
+    })
+    all_images.value[index].current = true
+    shown_image.value = all_images.value[index].image
 }
 </script>
 
@@ -177,5 +203,32 @@ function saveBuild() {
     display: flex;
     justify-content: flex-start;
     gap: 2rem;
+}
+
+.image-carousel {
+    overflow: hidden;
+
+    height: 37.5rem;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.image-carousel-item {
+    width: 6.25rem;
+    height: 5.625rem;
+    object-fit: cover;
+    border-radius: 0.3125rem;
+
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(0.5);
+    cursor: pointer;
+
+    transition: filter 0.2s ease;
+}
+
+.image-carousel-current {
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(1);
 }
 </style>
