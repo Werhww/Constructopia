@@ -1,7 +1,7 @@
 <template>
 <section class="open-build">
     <BuildOpenImage :image_link="shown_image"/>
-    <div class="image-carousel" v-dragscroll.y>
+    <div class="image-carousel">
         <img v-for="item in all_images" @click="changeShownImage(item.index)" :src="item.image" :class="{'image-carousel-current': item.current, 'image-carousel-item': true}">
     </div>
     <div class="build-info">
@@ -98,7 +98,7 @@ function saveBuild() {
     changeEditState()
 }
 
-const shown_image = ref()
+const shown_image = ref('')
 const all_images = ref<{
     image:string
     current:boolean

@@ -6,7 +6,7 @@
 
     <img v-if="previewOpen" class="preview-image" :src="thumbnail_preview" @click="openImport">
 </div>
-<div class="preview-carousel" v-dragscroll.y>
+<div class="preview-carousel">
     <img v-for="item in preview_images" @click="changePreviewImage(item.index)" :src="item.image" :class="{'preview-carousel-current': item.current, 'preview-carousel-item': true}">
 </div>
 </template>
@@ -30,11 +30,21 @@ function openImport(){
 }
 
 function importImage(event: any){
+    if (!checkImageCount(event.target.files)) return
     readThumbnail(event.target.files[0])
     readImages(event.target.files)
     emit('image-imported', preview_images.value)
 
     previewOpen.value = true
+}
+
+function checkImageCount(images: any){
+    if (images.length > 6) {
+        alert('You can only upload 5 images')
+        return false
+    } else {
+        return true
+    }
 }
 
 function readThumbnail(thumbnail: any) {

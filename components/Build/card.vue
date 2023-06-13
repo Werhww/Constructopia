@@ -51,7 +51,7 @@ function open_build_check(e: MouseEvent) {
 }
 
 function like_build(likeValue: boolean) {
-    console.log(likeValue)
+    likeBuild(likeValue, prop.buildId)
     /* firebase function */
 }
 </script>
