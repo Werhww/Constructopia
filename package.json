@@ -14,6 +14,7 @@
     "nuxt": "^3.5.2"
   },
   "dependencies": {
+    "@kleppe/litematic-reader": "^1.0.1",
     "lottie-web-vue": "^2.0.6",
     "moment": "^2.29.4",
     "vue-dragscroll": "^4.0.5"

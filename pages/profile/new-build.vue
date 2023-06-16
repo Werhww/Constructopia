@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+
 const router = useRouter()
 const isLitematicImported = ref(false)
 
@@ -35,6 +36,10 @@ const difficulty = ref('easy')
 const description = ref('')
 const thumbnail = ref()
 const litematic = ref()
+const inventory = ref<{
+    amount: number
+    blockId: string
+}[]>([])
 
 function asignThumbnail(image: any){
     thumbnail.value = image
@@ -43,6 +48,12 @@ function asignThumbnail(image: any){
 function asignLitematic(file: any){
     litematic.value = file
     isLitematicImported.value = true
+}
+
+function getInventory() {
+    if(!litematic.value) return
+
+
 }
 
 function createBuild(){
