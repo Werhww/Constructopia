@@ -22,9 +22,9 @@ function litematicImport(){
     litematicInput.value.click()
 }
 
-function importLitematic(){
-    build_name.value = litematicInput.value.files[0].name
-    emit('litematic-imported', litematicInput.value.files[0])
+async function importLitematic(event: any){
+    build_name.value = event.target.files[0].name
+    emit('litematic-imported', event.target.files[0])
 }
 
 </script>

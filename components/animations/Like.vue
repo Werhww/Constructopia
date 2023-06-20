@@ -1,5 +1,5 @@
 <template>
-<lottie-animation
+<LottieAnimation
     @click="play"
     class="wrapper"
     ref="anim"
@@ -11,6 +11,7 @@
 </template>
 
 <script setup lang="ts">
+import { LottieAnimation } from "lottie-web-vue"
 import animation from '~/assets/animations/favorite-ani.json';
 
 const prop = defineProps<{

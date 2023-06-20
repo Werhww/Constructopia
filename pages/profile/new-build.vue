@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import countBuild from '~/composables/count-build';
 
 const router = useRouter()
 const isLitematicImported = ref(false)
@@ -45,9 +46,13 @@ function asignThumbnail(image: any){
     thumbnail.value = image
 }
 
-function asignLitematic(file: any){
+async function asignLitematic(file: any){
     litematic.value = file
     isLitematicImported.value = true
+
+    const BlockPaletteWithCount = countBuild(file)
+
+    console.log(await BlockPaletteWithCount)
 }
 
 function getInventory() {

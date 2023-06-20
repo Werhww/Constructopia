@@ -1,5 +1,5 @@
 <template>
-<lottie-animation
+<LottieAnimation
     class="wrapper"
     :animationData="animation"
     :loop="true"
@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import { LottieAnimation } from "lottie-web-vue"
 import animation from '~/assets/animations/loading-ani.json';
 </script>
 

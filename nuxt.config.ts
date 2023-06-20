@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
     plugins: [
         '~/plugins/vue-dragscroll.ts',
-        '~/plugins/vue-lottie-web.ts',
     ],
 
     css: [
