@@ -1,12 +1,12 @@
 <template>
 <div class="build-file-import">
     <input v-on:change="importLitematic" class="litematic-import" ref="litematicInput" type="file" accept=".litematic">
-    <img @click="litematicImport" src="/icons/build/import-build.svg">
-    <p @click="litematicImport">{{ build_name }}</p>
+    <img class="build-icon" @click="litematicImport" src="/icons/build/import-build.svg">
+    <p class="build-name" @click="litematicImport">{{ build_name }}</p>
     <p class="import-info">?</p>
     <div class="descripton">
         We take use of the <a href="https://www.curseforge.com/minecraft/mc-mods/litematica" target="_blank" rel="noopener noreferrer">litematica mod</a> to import builds.
-        Litematic is a file format that contains a Minecraft build.
+        Litematic is a file format that contains Minecraft builds.
         <span><NuxtLink to="/build/litematica">Learn more</NuxtLink></span>
     </div>
 </div>
@@ -40,13 +40,17 @@ async function importLitematic(event: any){
     cursor: pointer;
 }
 
+.build-name, .build-icon {
+    z-index: 10;
+}
+
 .litematic-import {
-    user-select: none;
-    
     position: absolute;
-    top: 20vh;
-    left: 70vw;
+    top: 0;
+    left: 0;
     opacity: 0;
+
+    width: 7rem;
 }
 
 .import-info {

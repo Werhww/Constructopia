@@ -50,9 +50,9 @@ async function asignLitematic(file: any){
     litematic.value = file
     isLitematicImported.value = true
 
-    const BlockPaletteWithCount = countBuild(file)
+    const BlockPaletteWithCount = await countBuild(file)
 
-    console.log(await BlockPaletteWithCount)
+    console.log(BlockPaletteWithCount)
 }
 
 function getInventory() {
@@ -92,7 +92,7 @@ section {
     gap: 1.2rem;
 }
 
-.build-file-import, .build-open-3d{
+.build-open-3d{
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -101,14 +101,6 @@ section {
     cursor: pointer;
 }
 
-.build-file-import p:last-child{
-    text-decoration: underline;
-    text-underline-offset: 0.3rem;
-    cursor: help;
-}
-.litematic-import {
-    display: block;
-}
 
 .build-open-3d {
     text-decoration: underline;
