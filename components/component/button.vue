@@ -5,8 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import { emit } from 'process';
-
 defineProps<{
     label: string
     bg_color: string
@@ -32,6 +30,6 @@ defineEmits(['click'])
     color: v-bind(color);
     font: var(--text);
     font-weight: 600;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
 }
 </style>

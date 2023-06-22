@@ -16,6 +16,8 @@
   --inventory-background: #525152;
   --inventory-item-background: #333333;
   --inventory-item-border: #232323; 
+
+  --border-radius: 0.625rem;
 }
 
 body {

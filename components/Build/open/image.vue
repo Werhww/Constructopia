@@ -32,7 +32,7 @@ function mouseOver(e:MouseEvent) {
 .build-img-img {
     object-fit: cover;
     pointer-events: none;
-    border-radius: 0.625rem;
+    border-radius: var(--border-radius);
     width: 100%;
     height: 100%;
     transition: all 0.3s ease;

@@ -25,19 +25,23 @@
   :inventory="[
     {
       amount: 550,
-      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/6/67/Cobblestone.png'
+      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/6/67/Cobblestone.png',
+      block_name: 'minecraft:cobblestone'
     }, 
     {
       amount: 1550,
-      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/2/2f/Dirt.png'
+      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/2/2f/Dirt.png',
+      block_name: 'minecraft:dirt'
     },
     {
       amount: 100,
-      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/71/Sand_JE5_BE3.png'
+      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/71/Sand_JE5_BE3.png',
+      block_name: 'minecraft:sand'
     },
     {
+      amount: 100,
       block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/3/3e/Glass_JE4_BE2.png',
-      amount: 100
+      block_name: 'minecraft:glass'
     }
   ]" 
 />

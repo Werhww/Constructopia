@@ -113,7 +113,7 @@ function changePreviewImage(index: number){
     width: 42.5rem;
     height: 37.5rem;
     object-fit: cover;
-    border-radius: 0.625rem;
+    border-radius: var(--border-radius);
 }
 
 .background_with_blur{
@@ -163,7 +163,7 @@ function changePreviewImage(index: number){
     width: 6.25rem;
     height: 5.625rem;
     object-fit: cover;
-    border-radius: 0.3125rem;
+    border-radius: calc(var(--border-radius) / 2);
 
     filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(0.5);
     cursor: pointer;

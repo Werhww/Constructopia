@@ -3,6 +3,10 @@
     <img :src="block_image">
     <p class="stacks-text" v-if="amount.stacks">x64</p>
     <p class="amount-text">{{ fixedAmount }}</p>
+
+    <div class="tooltip" v-if="needTooltip">
+        <p>{{ block_name }}</p>
+    </div>
 </div>
 </template>
 
@@ -13,6 +17,7 @@ const prop = defineProps<{
         stacks: boolean
     }
     block_image: string
+    block_name: string
 }>()
 
 const fixedAmount = computed(() => {
@@ -20,6 +25,14 @@ const fixedAmount = computed(() => {
         return " "
     } else {
         return prop.amount.amount
+    }
+})
+
+const needTooltip = computed(() => {
+    if (prop.amount.amount == 0) {
+        return false
+    } else {
+        return true
     }
 })
 
@@ -69,5 +82,26 @@ const fixedAmount = computed(() => {
     position: absolute;
     bottom: 0.8rem;
     right: 0;
+}
+
+.inventory-item:hover > .tooltip {
+    display: block;
+}
+
+.tooltip {
+    user-select: text;
+
+    display: none;
+    position: absolute;
+    top: 1.5rem;
+    left: 2.4rem;
+    z-index: 100;
+
+    padding: 0.3rem;
+    border-radius: var(--border-radius);
+    filter: drop-shadow(0 0 0.25rem rgba(0, 0, 0, 0.5));
+
+    color: var(--white);
+    background-color: var(--inventory-item-background);
 }
 </style>

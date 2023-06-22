@@ -1,6 +1,6 @@
 <template>
 <div class="inventory-row">
-    <BuildInventoryItem v-for="item in inventoryFixed" :block_image="item.block_image" :amount="item.amount" />
+    <BuildInventoryItem v-for="item in inventoryFixed" :block_image="item.block_image" :amount="item.amount" :block_name="item.block_name" />
 </div>
 </template>
 
@@ -14,6 +14,7 @@ const prop = defineProps<{
             stacks: boolean
         }
         block_image: string
+        block_name: string
     }[]
 }>()
 
@@ -26,6 +27,7 @@ const inventoryFixed = computed(() => {
             stacks: boolean
         }
         block_image: any
+        block_name: string
     }[] = []
 
     if (inventory.length == 9) {
@@ -40,7 +42,8 @@ const inventoryFixed = computed(() => {
                         amount: 0,
                         stacks: false
                     },
-                    block_image: air
+                    block_image: air,
+                    block_name: ""
                 })
             }
         }

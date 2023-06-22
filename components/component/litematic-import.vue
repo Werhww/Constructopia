@@ -73,7 +73,7 @@ async function importLitematic(event: any){
 
     width: 30rem;
     height: fit-content;
-    border-radius: 0.3rem;
+    border-radius: calc(var(--border-radius) / 2);
     padding: .8rem;
 
     z-index: 100;

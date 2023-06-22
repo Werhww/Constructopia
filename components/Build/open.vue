@@ -7,6 +7,7 @@
     <div class="build-info">
         <h1 v-if="!isEditing">{{ build.title }}</h1>
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
+
         <div class="metadata">
             <p>{{ formatDate(prop.build.date, 1) }}</p>
             <p>@{{ build.user }}</p>
@@ -24,8 +25,16 @@
             <BuildOpenIconButton v-if="owner" text="edit" :icon="edit_icon" @click="changeEditState"/>
         </div>
         <div class="edit-buttons" v-if="owner && isEditing">
-            <BuildOpenIconButton text="delete" :icon="delete_icon" color="#C11212"  @click="deleteBuild"/>
+            <BuildOpenIconButton text="delete" :icon="delete_icon" color="#C11212"  @click="initalDelete"/>
             <BuildOpenIconButton text="save" :icon="save_icon" @click="saveBuild"/>
+            <BuildOpenIconButton text="cancel" :icon="edit_icon" @click="changeEditState"/>
+        </div>
+    </div>
+    <div v-if="deletePrompt" class="delete-prompt">
+        <p>Are you sure you want to delete this build?</p>
+        <div class="delete-prompt-buttons">
+            <BuildOpenIconButton text="delete" :icon="delete_icon" color="#C11212"  @click="deleteBuild"/>
+            <BuildOpenIconButton text="cancel" :icon="edit_icon" @click="initalDelete"/>
         </div>
     </div>
 </section>
@@ -61,6 +70,7 @@ const prop = defineProps<{
     inventory: {
         amount: number
         block_image: string
+        block_name: string
     }[]
 }>()
 
@@ -84,6 +94,12 @@ const editData = ref({
 
 function changeEditState() {
     isEditing.value = !isEditing.value
+}
+
+const deletePrompt = ref(false)
+
+function initalDelete() {
+    deletePrompt.value = !deletePrompt.value
 }
 
 function deleteBuild() {
@@ -128,6 +144,28 @@ function changeShownImage(index: number){
 </script>
 
 <style scoped>
+.delete-prompt {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    padding: 1rem .75rem;
+    border-radius: var(--border-radius);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+
+    position: absolute;
+    top: 20rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: var(--background);
+    color: var(--white);
+}
+
+.delete-prompt-buttons {
+    display: flex;
+    justify-content: space-between;
+}
 
 .edit-input {
     outline: none;
@@ -144,7 +182,7 @@ function changeShownImage(index: number){
 .edit-title {
     font: var(--title);
     font-style: normal;
-    width: 65rem;
+    width: fit-content;
 }
 
 .edit-description {
@@ -164,7 +202,7 @@ function changeShownImage(index: number){
     height: 37.5rem;
     object-fit: cover;
 
-    border-radius: 0.625rem;
+    border-radius: var(--border-radius);
 }
 
 .build-info {
@@ -220,7 +258,7 @@ function changeShownImage(index: number){
     width: 6.25rem;
     height: 5.625rem;
     object-fit: cover;
-    border-radius: 0.3125rem;
+    border-radius: calc(var(--border-radius) / 2);
 
     filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(0.5);
     cursor: pointer;

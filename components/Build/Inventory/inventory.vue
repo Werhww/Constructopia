@@ -9,6 +9,7 @@ const prop = defineProps<{
     inventory: {
         amount: number
         block_image: string
+        block_name: string
     }[]
 }>()
 
@@ -20,6 +21,7 @@ const inventortFixedForRows = computed(()=>{
             stacks: boolean
         }
         block_image: string
+        block_name: string
     }[][] = []
 
     let currentRow: {
@@ -28,6 +30,7 @@ const inventortFixedForRows = computed(()=>{
             stacks: boolean
         }
         block_image: string
+        block_name: string
     }[] = []
 
     for (let i = 0; i < inventory.length; i++) {
@@ -36,7 +39,7 @@ const inventortFixedForRows = computed(()=>{
             currentRow = []
         }
         
-        const { amount, block_image } = inventory[i]
+        const { amount, block_image, block_name } = inventory[i]
 
         if(amount < 64) {
             currentRow.push({
@@ -44,7 +47,8 @@ const inventortFixedForRows = computed(()=>{
                     amount,
                     stacks: false
                 },
-                block_image
+                block_image,
+                block_name
             })
         } else {
             const stacks = Math.floor(amount / 64)
@@ -55,7 +59,8 @@ const inventortFixedForRows = computed(()=>{
                     amount: stacks,
                     stacks: true
                 },
-                block_image
+                block_image,
+                block_name
             })
 
             if (currentRow.length == 9) {
@@ -68,7 +73,8 @@ const inventortFixedForRows = computed(()=>{
                     amount: remainder,
                     stacks: false
                 },
-                block_image
+                block_image,
+                block_name
             })
         }
 
@@ -89,7 +95,7 @@ const inventortFixedForRows = computed(()=>{
     padding: 0.8rem 0.6rem;
     background-color: var(--inventory-background);
     width: fit-content;
-    border-radius: 0.25rem;
+    border-radius: var(--border-radius);
     filter: drop-shadow(0px 0px 0.25rem rgba(0, 0, 0, .5));
 }
 </style>

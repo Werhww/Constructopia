@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@kleppe/litematic-reader": "^1.0.9",
+    "firebase": "^9.22.2",
     "fs-web": "^1.0.1",
     "lottie-web-vue": "^2.0.6",
     "moment": "^2.29.4",

@@ -10,7 +10,7 @@
     height: 17.938rem;
 
 
-    border-radius: 1rem;
+    border-radius: var(--border-radius);
 
     display: flex;
     justify-content: center;

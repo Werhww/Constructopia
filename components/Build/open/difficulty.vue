@@ -68,6 +68,6 @@ if (prop.white) {
     
     background-color: var(--background);
     padding: 0 .3rem .3rem .3rem;
-    border-radius: 0 0 0.625rem 0.625rem;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 </style>
