@@ -1,7 +1,7 @@
 <template>
 <section>
     <div class="new-build">
-        <ComponentImageImport v-on:image-imported="asignThumbnail"/>
+        <ComponentImageImport v-on:image-imported="asignImages" v-on:update-main-image="asignThumbnail"/>
         <div class="build-details">
             <ComponentInput v-model="title" class="build-title" placeholder="title" font_size="2.5rem" width="100%" :maxlength="35"/>
             <div class="build-undertitel">
@@ -23,46 +23,92 @@
 </template>
 
 <script setup lang="ts">
-import countBuild from '~/composables/count-build';
-
 const router = useRouter()
 const isLitematicImported = ref(false)
+import { db, storage } from '@/assets/scripts/firebase'
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"; 
+import { ref as fbRef, uploadString } from "firebase/storage"
+
+const buildsRef = collection(db, "builds")
 
 definePageMeta({
     title: 'New Build'
 })
 
-const title = ref('')
-const difficulty = ref('easy')
-const description = ref('')
-const thumbnail = ref()
-const litematic = ref()
-const inventory = ref<{
-    amount: number
-    blockId: string
-}[]>([])
+const userid = '1234test'
 
-function asignThumbnail(image: any){
-    thumbnail.value = image
+/* Input values */
+const title = ref('')
+const description = ref('')
+const difficulty = ref('easy')
+
+const litematic = ref()
+
+const totelBlocks = ref(0)
+const inventory = ref<{[key: string]: {
+    block: string;
+    count: number;
+}}>({})
+
+const thumbnailIndex = ref<number>()
+const images = ref<string[]>([])
+
+function asignImages(image: any){
+    images.value = image
+
+    console.log(images.value)
 }
+
+function asignThumbnail(index: number){
+    thumbnailIndex.value = index
+}
+
 
 async function asignLitematic(file: any){
     litematic.value = file
     isLitematicImported.value = true
 
-    const BlockPaletteWithCount = await countBuild(file)
+    inventory.value =  await countBuild(file) as any
+    totelBlocks.value = await countBlocks(file) as number
 
-    console.log(BlockPaletteWithCount)
+    console.log(inventory.value)
+    console.log(totelBlocks.value)
 }
 
-function getInventory() {
-    if(!litematic.value) return
+async function createBuild(){
+    const buildRef = await addDoc(collection(db, "builds"), {
+        title: title.value,
+        description: description.value,
+        difficulty: difficulty.value,
+        views: 0,
+        blocks: 1,
 
+        thumbnailIndex: thumbnailIndex.value,
+        images: images.value.length - 1,
 
+        date: {
+            created: serverTimestamp(),
+            lastEdit: serverTimestamp()
+        },
+
+        user: userid,
+    })
+
+    uploadImages(buildRef.id)
 }
 
-function createBuild(){
-    console.log(title.value, difficulty.value, description.value, thumbnail.value, litematic.value)
+async function uploadImages(buildId: string) {
+    const storageRef = fbRef(storage, `builds/${userid}/${buildId}/images`)
+
+
+    for (let i = 0; i < images.value.length; i++) {
+        const image = images.value[i]
+        const imagesRef = fbRef(storageRef, `${i}.png`)
+
+        uploadString(imagesRef, image, 'data_url').then((snapshot) => {
+            console.log('Uploaded a data_url string!')
+        })
+    }
 }
 </script>
 

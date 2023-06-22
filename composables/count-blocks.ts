@@ -1,6 +1,6 @@
 import { Litematic } from '@kleppe/litematic-reader'
 
-export default async function countBuild(file: any) {
+export default async function countBlocks(file: any) {
 	let reader = new FileReader()
 
 	reader.readAsArrayBuffer(file)
@@ -9,7 +9,8 @@ export default async function countBuild(file: any) {
 		reader.addEventListener('loadend', async (e) => {
 			const arrayBuffer = e.target?.result
 			let litematic = new Litematic(arrayBuffer as ArrayBuffer)
-			resolve(await litematic.getBlockPaletteWithCount())
+			await litematic.read()
+			resolve(litematic.litematic?.totalBlocks)
 		})
 		reader.addEventListener('error', (error) => {
 			reject(error)

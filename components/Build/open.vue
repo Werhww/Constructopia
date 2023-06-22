@@ -244,8 +244,6 @@ function changeShownImage(index: number){
 }
 
 .image-carousel {
-    overflow: hidden;
-
     height: 37.5rem;
     overflow: hidden;
 

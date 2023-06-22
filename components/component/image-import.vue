@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits(['image-imported'])
+const emit = defineEmits(['image-imported', 'update-main-image'])
 
 const previewOpen = ref(false)
 const thumbnail_preview = ref()
@@ -20,8 +20,9 @@ const preview_images = ref<{
     image:string
     current:boolean
     index:number
-
 }[]>([])
+
+const allImages = ref<string[]>([])
 
 const imageInput = ref()
 
@@ -31,61 +32,47 @@ function openImport(){
 
 function importImage(event: any){
     if (!checkImageCount(event.target.files)) return
-    readThumbnail(event.target.files[0])
     readImages(event.target.files)
-    emit('image-imported', preview_images.value)
-
     previewOpen.value = true
 }
 
 function checkImageCount(images: any){
     if (images.length > 6) {
-        alert('You can only upload 5 images')
+        alert('You can only upload 6 images')
         return false
     } else {
         return true
     }
 }
 
-function readThumbnail(thumbnail: any) {
-    const reader = new FileReader();
-    reader.onload = (e:any) => {
-        thumbnail_preview.value = e.target.result;
-    }
-    reader.readAsDataURL(thumbnail)
-}
-
 function readImages(images: any) {
     preview_images.value = []
+    allImages.value = []
     let current_index = 0
 
     for (let i = 0; i < images.length; i++) {
         const reader = new FileReader();
 
-
         reader.onload = (e: any) => {
-            if (i == 0) {
-                preview_images.value.push({
-                    image: e.target.result,
-                    current: true,
-                    index: current_index
-                });
-                current_index ++
-                return
-            }
-
+            allImages.value.push(e.target.result)
             preview_images.value.push({
                 image: e.target.result,
                 current: false,
                 index: current_index
             });
+
+            if (current_index == images.length - 1) {
+                changePreviewImage(0)
+            }
+
             current_index ++
-
-
         };
 
         reader.readAsDataURL(images[i]);
     }
+
+    emit('update-main-image', 0)
+    emit('image-imported', allImages.value)
 }
 
 function changePreviewImage(index: number){
@@ -94,6 +81,7 @@ function changePreviewImage(index: number){
     })
     preview_images.value[index].current = true
     thumbnail_preview.value = preview_images.value[index].image
+    emit('update-main-image', index)
 }
 </script>
 

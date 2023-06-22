@@ -44,6 +44,13 @@ async function importLitematic(event: any){
     z-index: 10;
 }
 
+.build-name {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 10rem;
+}
+
 .litematic-import {
     position: absolute;
     top: 0;
