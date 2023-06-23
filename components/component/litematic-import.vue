@@ -1,6 +1,6 @@
 <template>
 <div class="build-file-import">
-    <input v-on:change="importLitematic" class="litematic-import" ref="litematicInput" type="file" accept=".litematic">
+    <input v-on:change="importLitematic" v-bind="$attrs" class="litematic-import" ref="litematicInput" type="file" accept=".litematic">
     <img class="build-icon" @click="litematicImport" src="/icons/build/import-build.svg">
     <p class="build-name" @click="litematicImport">{{ build_name }}</p>
     <p class="import-info">?</p>

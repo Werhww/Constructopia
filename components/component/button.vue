@@ -1,7 +1,7 @@
 <template>
-<div class="Custom-button" @click="$emit('click')">
+<button class="Custom-button" @click="$emit('click')" v-bind="$attrs">
     {{ label }}
-</div>
+</button>
 </template>
 
 <script setup lang="ts">
@@ -27,9 +27,13 @@ defineEmits(['click'])
     padding: 0.375rem 5.25rem;
 
     background-color: v-bind(bg_color);
+    border-radius: var(--border-radius);
+    border: 0;
+
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+
     color: v-bind(color);
     font: var(--text);
     font-weight: 600;
-    border-radius: var(--border-radius);
 }
 </style>

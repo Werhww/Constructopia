@@ -1,6 +1,6 @@
 <template>
 <div>
-    <input class="input" :placeholder="placeholder" type="text" :value="modelValue" @input="updateValue" :maxlength="maxlength" />
+    <input class="input" v-bind="$attrs" :placeholder="placeholder" type="text" :value="modelValue" @input="updateValue" :maxlength="maxlength" />
     <div class="underline"><!-- Underline --></div>
 </div>
 </template>

@@ -25,7 +25,7 @@
             <BuildOpenIconButton v-if="owner" text="edit" :icon="edit_icon" @click="changeEditState"/>
         </div>
         <div class="edit-buttons" v-if="owner && isEditing">
-            <BuildOpenIconButton text="delete" :icon="delete_icon" color="#C11212"  @click="initalDelete"/>
+            <BuildOpenIconButton text="delete" :icon="delete_icon" color="var(--red)"  @click="initalDelete"/>
             <BuildOpenIconButton text="save" :icon="save_icon" @click="saveBuild"/>
             <BuildOpenIconButton text="cancel" :icon="edit_icon" @click="changeEditState"/>
         </div>
@@ -33,7 +33,7 @@
     <div v-if="deletePrompt" class="delete-prompt">
         <p>Are you sure you want to delete this build?</p>
         <div class="delete-prompt-buttons">
-            <BuildOpenIconButton text="delete" :icon="delete_icon" color="#C11212"  @click="deleteBuild"/>
+            <BuildOpenIconButton text="delete" :icon="delete_icon" color="var(--red)"  @click="deleteBuild"/>
             <BuildOpenIconButton text="cancel" :icon="edit_icon" @click="initalDelete"/>
         </div>
     </div>

@@ -1,6 +1,6 @@
 <template>
 <div :class="{'image-import': true, 'image-imported': previewOpen}">
-    <input v-on:change="importImage" ref="imageInput" type="file" accept="image/apng, image/avif, image/jpeg, image/png, image/webp, image/svg+xmllø" multiple>
+    <input v-bind="$attrs" v-on:change="importImage" ref="imageInput" type="file" accept="image/apng, image/avif, image/jpeg, image/png, image/webp, image/svg+xmllø" multiple>
     <img v-if="!previewOpen" class="import-image" src="/icons/components/import-image.svg" @click="openImport">
     <div v-if="!previewOpen" @click="openImport" class="background_with_blur"><!-- Background color with blur --></div>
 
