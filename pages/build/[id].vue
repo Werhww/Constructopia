@@ -3,22 +3,9 @@
   v-on:share="share"
   v-on:3d-editor="open3dEditor"
 
-  :build="{
-    userId: '123',
-    thumbnail: 'https://i.pinimg.com/736x/f5/c0/a2/f5c0a23a575e40913a2056441a30412b.jpg',
-    images: [
-    'https://www.pcgamesn.com/wp-content/sites/pcgamesn/2021/03/minecraft-building-ideas.jpg',
-    'https://i.pinimg.com/736x/f5/c0/a2/f5c0a23a575e40913a2056441a30412b.jpg',
-    'https://i.pinimg.com/736x/f5/c0/a2/f5c0a23a575e40913a2056441a30412b.jpg'
-    ],
-    title: 'The Ultimate Survival Base',
-    date: '2023-05-18T15:00:00',
-    user: 'John-Doe',
-    difficulty: 'easy',
-    description: 'This is a description',
-    blocks: 5,
-    views: 100 
-  }"
+  :build-id="id"
+
+  :build="buildDetails"
 
   :favorite="true"
     
@@ -51,14 +38,43 @@
 </template>
 
 <script setup lang="ts">
+import { getDoc, getDocs, doc } from 'firebase/firestore';
+import { 
+  buildRef,
+  inventoryRef,
+  storage 
+} from '@/assets/scripts/firebase'
+
+const { id } = useRoute().params
 definePageMeta({
   title: 'Build'
+})
+
+const buildDetails = ref<any>({
+  title: '',
+  description: '',
+  difficulty: '',
+  blocks: 0,
+  images: 0,
+  thumbnailIndex: 0,
+  views: 0,
+  date: {
+    created: '',
+    lastEdited: ''
+  },
+  user: '',
+  userId: ''
+})
+
+
+onMounted(async () => {
+  buildDetails.value = (await getDoc(doc(buildRef, id as string))).data()
+  console.log(buildDetails.value)
 })
 
 /* Change to auth id for prod */
 const userId = '123'
 
-const { id } = useRoute().params
 
 function share() {
   console.log('share')

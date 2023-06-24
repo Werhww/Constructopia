@@ -1,6 +1,6 @@
 <template>
 <LottieAnimation
-    class="wrapper"
+    :class="{'wrapper': fullScreen}"
     :animationData="animation"
     :loop="true"
     :autoPlay="true"
@@ -11,6 +11,10 @@
 <script setup lang="ts">
 import { LottieAnimation } from "lottie-web-vue"
 import animation from '~/assets/animations/loading-ani.json';
+
+defineProps<{
+    fullScreen: boolean    
+}>()
 </script>
 
 
@@ -20,5 +24,7 @@ import animation from '~/assets/animations/loading-ani.json';
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    z-index: 11;
 }
 </style>

@@ -9,7 +9,7 @@
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
 
         <div class="metadata">
-            <p>{{ formatDate(prop.build.date, 1) }}</p>
+            <p>{{ formatDate(build.date.created.seconds, 1) }}</p>
             <p>@{{ build.user }}</p>
             <p v-if="!isEditing">/{{ build.difficulty }}</p>
             <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
@@ -47,22 +47,34 @@ import share_icon from '/icons/build/share-icon.svg'
 import edit_icon from '/icons/build/edit-icon.svg'
 import delete_icon from '/icons/build/delete-icon.svg'
 import save_icon from '/icons/build/save-icon.svg'
+import { Timestamp } from 'firebase/firestore'
+
+import { ref as fbRef, getDownloadURL } from "firebase/storage"
+import { storage } from '@/assets/scripts/firebase'
 
 /* swich userid with id form auth */
-const userID = '123'
+const loggedInUserId = '123'
 
 const prop = defineProps<{
+    buildId: string | string[]
+
     build: {
         userId: string
-        thumbnail: string
-        images: string[]
-        title: string
-        date: string
         user: string
+
+        thumbnailIndex: number
+        images: number
+
+        title: string
         description: string
         difficulty: string
         blocks: number
+
         views: number
+        date: {
+            created: Timestamp
+            lastEdited: Timestamp
+        }
     }
 
     favorite: boolean
@@ -78,7 +90,7 @@ const emit = defineEmits(['3d-editor', 'share'])
 
 /* Formatted data */
 const owner = computed(() => {
-    if(userID === prop.build.userId) {
+    if(loggedInUserId === prop.build.userId) {
         return true
     } else {
         return false
@@ -114,6 +126,7 @@ function saveBuild() {
     changeEditState()
 }
 
+/* Image data & functions */
 const shown_image = ref('')
 const all_images = ref<{
     image:string
@@ -122,17 +135,28 @@ const all_images = ref<{
 
 }[]>([])
 
-onMounted(() => {
-    const images = prop.build.images.map((item, index) => {
-        return {
-            image: item,
-            current: index === 0 ? true : false,
-            index: index
-        }
-    })
-    shown_image.value = images[0].image
-    all_images.value = images
-})
+async function getImages() {
+    const storageRef = fbRef(storage, `/builds/${prop.build.userId}/${prop.buildId}/images`)
+
+    for(let i = 0; i < prop.build.images; i++) {
+        const imageRef = fbRef(storageRef, `${i}.png`)
+        let imageUrl = ""
+
+        await getDownloadURL(imageRef).then((url) => {
+            imageUrl = url
+        }).catch((error) => {
+            console.log(error)
+        })
+        
+        all_images.value.push({
+            image: imageUrl,
+            current: false,
+            index: i
+        })
+    }
+
+    changeShownImage(prop.build.thumbnailIndex)
+}
 
 function changeShownImage(index: number){
     all_images.value.forEach((item) => {
@@ -141,6 +165,10 @@ function changeShownImage(index: number){
     all_images.value[index].current = true
     shown_image.value = all_images.value[index].image
 }
+
+watch(() => prop.build, () => {
+    getImages()
+})
 </script>
 
 <style scoped>

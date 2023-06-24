@@ -21,18 +21,28 @@
     </div>
 </section>
 
-<ComponentAlert v-if="openAlert" v-on:close="alertAction(false)"  v-on:confirm="alertAction(true)" :alert="alertMessage" />
+<ComponentBlur v-if="openAlert || isLoading"/>
+<ComponentAlert v-if="openAlert" v-on:close="alertAction(false)"  v-on:confirm="alertAction(true)" :alert="alertMessage" :user-interaction="alertInteraction"/>
+
+<AnimationsLoading v-if="isLoading" :full-screen="true"/>
+<ComponentUploadingStatus v-if="isLoading" 
+    :uploadStarted="uploadingStates.uploadStarted"
+    :document="uploadingStates.document"
+    :images="uploadingStates.images"
+    :litematic="uploadingStates.litematic"
+    :inventory="uploadingStates.inventory"/>
 </template>
 
 <script setup lang="ts">
 const router = useRouter()
-const isLitematicImported = ref(false)
 
-import { db, storage } from '@/assets/scripts/firebase'
-import { collection, addDoc, serverTimestamp } from "firebase/firestore"; 
+import { 
+    buildRef,
+    inventoryRef,
+    storage 
+} from '@/assets/scripts/firebase'
+import { collection, addDoc, serverTimestamp, or } from "firebase/firestore"; 
 import { ref as fbRef, uploadString } from "firebase/storage"
-
-const buildsRef = collection(db, "builds")
 
 definePageMeta({
     title: 'New Build'
@@ -40,31 +50,36 @@ definePageMeta({
 
 const userid = '1234test'
 
-const isButtonsDisabled = ref(false)
+const isButtonsDisabled = ref(false) // disables all buttons when true
 
 /* Input values */
-const buildRef = ref('124124')
+const buildId = ref('124124') // id of build in firebase
 
-const title = ref('')
-const description = ref('')
-const difficulty = ref('easy')
-
-const litematic = ref()
-
-const totelBlocks = ref(0)
+const title = ref('') // max 35 characters
+const description = ref('') // max 350 characters
+const difficulty = ref('easy') // easy, medium, hard
+const totelBlocks = ref(0) // totel blocks in litematic file
 const inventory = ref<{[key: string]: {
     block: string;
     count: number;
-}}>({})
+}}>({}) // inventory of litematic file
 
-const thumbnailIndex = ref<number>()
-const images = ref<string[]>([])
+
+const litematic = ref() // litematic file
+const isLitematicImported = ref(false) // true when litematic file is imported
+
+const images = ref<string[]>([]) // all images data_url
+const thumbnailIndex = ref<number>() // index of thumbnail image
 
 /* alert */
-const openAlert = ref(false)
-const alertConfirm = ref(false)
-const alertMessage = ref('')
-const alertTo = ref()
+const openAlert = ref(false) // opens alert popup
+const alertConfirm = ref(false) // confirms alert popup
+const alertMessage = ref('') // message of alert popup
+const alertTo = ref() // route to go to when alert is confirmed
+const alertInteraction = ref(true) // type of action to take when alert is confirmed
+
+/* loading */
+const isLoading = ref(false) // shows loading animation
 
 /* states of uploading fase */
 const uploadingStates = ref({
@@ -76,32 +91,56 @@ const uploadingStates = ref({
     inventory: false,
 })
 
+/* Asings all imported images to images ref */
+/* Called by image import componenet */
 function asignImages(image: any){
     images.value = image
-
-    console.log(images.value)
 }
 
+/* Asings thumbnail index to thumbnailIndex ref*/
+/* Called by image import componenet */
 function asignThumbnail(index: number){
     thumbnailIndex.value = index
 }
 
+
+/* Called by litematic import componenet */
 async function asignLitematic(file: any){
+    /*  
+    *   Asings litematic file to litematic ref
+    *   Counts all blocks in litematic file and asings it to totelBlocks ref
+    *   Get block palett and count in litematic file and asings it to inventory ref
+    */
+
     litematic.value = file
     isLitematicImported.value = true
 
     inventory.value =  await countBuild(file) as any
     totelBlocks.value = await countBlocks(file) as number
-
-    console.log(inventory.value)
-    console.log(totelBlocks.value)
 }
 
+/* Called when and action is taken on the alert popup */
+function alertAction(state:boolean) {
+    if (state) {
+        alertConfirm.value = true
+        router.push(alertTo.value)
+    } else {
+        alertConfirm.value = false
+        openAlert.value = false
+    }
+}
+
+/* Called when saving newly created build */
+/* Called by save button */
 async function createBuild(){
+    if(!checkIfSomethingIsMissing()) return
+
+
+    isLoading.value = true
     isButtonsDisabled.value = true
     uploadingStates.value.uploadStarted = true
 
-    /* const buildRef = await addDoc(collection(db, "builds"), {
+    const build = await addDoc(buildRef, {
         title: title.value,
         description: description.value,
         difficulty: difficulty.value,
@@ -116,22 +155,25 @@ async function createBuild(){
             lastEdit: serverTimestamp()
         },
 
+        userId: userid,
         user: userid,
-    }) */
+    })
 
-    uploadingStates.value.buildRef = /* buildRef.id */"34"
+    uploadingStates.value.buildRef = build.id
     uploadingStates.value.document = true
 
-    uploadImages(/* buildRef.id */"34")
-    uploadLitematic(/* buildRef.id */"34")
-    uploadInventory(/* buildRef.id */"34")
-    
 
-    /* console.log('build created', isButtonsDisabled.value) */
+
+    uploadImages(build.id)
+    uploadLitematic(build.id)
+    uploadInventory(build.id)
 }
 
+/* Called by createBuild() */
 async function uploadImages(buildId: string) {
-    /* const storageRef = fbRef(storage, `builds/${userid}/${buildId}/images`)
+    /* Uploads all images from the build to firebase storage */
+    const storageRef = fbRef(storage, `builds/${userid}/${buildId}/images`)
+    let uploadedImages = 0
 
     for (let i = 0; i < images.value.length; i++) {
         const image = images.value[i]
@@ -139,14 +181,20 @@ async function uploadImages(buildId: string) {
 
         uploadString(imagesRef, image, 'data_url').then((snapshot) => {
             console.log(`Uploaded image ${i}`)
-        })
-    } */
+            uploadedImages++
 
-    uploadingStates.value.images = true
+            if (uploadedImages == images.value.length) {
+                console.log('Uploaded all images')
+                uploadingStates.value.images = true
+            }
+        })
+    }
 }
 
+/* Called by createBuild() */
 async function uploadLitematic(buildId: string) {
-    /* const storageRef = fbRef(storage, `builds/${userid}/${buildId}/litematic`)
+    /* Uploads litematic file to the firebase storage */
+    const storageRef = fbRef(storage, `builds/${userid}/${buildId}/litematic`)
     const litematicRef = fbRef(storageRef, `build.litematic`)
 
     let reader = new FileReader()
@@ -154,46 +202,78 @@ async function uploadLitematic(buildId: string) {
     reader.onload = function(e:any) {
         uploadString(litematicRef, e.target?.result, 'data_url').then((snapshot) => {
         console.log('Uploaded litematic file')
+        uploadingStates.value.litematic = true
     })}
 
-    reader.readAsDataURL(litematic.value) */
-
-    uploadingStates.value.litematic = true
+    reader.readAsDataURL(litematic.value)
 }
 
+/* Called by createBuild() */
 async function uploadInventory(buildId: string) {
-    /* const storageRef = fbRef(storage, `builds/${userid}/${buildId}/inventory`)
-    const inventoryRef = fbRef(storageRef, `inventory.json`)
+    /* Uploads inventory documents to firebase firestore */
+    let uploadedInventory = 0
 
-    uploadString(inventoryRef, JSON.stringify(inventory.value), 'data_url').then((snapshot) => {
-        console.log('Uploaded inventory file')
-    }) */
+    for(let key in inventory.value) {
+        if (inventory.value[key].block == "minecraft:air") continue
 
-    uploadingStates.value.inventory = true
-}
 
-function alertAction(state:boolean) {
-    if (state) {
-        alertConfirm.value = true
-        router.push(alertTo.value)
-    } else {
-        alertConfirm.value = false
-        openAlert.value = false
+        await addDoc(inventoryRef, {
+            buildId: buildId,
+            block: inventory.value[key].block,
+            count: inventory.value[key].count
+        }).then(() => {
+            console.log(`Uploaded inventory ${key}`)
+            uploadedInventory++
+
+            if (uploadedInventory == Object.keys(inventory.value).length - 1) {
+                console.log('Uploaded all inventory')
+                uploadingStates.value.inventory = true
+            }
+        })
     }
 }
 
+/* Called by createBuild() */
+function checkIfSomethingIsMissing() {
+    /* Check if user has added everything to build */
+    openAlert.value = true
+    alertInteraction.value = false
+
+    if(!title.value) {
+        alertMessage.value = 'You have to add a title to your build'
+        return false
+    } else if (!description.value) {
+        alertMessage.value = 'You have to add a description to your build'
+        return false
+    } else if (!isLitematicImported) {
+        alertMessage.value = 'You have to import a litematic file to your build'
+        return false
+    } else if (!images.value.length) {
+        alertMessage.value = ' You have to addat least one image to your build'
+        return false
+    }
+     
+    openAlert.value = false
+    return true
+}
+
+/* watch uploading states */
 watch(uploadingStates.value, (newVal) => {
+    /* when all is finished it opens minecraft build page  */
     if (newVal.document && newVal.images && newVal.litematic && newVal.inventory) {
-        router.push(`/build/${newVal.buildRef}`)
+        setTimeout(() => {
+            router.push(`/build/${uploadingStates.value.buildRef}`)
+        }, 1500)
     }
 })
 
+/* fires before router change */
 router.beforeResolve((to, from, next) => {
+    /* checks if upload is done or trow a warning for user */
+
     if (uploadingStates.value.document && uploadingStates.value.images && uploadingStates.value.litematic && uploadingStates.value.inventory) {
-        console.log('ready')
         next(true)
     } else if (alertConfirm.value) {
-        console.log('ready')
         next(true)
     } else {
         if (uploadingStates.value.uploadStarted) {
@@ -201,6 +281,7 @@ router.beforeResolve((to, from, next) => {
         } else {
             alertMessage.value = 'You have not uploaded your build, are you sure you want to leave?'
         }
+        alertInteraction.value = true
         openAlert.value = true
         alertTo.value = to
 

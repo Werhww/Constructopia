@@ -3,12 +3,13 @@
     <p class="title">Are you sure?</p>
     <p class="alertText">{{ alert }}</p>
 
-    <div class="buttons">
+    <div class="buttons" v-if="userInteraction">
         <ComponentButton @click="$emit('close')" label="cancel" bg_color="var(--red)"  color="var(--white)" />
         <ComponentButton @click="$emit('confirm')" label="confirm" bg_color="var(--green)" color="var(--white)"/>
     </div>
+
+    <ComponentButton v-else @click="$emit('close')" label="ok" bg_color="var(--green)" color="var(--white)"/>
 </div>
-<div class="blur"><!-- Background blur --></div>
 </template>
 
 <script setup lang="ts">
@@ -16,21 +17,11 @@ defineEmits(['close', 'confirm'])
 
 defineProps<{
     alert: string
+    userInteraction: boolean
 }>()
 </script>
 
 <style scoped>
-.blur {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    backdrop-filter: blur(8px);
-    height: 100vh;
-    width: 100vw;
-    z-index: 10;
-}
-
 .alert {
     z-index: 11;
 
