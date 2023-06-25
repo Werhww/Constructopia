@@ -33,17 +33,12 @@
   ]" 
 />
 
-
 <BuildListRecommended title="Recommended" />
 </template>
 
 <script setup lang="ts">
-import { getDoc, getDocs, doc } from 'firebase/firestore';
-import { 
-  buildRef,
-  inventoryRef,
-  storage 
-} from '@/assets/scripts/firebase'
+import { getDoc, doc } from 'firebase/firestore'
+import { buildRef } from '~/assets/scripts/firebase'
 
 const { id } = useRoute().params
 definePageMeta({

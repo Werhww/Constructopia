@@ -22,6 +22,8 @@ const auth = getAuth(app)
 const userRef = collection(db, 'users')
 const buildRef = collection(db, "builds")
 const inventoryRef = collection(db, "inventory")
+const blockImagesRef = collection(db, "blockImages")
+
 
 export {
 	db,
@@ -31,5 +33,6 @@ export {
 	/* firestore refs */
 	userRef,
 	buildRef,
-	inventoryRef
+	inventoryRef,
+	blockImagesRef
 }
