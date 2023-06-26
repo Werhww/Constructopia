@@ -33,7 +33,7 @@ function addBlock() {
     blockId.value = ''
     blockImageLink.value = ''
 }
-/* har gjort Farmland neste er Furnace */
+/* har gjort Terracotta neste er Leaves */
 /* https://wiingy.com/blog/minecraft-blocks/ */
 /* https://minecraft.fandom.com/wiki/Wood */
 </script>
