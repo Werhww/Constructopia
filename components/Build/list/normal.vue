@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 
-const prop = defineProps<{
+defineProps<{
     title: string
     builds?: Array<{
         image: string

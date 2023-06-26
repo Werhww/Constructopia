@@ -2,27 +2,27 @@
 <div class="loadingStatus">
     <div>
         <p>Upload started:</p>
-        <p v-if="uploadStarted">true</p>
+        <p v-if="uploadStarted">done</p>
         <AnimationsLoading v-else :full-screen="false" class="loadingAnimation"/>
     </div>
     <div>
         <p>Build info uploaded:</p>
-        <p v-if="document">true</p>
+        <p v-if="document">done</p>
         <AnimationsLoading v-else :full-screen="false" class="loadingAnimation"/>
     </div>
     <div>
         <p>Images uploaded:</p>
-        <p v-if="images">true</p>
+        <p v-if="images">done</p>
         <AnimationsLoading v-else :full-screen="false" class="loadingAnimation"/>
     </div>
     <div>
         <p>Litematic file uploaded:</p>
-        <p v-if="litematic">true</p>
+        <p v-if="litematic">done</p>
         <AnimationsLoading v-else :full-screen="false" class="loadingAnimation"/>
     </div>
     <div>
         <p>Inventory uploaded:</p>
-        <p v-if="inventory">true</p>
+        <p v-if="inventory">done</p>
         <AnimationsLoading v-else :full-screen="false" class="loadingAnimation"/>
     </div>
 </div>

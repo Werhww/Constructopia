@@ -1,6 +1,6 @@
 <template>
 <div class="alert">
-    <p class="title">Are you sure?</p>
+    <p class="title">Wow, big man</p>
     <p class="alertText">{{ alert }}</p>
 
     <div class="buttons" v-if="userInteraction">

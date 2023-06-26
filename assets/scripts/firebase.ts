@@ -23,6 +23,7 @@ const userRef = collection(db, 'users')
 const buildRef = collection(db, "builds")
 const inventoryRef = collection(db, "inventory")
 const blockImagesRef = collection(db, "blockImages")
+const favoriteRef = collection(db, "favorites")
 
 
 export {
@@ -34,5 +35,6 @@ export {
 	userRef,
 	buildRef,
 	inventoryRef,
-	blockImagesRef
+	blockImagesRef,
+	favoriteRef
 }

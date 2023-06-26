@@ -4,72 +4,54 @@
   v-on:3d-editor="open3dEditor"
 
   :build-id="id"
+  :build="buildData"
 
-  :build="buildDetails"
+  :images="buildImages"
+  :current-image="currentImage"
 
-  :favorite="true"
+  :favorite="buildFavorite"
     
-  :inventory="[
-    {
-      amount: 550,
-      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/6/67/Cobblestone.png',
-      block_name: 'minecraft:cobblestone'
-    }, 
-    {
-      amount: 1550,
-      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/2/2f/Dirt.png',
-      block_name: 'minecraft:dirt'
-    },
-    {
-      amount: 100,
-      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/7/71/Sand_JE5_BE3.png',
-      block_name: 'minecraft:sand'
-    },
-    {
-      amount: 100,
-      block_image: 'https://static.wikia.nocookie.net/minecraft_gamepedia/images/3/3e/Glass_JE4_BE2.png',
-      block_name: 'minecraft:glass'
-    }
-  ]" 
+  :inventory="buildInventory" 
 />
 
 <BuildListRecommended title="Recommended" />
+
+<ComponentAlert v-if="showAlert" :alert="alertMessage" :user-interaction="alertType" v-on:close="alertClose"/>
+<ComponentBlur v-if="showAlert" />
 </template>
 
 <script setup lang="ts">
-import { getDoc, doc } from 'firebase/firestore'
-import { buildRef } from '~/assets/scripts/firebase'
 
+
+const router = useRouter()
 const { id } = useRoute().params
+
+const { 
+  buildData, buildInventory, buildImages, currentImage, buildFavorite,
+
+  getBuildDoc, getBuildInventory, getImages, changeShownImage,
+} = useBuild()
+
+onMounted(async () => {
+  await getBuildDoc(id)
+  await getBuildInventory(id)
+  await getImages(id)
+})
+
 definePageMeta({
   title: 'Build'
 })
 
-const buildDetails = ref<any>({
-  title: '',
-  description: '',
-  difficulty: '',
-  blocks: 0,
-  images: 0,
-  thumbnailIndex: 0,
-  views: 0,
-  date: {
-    created: '',
-    lastEdited: ''
-  },
-  user: '',
-  userId: ''
-})
+const showAlert = ref(false)
+const alertMessage = ref('')
+const alertType = ref(false)
 
-
-onMounted(async () => {
-  buildDetails.value = (await getDoc(doc(buildRef, id as string))).data()
-  console.log(buildDetails.value)
-})
+function alertClose() {
+  router.back()
+}
 
 /* Change to auth id for prod */
 const userId = '123'
-
 
 function share() {
   console.log('share')

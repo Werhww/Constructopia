@@ -8,4 +8,11 @@ export default defineNuxtConfig({
         '@/assets/css/main.css',
     ],
 
+    imports: {
+        dirs: [
+          // Scan top-level modules
+          'composables',
+        ]
+      }
+
 })

@@ -26,14 +26,16 @@ const blockImageLink = ref('')
 
 
 function addBlock() {
+
     setDoc(doc(db, "blockImages", `minecraft:${blockId.value}`), {
         url: `${blockImageLink.value}`
     })
 
+
     blockId.value = ''
     blockImageLink.value = ''
 }
-/* har gjort Terracotta neste er Leaves */
+/* har gjort Button neste er Jack O’Lantern */
 /* https://wiingy.com/blog/minecraft-blocks/ */
 /* https://minecraft.fandom.com/wiki/Wood */
 </script>

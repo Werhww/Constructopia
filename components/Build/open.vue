@@ -1,8 +1,8 @@
 <template>
 <section class="open-build">
-    <BuildOpenImage :image_link="shown_image"/>
+    <BuildOpenImage :image_link="currentImage"/>
     <div class="image-carousel">
-        <img v-for="item in all_images" @click="changeShownImage(item.index)" :src="item.image" :class="{'image-carousel-current': item.current, 'image-carousel-item': true}">
+        <img v-for="item in images" @click="changeShownImage(item.index)" :src="item.image" :class="{'image-carousel-current': item.current, 'image-carousel-item': true}">
     </div>
     <div class="build-info">
         <h1 v-if="!isEditing">{{ build.title }}</h1>
@@ -20,73 +20,56 @@
 
         <div class="build-buttons" v-if="!isEditing">
             <BuildOpenLikeButton v-if="!owner" :liked="favorite" v-on:like="likeBuild(favorite, build.userId)"/>
-            <BuildOpenIconButton text="3d editor" :icon="threeD_icon" @click="emit('3d-editor')"/>
-            <BuildOpenIconButton text="share" :icon="share_icon" @click="emit('share')"/>
-            <BuildOpenIconButton v-if="owner" text="edit" :icon="edit_icon" @click="changeEditState"/>
+            <BuildOpenIconButton text="3d editor" icon="/icons/build/3d-icon.svg" @click="emit('3d-editor')"/>
+            <BuildOpenIconButton text="share" icon="/icons/build/share-icon.svg" @click="emit('share')"/>
+            <BuildOpenIconButton v-if="owner" text="edit" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
         <div class="edit-buttons" v-if="owner && isEditing">
-            <BuildOpenIconButton text="delete" :icon="delete_icon" color="var(--red)"  @click="initalDelete"/>
-            <BuildOpenIconButton text="save" :icon="save_icon" @click="saveBuild"/>
-            <BuildOpenIconButton text="cancel" :icon="edit_icon" @click="changeEditState"/>
+            <BuildOpenIconButton text="delete" icon="/icons/build/delete-icon.svg" color="var(--red)"  @click="initalDelete"/>
+            <BuildOpenIconButton text="save" icon="/icons/build/save-icon.svg" @click="saveBuild"/>
+            <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
     </div>
+    
     <div v-if="deletePrompt" class="delete-prompt">
         <p>Are you sure you want to delete this build?</p>
         <div class="delete-prompt-buttons">
-            <BuildOpenIconButton text="delete" :icon="delete_icon" color="var(--red)"  @click="deleteBuild"/>
-            <BuildOpenIconButton text="cancel" :icon="edit_icon" @click="initalDelete"/>
+            <BuildOpenIconButton text="delete" icon="/icons/build/delete-icon.svg" color="var(--red)"  @click="deleteBuild"/>
+            <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="initalDelete"/>
         </div>
     </div>
 </section>
 </template>
 
 <script setup lang="ts">
-/* Image imports */
-import threeD_icon from '/icons/build/3d-icon.svg'
-import share_icon from '/icons/build/share-icon.svg'
-import edit_icon from '/icons/build/edit-icon.svg'
-import delete_icon from '/icons/build/delete-icon.svg'
-import save_icon from '/icons/build/save-icon.svg'
-import { Timestamp } from 'firebase/firestore'
+import type { 
+    BuildDocument,
+    BuildInventory
+} from '@/assets/scripts/useTypes';
 
-import { ref as fbRef, getDownloadURL } from "firebase/storage"
-import { storage } from '@/assets/scripts/firebase'
+const { changeShownImage } = useBuild()
 
 /* swich userid with id form auth */
 const loggedInUserId = '123'
 
+const emit = defineEmits(['3d-editor', 'share'])
+
 const prop = defineProps<{
     buildId: string | string[]
 
-    build: {
-        userId: string
-        user: string
-
-        thumbnailIndex: number
-        images: number
-
-        title: string
-        description: string
-        difficulty: string
-        blocks: number
-
-        views: number
-        date: {
-            created: Timestamp
-            lastEdited: Timestamp
-        }
-    }
+    build: BuildDocument
 
     favorite: boolean
 
-    inventory: {
-        amount: number
-        block_image: string
-        block_name: string
+    currentImage: string
+    images: {
+        image:string
+        current:boolean
+        index:number
     }[]
-}>()
 
-const emit = defineEmits(['3d-editor', 'share'])
+    inventory: BuildInventory[]
+}>()
 
 /* Formatted data */
 const owner = computed(() => {
@@ -125,50 +108,6 @@ function saveBuild() {
     console.log(editData.value)
     changeEditState()
 }
-
-/* Image data & functions */
-const shown_image = ref('')
-const all_images = ref<{
-    image:string
-    current:boolean
-    index:number
-
-}[]>([])
-
-async function getImages() {
-    const storageRef = fbRef(storage, `/builds/${prop.build.userId}/${prop.buildId}/images`)
-
-    for(let i = 0; i < prop.build.images; i++) {
-        const imageRef = fbRef(storageRef, `${i}.png`)
-        let imageUrl = ""
-
-        await getDownloadURL(imageRef).then((url) => {
-            imageUrl = url
-        }).catch((error) => {
-            console.log(error)
-        })
-        
-        all_images.value.push({
-            image: imageUrl,
-            current: false,
-            index: i
-        })
-    }
-
-    changeShownImage(prop.build.thumbnailIndex)
-}
-
-function changeShownImage(index: number){
-    all_images.value.forEach((item) => {
-        item.current = false
-    })
-    all_images.value[index].current = true
-    shown_image.value = all_images.value[index].image
-}
-
-watch(() => prop.build, () => {
-    getImages()
-})
 </script>
 
 <style scoped>
