@@ -33,7 +33,8 @@ function addBlock() {
     blockId.value = ''
     blockImageLink.value = ''
 }
-/* Stoppet på stripped_spruce_wood */
+/* har gjort Farmland neste er Furnace */
+/* https://wiingy.com/blog/minecraft-blocks/ */
 /* https://minecraft.fandom.com/wiki/Wood */
 </script>
 

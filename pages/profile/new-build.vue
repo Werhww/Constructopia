@@ -245,7 +245,7 @@ function checkIfSomethingIsMissing() {
     } else if (!description.value) {
         alertMessage.value = 'You have to add a description to your build'
         return false
-    } else if (!isLitematicImported) {
+    } else if (!isLitematicImported.value) {
         alertMessage.value = 'You have to import a litematic file to your build'
         return false
     } else if (!images.value.length) {

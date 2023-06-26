@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
-/* Dropdown images */
-import userDropdown from '/icons/Header/user-icon-dropdown.svg'
-import buildDropdown from '/icons/Header/build-icon.svg'
-import starDropdown from '/icons/Header/star-icon.svg'
-import newDocumentDropdown from '/icons/Header/new-document-icon.svg'
-import logoutDropdown from '/icons/Header/logout-icon.svg'
 
 defineExpose({
   open
@@ -31,11 +23,11 @@ function open() {
   <img @click="open" src="/icons/Header/user-icon.svg">
   <Transition name="dropdown">
     <nav v-if="isOpen" class="dropdown">
-      <HDropdownItem text="Profile" :image="userDropdown" to="/profile"/>
-      <HDropdownItem text="Builds" :image="buildDropdown" :to="`/builds/${userId}`"/>
-      <HDropdownItem text="Favorites" :image="starDropdown" to="/profile/favorites"/>
-      <HDropdownItem text="New Build" :image="newDocumentDropdown" to="/profile/new-build"/>
-      <HDropdownItem text="Logout" :image="logoutDropdown" to="404" :isLink="true"/>
+      <HDropdownItem text="Profile" image="/icons/Header/user-icon-dropdown.svg" to="/profile"/>
+      <HDropdownItem text="Builds" image="/icons/Header/build-icon.svg" :to="`/builds/${userId}`"/>
+      <HDropdownItem text="Favorites" image="/icons/Header/star-icon.svg" to="/profile/favorites"/>
+      <HDropdownItem text="New Build" image="/icons/Header/new-document-icon.svg" to="/profile/new-build"/>
+      <HDropdownItem text="Logout" image="/icons/Header/logout-icon.svg" to="404" :isLink="true"/>
     </nav>
   </Transition>
 </nav>
