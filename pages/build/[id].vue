@@ -40,9 +40,9 @@ const {
 } = useBuild()
 
 onMounted(async () => {
-  loading.value.buildDoc = await getBuildDoc(id)
-  loading.value.buildImages = await getImages(id)
-  loading.value.buildInventory = await getBuildInventory(id)
+  loading.value.buildDoc = await getBuildDoc(id as string)
+  loading.value.buildImages = await getImages(id  as string)
+  loading.value.buildInventory = await getBuildInventory(id  as string)
 })
 
 definePageMeta({

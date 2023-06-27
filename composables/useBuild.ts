@@ -4,9 +4,8 @@ import {
 } from '@/assets/scripts/useTypes'
 import { Timestamp } from 'firebase/firestore'
 
-import { doc } from '@firebase/firestore'
-import { ref as fbRef, getDownloadURL } from '@firebase/storage'
-
+import { doc } from 'firebase/firestore'
+import { ref as fbRef, getDownloadURL } from 'firebase/storage'
 
 export function useBuild() {
     const buildFavorite = ref<boolean>(false)

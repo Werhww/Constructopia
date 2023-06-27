@@ -7,16 +7,16 @@
         <ComponentLoadingText class="build-title-loading" v-if="!loading.buildDoc"/>
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
 
-        <div class="metadata">
-            <p v-if="loading.buildDoc">{{ formatDate(build.date.created.seconds, 1) }}</p>
-            <p v-if="loading.buildDoc">@{{ build.user }}</p>
-            <p v-if="!isEditing && loading.buildDoc">/{{ build.difficulty }}</p>
+        <div class="metadata" v-if="loading.buildDoc">
+            <p>{{ formatDate(build.date.created.seconds, 1) }}</p>
+            <p>@{{ build.user }}</p>
+            <p v-if="!isEditing">/{{ build.difficulty }}</p>
             <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
         </div>
-        <div class="metadata-loading">
-            <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
-            <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
-            <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
+        <div class="metadata-loading" v-if="!loading.buildDoc">
+            <ComponentLoadingText class="build-text-loading"/>
+            <ComponentLoadingText class="build-text-loading"/>
+            <ComponentLoadingText class="build-text-loading"/>
         </div>
 
         <BuildInventory :inventory="inventory" :loading="loading.buildInventory" />
