@@ -2,6 +2,7 @@
 <BuildOpen 
   v-on:share="share"
   v-on:3d-editor="open3dEditor"
+  v-on:change-preview-image="changeShownImage"
 
   :build-id="id"
   :build="buildData"
@@ -11,7 +12,9 @@
 
   :favorite="buildFavorite"
     
-  :inventory="buildInventory" 
+  :inventory="buildInventory"
+
+  :loading="loading"
 />
 
 <BuildListRecommended title="Recommended" />
@@ -21,21 +24,25 @@
 </template>
 
 <script setup lang="ts">
-
-
 const router = useRouter()
 const { id } = useRoute().params
+
+const loading = ref({
+  buildDoc: false,
+  buildImages: false,
+  buildInventory: false
+})
 
 const { 
   buildData, buildInventory, buildImages, currentImage, buildFavorite,
 
-  getBuildDoc, getBuildInventory, getImages, changeShownImage,
+  getBuildDoc, getBuildInventory, getImages, changeShownImage, checkFavoriteState
 } = useBuild()
 
 onMounted(async () => {
-  await getBuildDoc(id)
-  await getBuildInventory(id)
-  await getImages(id)
+  loading.value.buildDoc = await getBuildDoc(id)
+  loading.value.buildImages = await getImages(id)
+  loading.value.buildInventory = await getBuildInventory(id)
 })
 
 definePageMeta({

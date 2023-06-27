@@ -1,21 +1,28 @@
 <template>
 <section class="open-build">
-    <BuildOpenImage :image_link="currentImage"/>
-    <div class="image-carousel">
-        <img v-for="item in images" @click="changeShownImage(item.index)" :src="item.image" :class="{'image-carousel-current': item.current, 'image-carousel-item': true}">
-    </div>
+    <BuildOpenImage :image_link="currentImage" :loading="loading.buildImages"/>
+    <BuildOpenImageCarousel :images="images" :loading="loading.buildImages" v-on:change-preview-image="emitChangePreviewImage" />
     <div class="build-info">
-        <h1 v-if="!isEditing">{{ build.title }}</h1>
+        <h1 v-if="!isEditing && loading.buildDoc" class="build-title">{{ build.title }}</h1>
+        <ComponentLoadingText class="build-title-loading" v-if="!loading.buildDoc"/>
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
 
         <div class="metadata">
-            <p>{{ formatDate(build.date.created.seconds, 1) }}</p>
-            <p>@{{ build.user }}</p>
-            <p v-if="!isEditing">/{{ build.difficulty }}</p>
+            <p v-if="loading.buildDoc">{{ formatDate(build.date.created.seconds, 1) }}</p>
+            <p v-if="loading.buildDoc">@{{ build.user }}</p>
+            <p v-if="!isEditing && loading.buildDoc">/{{ build.difficulty }}</p>
             <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
         </div>
-        <BuildInventory :inventory="inventory" />
-        <p v-if="!isEditing" class="description">{{ build.description }}</p>
+        <div class="metadata-loading">
+            <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
+            <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
+            <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
+        </div>
+
+        <BuildInventory :inventory="inventory" :loading="loading.buildInventory" />
+
+        <p v-if="!isEditing && loading.buildDoc" class="description build-text">{{ build.description }}</p>
+        <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
         <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
 
         <div class="build-buttons" v-if="!isEditing">
@@ -31,7 +38,7 @@
         </div>
     </div>
     
-    <div v-if="deletePrompt" class="delete-prompt">
+    <div v-if="deletePrompt && owner && isEditing" class="delete-prompt">
         <p>Are you sure you want to delete this build?</p>
         <div class="delete-prompt-buttons">
             <BuildOpenIconButton text="delete" icon="/icons/build/delete-icon.svg" color="var(--red)"  @click="deleteBuild"/>
@@ -47,12 +54,11 @@ import type {
     BuildInventory
 } from '@/assets/scripts/useTypes';
 
-const { changeShownImage } = useBuild()
+const emit = defineEmits(['3d-editor', 'share', 'change-preview-image'])
 
-/* swich userid with id form auth */
-const loggedInUserId = '123'
-
-const emit = defineEmits(['3d-editor', 'share'])
+function emitChangePreviewImage(index: number) {
+    emit('change-preview-image', index)
+}
 
 const prop = defineProps<{
     buildId: string | string[]
@@ -69,7 +75,16 @@ const prop = defineProps<{
     }[]
 
     inventory: BuildInventory[]
+
+    loading: {
+        buildDoc: boolean,
+        buildImages: boolean,
+        buildInventory: boolean
+    }
 }>()
+
+/* swich userid with id form auth */
+const loggedInUserId = '123'
 
 /* Formatted data */
 const owner = computed(() => {
@@ -178,15 +193,25 @@ function saveBuild() {
     gap: 0.625rem;
 }
 
-.build-info > h1{
+.build-title {
     font: var(--title);
     font-style: normal;
     color: var(--white);
 }
 
-.build-info > p{
+.build-title-loading {
+    font-style: normal;
+    font: var(--title);
+}
+
+.build-text {
     font: var(--text);
     color: var(--lower-tone);
+}
+
+.build-text-loading {
+    font: var(--text);
+    flex: 1;
 }
 
 
@@ -195,9 +220,18 @@ function saveBuild() {
     gap: 1rem;
 }
 
+.metadata-loading {
+    display: flex;
+    gap: 1rem;
+}
+
 .metadata > p {
     font: var(--undertitle);
     color: var(--lower-tone);
+}
+
+.metadata-loading > p {
+    font: var(--undertitle);
 }
 
 .description {
@@ -208,30 +242,5 @@ function saveBuild() {
     display: flex;
     justify-content: flex-start;
     gap: 2rem;
-}
-
-.image-carousel {
-    height: 37.5rem;
-    overflow: hidden;
-
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-}
-
-.image-carousel-item {
-    width: 6.25rem;
-    height: 5.625rem;
-    object-fit: cover;
-    border-radius: calc(var(--border-radius) / 2);
-
-    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(0.5);
-    cursor: pointer;
-
-    transition: filter 0.2s ease;
-}
-
-.image-carousel-current {
-    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.25)) brightness(1);
 }
 </style>

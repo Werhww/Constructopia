@@ -13,6 +13,7 @@ import {
 
 import {
     doc,
+    setDoc,
     getDoc,
     getDocs,
     collection,
@@ -47,6 +48,7 @@ export {
 
     /* Firestore function */
     doc,
+    setDoc,
     getDoc,
     getDocs,
     collection,
