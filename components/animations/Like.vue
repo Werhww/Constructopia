@@ -15,7 +15,7 @@ import { LottieAnimation } from "lottie-web-vue"
 import animation from '~/assets/animations/favorite-ani.json';
 
 const prop = defineProps<{
-    liked: boolean;
+    liked: boolean
 }>()
 
 const emit = defineEmits<{
@@ -31,6 +31,12 @@ let anim = ref();
 
 onMounted(() => {
     if (prop.liked) {
+        anim.value.goToAndStop(30, true);
+    }
+})
+
+watch(()=> prop.liked ,(newVal)=> {
+    if (newVal) {
         anim.value.goToAndStop(30, true);
     }
 })

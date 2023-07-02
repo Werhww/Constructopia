@@ -14,7 +14,7 @@
     
   :inventory="buildInventory"
 
-  :loading="loading"
+  :loading="buildLoadStates"
 />
 
 <BuildListRecommended title="Recommended" />
@@ -27,22 +27,17 @@
 const router = useRouter()
 const { id } = useRoute().params
 
-const loading = ref({
-  buildDoc: false,
-  buildImages: false,
-  buildInventory: false
-})
 
 const { 
-  buildData, buildInventory, buildImages, currentImage, buildFavorite,
+  buildData, buildInventory, buildImages, currentImage, buildFavorite, buildLoadStates,
 
   getBuildDoc, getBuildInventory, getImages, changeShownImage, checkFavoriteState
 } = useBuild()
 
 onMounted(async () => {
-  loading.value.buildDoc = await getBuildDoc(id as string)
-  loading.value.buildImages = await getImages(id  as string)
-  loading.value.buildInventory = await getBuildInventory(id  as string)
+  await getBuildDoc(id as string)
+  getImages(id  as string)
+  getBuildInventory(id  as string)
 })
 
 definePageMeta({

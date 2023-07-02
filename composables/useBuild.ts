@@ -34,6 +34,12 @@ export function useBuild() {
         index:number
     }[]>([])
 
+    const buildLoadStates = ref({
+        buildDoc: false,
+        buildInventory: false,
+        buildImages: false,
+    })
+
     /* Build doc functions */
     async function getBuildDoc(buildId: string) {
         try {
@@ -45,7 +51,7 @@ export function useBuild() {
             })
             checkFavoriteState(buildId)
 
-            return true
+            buildLoadStates.value.buildDoc = true
         } catch (error) {
             console.log(error)
             return false
@@ -82,7 +88,7 @@ export function useBuild() {
                 })
             })
 
-            return true
+            buildLoadStates.value.buildInventory = true
         } catch (error) {
             console.log(error)
             return false
@@ -91,24 +97,16 @@ export function useBuild() {
 
     async function deleteBuildInventory(buildId: string) {
         const inventoryQuery = query(inventoryRef, where('buildId', '==', buildId), orderBy('count', 'desc'))
-        getDocs(inventoryQuery).then((querySnapshot) => {
+        await getDocs(inventoryQuery).then((querySnapshot) => {
             querySnapshot.forEach((data) => {
-                deleteDoc(doc(db, 'inventory', data.id) ).then(() => {
-                    return '200'
-                }).catch((error) => {
-                    console.log("Error deleting document:", error)
-                    return '500'
-                })
+                deleteDoc(doc(db, 'inventory', data.id))
             })
-        }).catch((error) => {
-            console.log("Error getting document:", error)
-            return '500'
         })
     }
 
     async function getImages(buildId: string) {
         try {
-          const storageRef = fbRef(storage, `/builds/${buildData.value.userId}/${buildId}/images`)
+            const storageRef = fbRef(storage, `/builds/${buildData.value.userId}/${buildId}/images`)
     
             for(let i = 0; i < buildData.value.images; i++) {
                 const imageRef = fbRef(storageRef, `${i}.png`)
@@ -119,6 +117,8 @@ export function useBuild() {
                 }).catch((error) => {
                     console.log(error)
                 })
+
+                console.log(imageUrl)
                 
                 buildImages.value.push({
                     image: imageUrl,
@@ -128,7 +128,7 @@ export function useBuild() {
             }
         
             changeShownImage(buildData.value.thumbnailIndex)  
-            return true
+            buildLoadStates.value.buildImages = true
         } catch (error) {
             console.log(error)
             return false
@@ -149,6 +149,8 @@ export function useBuild() {
     }
 
     async function addFavorite(userId:string) {
+        
+
         await setDoc(doc(favoriteRef, `${buildData.value.buildId}:${userId}`), {
             buildId: buildData.value.buildId,
             userId: userId
@@ -168,6 +170,7 @@ export function useBuild() {
         buildImages,
         currentImage,
         buildFavorite,
+        buildLoadStates,
 
         getBuildDoc,
         updateBuildDoc,
