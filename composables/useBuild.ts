@@ -2,6 +2,7 @@ import {
     BuildDocument,
     BuildInventory
 } from '@/assets/scripts/useTypes'
+import { count } from 'console'
 import { Timestamp } from 'firebase/firestore'
 
 import { doc } from 'firebase/firestore'
@@ -105,35 +106,30 @@ export function useBuild() {
     }
 
     async function getImages(buildId: string) {
-        try {
-            const storageRef = fbRef(storage, `/builds/${buildData.value.userId}/${buildId}/images`)
-    
-            for(let i = 0; i < buildData.value.images; i++) {
-                const imageRef = fbRef(storageRef, `${i}.png`)
-                let imageUrl = ""
-        
-                await getDownloadURL(imageRef).then((url) => {
-                    imageUrl = url
-                }).catch((error) => {
-                    console.log(error)
-                })
+        const imageQuery = query(imageRef, where('buildId', '==', buildId))
+        const imageData = (await getDocs(imageQuery)).docs[0].data()
 
-                console.log(imageUrl)
-                
+        for(let i = 0; i < imageData.links.length; i++) {
+            const image = imageData.links[i] 
+
+            if(i == buildData.value.thumbnailIndex) {
+                currentImage.value = image
                 buildImages.value.push({
-                    image: imageUrl,
+                    image: image,
+                    current: true,
+                    index: i
+                })
+            } else {
+                buildImages.value.push({
+                    image: image,
                     current: false,
                     index: i
                 })
             }
-        
-            changeShownImage(buildData.value.thumbnailIndex)  
-            buildLoadStates.value.buildImages = true
-        } catch (error) {
-            console.log(error)
-            return false
         }
-        
+
+        changeShownImage(buildData.value.thumbnailIndex)  
+        buildLoadStates.value.buildImages = true
     }
 
     function changeShownImage(index: number){

@@ -38,6 +38,7 @@ const router = useRouter()
 
 import { 
     buildRef,
+    imageRef,
     inventoryRef,
     storage 
 } from '@/assets/scripts/firebase'
@@ -175,20 +176,32 @@ async function uploadImages(buildId: string) {
     const storageRef = fbRef(storage, `builds/${userid}/${buildId}/images`)
     let uploadedImages = 0
 
+    let links: string[] = []
+
     for (let i = 0; i < images.value.length; i++) {
         const image = images.value[i]
         const imagesRef = fbRef(storageRef, `${i}.png`)
 
-        uploadString(imagesRef, image, 'data_url').then((snapshot) => {
+        await uploadString(imagesRef, image, 'data_url').then((snapshot) => {
             console.log(`Uploaded image ${i}`)
             uploadedImages++
-
-            if (uploadedImages == images.value.length) {
-                console.log('Uploaded all images')
-                uploadingStates.value.images = true
-            }
         })
+
+        await getDownloadURL(imagesRef).then((url) => {
+            links.push(url)
+        })
+
+        
+        if (uploadedImages == images.value.length) {
+            console.log('Uploaded all images')
+            uploadingStates.value.images = true
+        }
     }
+
+    addDoc(imageRef, {
+        buildId: buildId,
+        links: links
+    })
 }
 
 /* Called by createBuild() */
@@ -262,7 +275,7 @@ watch(uploadingStates.value, (newVal) => {
     /* when all is finished it opens minecraft build page  */
     if (newVal.document && newVal.images && newVal.litematic && newVal.inventory) {
         setTimeout(() => {
-            router.push(`/build/${uploadingStates.value.buildRef}`)
+            router.push(`/build/${newVal.buildRef}`)
         }, 1500)
     }
 })

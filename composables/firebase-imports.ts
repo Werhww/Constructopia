@@ -6,6 +6,7 @@ import {
 	/* firestore refs */
 	userRef,
 	buildRef,
+    imageRef,
 	inventoryRef,
 	blockImagesRef,
     favoriteRef
@@ -42,6 +43,7 @@ export {
 	/* firestore refs */
 	userRef,
 	buildRef,
+    imageRef,
 	inventoryRef,
 	blockImagesRef,
     favoriteRef,
