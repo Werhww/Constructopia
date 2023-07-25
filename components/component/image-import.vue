@@ -22,7 +22,7 @@ const preview_images = ref<{
     index:number
 }[]>([])
 
-const allImages = ref<string[]>([])
+let allImages:string[] = []
 
 const imageInput = ref()
 
@@ -45,16 +45,16 @@ function checkImageCount(images: any){
     }
 }
 
-function readImages(images: any) {
+function readImages(images: FileList) {
     preview_images.value = []
-    allImages.value = []
+    allImages = []
     let current_index = 0
 
     for (let i = 0; i < images.length; i++) {
         const reader = new FileReader();
 
         reader.onload = (e: any) => {
-            allImages.value.push(e.target.result)
+            allImages.push(e.target.result)
             preview_images.value.push({
                 image: e.target.result,
                 current: false,
@@ -72,7 +72,7 @@ function readImages(images: any) {
     }
 
     emit('update-main-image', 0)
-    emit('image-imported', allImages.value)
+    emit('image-imported', allImages, images.length)
 }
 
 function changePreviewImage(index: number){

@@ -95,7 +95,7 @@ const uploadingStates = ref({
 
 /* Asings all imported images to images ref */
 /* Called by image import componenet */
-function asignImages(image: any){
+async function asignImages(image: string[], imagesLength: number){
     images.value = image
 }
 
@@ -114,7 +114,9 @@ async function asignLitematic(file: any){
     *   Get block palett and count in litematic file and asings it to inventory ref
     */
 
+
     litematic.value = file
+
     isLitematicImported.value = true
 
     inventory.value =  await countBuild(file) as any
