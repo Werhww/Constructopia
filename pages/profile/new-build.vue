@@ -30,7 +30,8 @@
     :document="uploadingStates.document"
     :images="uploadingStates.images"
     :litematic="uploadingStates.litematic"
-    :inventory="uploadingStates.inventory"/>
+    :inventory="uploadingStates.inventory"
+/>
 </template>
 
 <script setup lang="ts">

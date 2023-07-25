@@ -2,7 +2,7 @@
 <div class="inventory" v-if="loading">
     <BuildInventoryRow v-for="item in inventortFixedForRows" :inventory="item" />
 </div>
-<div class="loading-column" v-else>
+<div class="loading-column inventory" v-else>
     <div class="loading-item loading-animation" v-for="i in 9"></div>
 </div>
 </template>
@@ -98,20 +98,17 @@ const inventortFixedForRows = computed(()=>{
     flex-direction: column;
     row-gap: 0.313rem;
     padding: 0.8rem 0.6rem;
+    margin-left: 2rem;
     background-color: var(--inventory-background);
     width: fit-content;
+    height: fit-content;
     border-radius: var(--border-radius);
     filter: drop-shadow(0px 0px 0.25rem rgba(0, 0, 0, .5));
 }
 
 .loading-column {
-    display: flex;
+    flex-direction: row;
     column-gap: 0.313rem;
-    padding: 0.8rem 0.6rem;
-    background-color: var(--inventory-background);
-    width: fit-content;
-    border-radius: var(--border-radius);
-    filter: drop-shadow(0px 0px 0.25rem rgba(0, 0, 0, .5));
 }
 
 .loading-item {

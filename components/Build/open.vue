@@ -19,8 +19,6 @@
             <ComponentLoadingText class="build-text-loading"/>
         </div>
 
-        <BuildInventory :inventory="inventory" :loading="loading.buildInventory" />
-
         <p v-if="!isEditing && loading.buildDoc" class="description build-text">{{ build.description }}</p>
         <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
         <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
@@ -45,6 +43,8 @@
             <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="initalDelete"/>
         </div>
     </div>
+
+    <BuildInventory :inventory="inventory" :loading="loading.buildInventory" />
 </section>
 </template>
 
@@ -191,6 +191,8 @@ function saveBuild() {
     display: flex;
     flex-direction: column;
     gap: 0.625rem;
+
+    
 }
 
 .build-title {
