@@ -1,6 +1,6 @@
 <template>
 <div class="image-carousel" v-if="loading">
-    <img v-for="item in carousel_images" @click="changeShownImage(item.index)" :src="item.image" :class="{'image-carousel-current': item.current, 'image-carousel-item': true}">
+    <img v-for="item in links" @click="$emit('change-preview-image', item.index)" :src="item.link" :class="{'image-carousel-current': item.active, 'image-carousel-item': true}">
 </div>
 <div class="image-carousel" v-else>
     <div v-for="i in 6" class="image-carousel-item-loading loading-animation"></div>
@@ -8,53 +8,17 @@
 </template>
 
 <script setup lang="ts">
-const emit = defineEmits(['change-preview-image'])
+defineEmits(['change-preview-image'])
 
-const props = defineProps<{
-    links: string[]
+defineProps<{
+    links: {
+        index: number
+        link: string
+        active: boolean
+    }[]
 
     loading: boolean
 }>()
-
-type CarouselImage = {
-    image: string
-    index: number
-    current: boolean
-}
-
-const carousel_images = computed(() => {
-    let items:CarouselImage[] = []
-
-    props.links.map((link, index) => {
-        items.push( {
-            image: link,
-            index: index,
-            current: index == 0
-        })
-    })
-
-    return items
-})
-
-
-function changeShownImage(newindex: number) {
-    console.log('cahnging carousel image', newindex)
-
-    let items:CarouselImage[] = []
-
-    props.links.map((link, index) => {
-        items.push( {
-            image: link,
-            index: index,
-            current: index == newindex
-        })
-    })
-
-    console.log(items)
-
-    emit('change-preview-image', newindex)
-}
-
 </script>
 
 <style scoped>

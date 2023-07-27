@@ -1,24 +1,15 @@
 <template>
 <div class="build-img" v-if="loading">
-    <img class="build-img-img" :src="image_link" @mousemove="mouseOver">
+    <img class="build-img-img" :src="link">
 </div>
 <div v-else class="build-img loading-animation"></div>
 </template>
 
 <script setup lang="ts">
-const prop = defineProps<{
-    image_link: string
-
+defineProps<{
+    link: string
     loading: boolean
 }>()
-
-const mouseX = ref(0)
-const mouseY = ref(0)
-
-function mouseOver(e:MouseEvent) {
-    mouseX.value = e.clientX
-    mouseY.value = e.clientY
-}
 
 </script>
 

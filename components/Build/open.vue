@@ -1,7 +1,7 @@
 <template>
 <section class="open-build">
-    <BuildOpenImage :image_link="currentImage" :loading="loading"/>
-    <BuildOpenImageCarousel :links="images.links" :loading="loading" v-on:change-preview-image="ChangePreviewImage" />
+    <BuildOpenImage :link="currentImage" :loading="loading"/>
+    <BuildOpenImageCarousel :links="carouselImages" :loading="loading" v-on:change-preview-image="ChangePreviewImage" />
     <div class="build-info">
         <h1 v-if="!isEditing && loading" class="build-title">{{ build.title }}</h1>
         <ComponentLoadingText class="build-title-loading" v-if="!loading"/>
@@ -18,11 +18,13 @@
             <ComponentLoadingText class="build-text-loading"/>
             <ComponentLoadingText class="build-text-loading"/>
         </div>
+        <BuildInventory :inventory="inventory" :loading="loading" />
 
         <p v-if="!isEditing && loading" class="description build-text">{{ build.description }}</p>
         <ComponentLoadingText  v-if="!loading" class="build-text-loading"/>
         <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
 
+        
         <div class="build-buttons" v-if="!isEditing">
             <BuildOpenLikeButton v-if="!owner" :liked="favorite" v-on:like="likeBuild(favorite, build.userId)"/>
             <BuildOpenIconButton text="3d editor" icon="/icons/build/3d-icon.svg" @click="emit('3d-editor')"/>
@@ -43,17 +45,11 @@
             <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="initalDelete"/>
         </div>
     </div>
-
-    <BuildInventory :inventory="inventory" :loading="loading" />
 </section>
 </template>
 
 <script setup lang="ts">
 const emit = defineEmits(['3d-editor', 'share'])
-
-function ChangePreviewImage(index: number) {
-    currentImage.value = prop.images.links[index]
-}
 
 const prop = defineProps<{
     buildId: string | string[]
@@ -95,15 +91,32 @@ const prop = defineProps<{
     loading: boolean
 }>()
 
-const currentImage = computed({
-    get: () => {
-        return prop.images.links[prop.build.thumbnailIndex]
-    },
-    set: (src:string) => {
-        console.log(src)
-        return src
+const currentImage = ref<string>(prop.images.links[prop.build.thumbnailIndex])
+
+const carouselImages = ref<any[]>()
+
+function ChangePreviewImage(index: number) {
+
+    carouselImages.value = []
+
+    for(let i = 0; i < prop.images.links.length; i++) {
+        console.log(prop.images.links.length)
+        console.log(prop.images.links[i])
+
+        carouselImages.value.push({
+            link: prop.images.links[i],
+            index: i,
+            active: i == index
+        })
     }
+
+    currentImage.value = prop.images.links[index]
+}
+  
+onMounted(() => {
+    ChangePreviewImage(prop.build.thumbnailIndex)
 })
+
 
 /* swich userid with id form auth */
 const loggedInUserId = '123'

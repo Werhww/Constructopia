@@ -89,7 +89,6 @@ const inventortFixedForRows = computed(()=>{
     flex-direction: column;
     row-gap: 0.313rem;
     padding: 0.8rem 0.6rem;
-    margin-left: 2rem;
     background-color: var(--inventory-background);
     width: fit-content;
     height: fit-content;

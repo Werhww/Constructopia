@@ -71,7 +71,6 @@ onMounted(async () => {
     loading.value = true
   } catch (error) {
     console.log(error);
-    console.log("error");
   }
 });
 
