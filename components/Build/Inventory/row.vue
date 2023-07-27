@@ -1,20 +1,16 @@
 <template>
 <div class="inventory-row">
-    <BuildInventoryItem v-for="item in inventoryFixed" :block_image="item.block_image" :amount="item.amount" :block_name="item.block_name" />
+    <BuildInventoryItem v-for="item in inventoryFixed" :block="item.block" :stack="item.stack" :count="item.count" />
 </div>
 </template>
 
 <script setup lang="ts">
-import air from '/icons/build/air.png'
-
 const prop = defineProps<{
     inventory: {
-        amount: {
-            amount: number
-            stacks: boolean
-        }
-        block_image: string
-        block_name: string
+        stack: boolean
+        buildId: string
+        block: string
+        count: number
     }[]
 }>()
 
@@ -22,12 +18,10 @@ const inventoryFixed = computed(() => {
     const inventory = prop.inventory
 
     const inventoryFixed: {
-        amount: {
-            amount: number
-            stacks: boolean
-        }
-        block_image: any
-        block_name: string
+        stack: boolean
+        buildId: string
+        block: string
+        count: number
     }[] = []
 
     if (inventory.length == 9) {
@@ -38,12 +32,10 @@ const inventoryFixed = computed(() => {
                 inventoryFixed.push(inventory[i])
             } else {
                 inventoryFixed.push({
-                    amount: {
-                        amount: 0,
-                        stacks: false
-                    },
-                    block_image: air,
-                    block_name: ""
+                    stack: false,
+                    buildId: 'empty',
+                    block: 'minecraft:air',
+                    count: 0
                 })
             }
         }

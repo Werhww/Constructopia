@@ -1,35 +1,39 @@
 <template>
 <div class="inventory-item">
-    <img :src="block_image">
-    <p class="stacks-text" v-if="amount.stacks">x64</p>
-    <p class="amount-text">{{ fixedAmount }}</p>
+    <img :src="block_image_src">
+    <p class="stacks-text" v-if="stack">x64</p>
+    <p class="amount-text">{{ fixedCount }}</p>
 
     <div class="tooltip" v-if="needTooltip">
-        <p>{{ block_name }}</p>
+        <p>{{ block }}</p>
     </div>
 </div>
 </template>
 
 <script setup lang="ts">
 const prop = defineProps<{
-    amount: {
-        amount: number
-        stacks: boolean
-    }
-    block_image: string
-    block_name: string
+    stack: boolean
+    block: string
+    count: number
 }>()
 
-const fixedAmount = computed(() => {
-    if (prop.amount.amount == 0) {
+const block_image_src = computed(() => {
+    const block = prop.block.split(":")[1]
+    
+    return '/blocks/' + block + '.png'
+    
+})
+
+const fixedCount = computed(() => {
+    if (prop.count == 0) {
         return " "
     } else {
-        return prop.amount.amount
+        return prop.count
     }
 })
 
 const needTooltip = computed(() => {
-    if (prop.amount.amount == 0) {
+    if (prop.count == 0) {
         return false
     } else {
         return true

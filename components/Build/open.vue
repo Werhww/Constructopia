@@ -1,26 +1,26 @@
 <template>
 <section class="open-build">
-    <BuildOpenImage :image_link="currentImage" :loading="loading.buildImages"/>
-    <BuildOpenImageCarousel :images="images" :loading="loading.buildImages" v-on:change-preview-image="emitChangePreviewImage" />
+    <BuildOpenImage :image_link="currentImage" :loading="loading"/>
+    <BuildOpenImageCarousel :links="images.links" :loading="loading" v-on:change-preview-image="ChangePreviewImage" />
     <div class="build-info">
-        <h1 v-if="!isEditing && loading.buildDoc" class="build-title">{{ build.title }}</h1>
-        <ComponentLoadingText class="build-title-loading" v-if="!loading.buildDoc"/>
+        <h1 v-if="!isEditing && loading" class="build-title">{{ build.title }}</h1>
+        <ComponentLoadingText class="build-title-loading" v-if="!loading"/>
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
 
-        <div class="metadata" v-if="loading.buildDoc">
+        <div class="metadata" v-if="loading">
             <p>{{ formatDate(build.date.created.seconds, 1) }}</p>
-            <p>@{{ build.user }}</p>
+            <p>@{{ build.username }}</p>
             <p v-if="!isEditing">/{{ build.difficulty }}</p>
             <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
         </div>
-        <div class="metadata-loading" v-if="!loading.buildDoc">
+        <div class="metadata-loading" v-if="!loading">
             <ComponentLoadingText class="build-text-loading"/>
             <ComponentLoadingText class="build-text-loading"/>
             <ComponentLoadingText class="build-text-loading"/>
         </div>
 
-        <p v-if="!isEditing && loading.buildDoc" class="description build-text">{{ build.description }}</p>
-        <ComponentLoadingText  v-if="!loading.buildDoc" class="build-text-loading"/>
+        <p v-if="!isEditing && loading" class="description build-text">{{ build.description }}</p>
+        <ComponentLoadingText  v-if="!loading" class="build-text-loading"/>
         <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
 
         <div class="build-buttons" v-if="!isEditing">
@@ -44,44 +44,66 @@
         </div>
     </div>
 
-    <BuildInventory :inventory="inventory" :loading="loading.buildInventory" />
+    <BuildInventory :inventory="inventory" :loading="loading" />
 </section>
 </template>
 
 <script setup lang="ts">
-import type { 
-    BuildDocument,
-    BuildInventory
-} from '@/assets/scripts/useTypes';
+const emit = defineEmits(['3d-editor', 'share'])
 
-const emit = defineEmits(['3d-editor', 'share', 'change-preview-image'])
-
-function emitChangePreviewImage(index: number) {
-    emit('change-preview-image', index)
+function ChangePreviewImage(index: number) {
+    currentImage.value = prop.images.links[index]
 }
 
 const prop = defineProps<{
     buildId: string | string[]
 
-    build: BuildDocument
+    build: {
+        buildId: string
+
+        userId: string
+        username: string
+
+        thumbnailIndex: number
+
+        title: string
+        description: string
+        difficulty: string
+        blocks: number
+
+        views: number
+
+        date: {
+            created: any
+            lastEdit: any
+    }
+}
 
     favorite: boolean
 
-    currentImage: string
     images: {
-        image:string
-        current:boolean
-        index:number
+        buildId: string
+        links: string[]
+    }
+
+    inventory: {
+        buildId: string
+        block: string
+        count: number
     }[]
 
-    inventory: BuildInventory[]
-
-    loading: {
-        buildDoc: boolean,
-        buildImages: boolean,
-        buildInventory: boolean
-    }
+    loading: boolean
 }>()
+
+const currentImage = computed({
+    get: () => {
+        return prop.images.links[prop.build.thumbnailIndex]
+    },
+    set: (src:string) => {
+        console.log(src)
+        return src
+    }
+})
 
 /* swich userid with id form auth */
 const loggedInUserId = '123'

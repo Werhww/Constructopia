@@ -1,69 +1,102 @@
 <template>
-<BuildOpen 
-  v-on:share="share"
-  v-on:3d-editor="open3dEditor"
-  v-on:change-preview-image="changeShownImage"
+  <BuildOpen
+    v-on:share="share"
+    v-on:3d-editor="open3dEditor"
+    :build-id="id"
+    :build="buildDocumentData"
+    :images="imagesDocumentData"
+    :favorite="favorite"
+    :inventory="InventoryItemsDocumentData"
+    :loading="loading"
+  />
 
-  :build-id="id"
-  :build="buildData"
+  <!-- <BuildListRecommended title="Recommended" /> -->
 
-  :images="buildImages"
-  :current-image="currentImage"
-
-  :favorite="buildFavorite"
-    
-  :inventory="buildInventory"
-
-  :loading="buildLoadStates"
-/>
-
-<BuildListRecommended title="Recommended" />
-
-<ComponentAlert v-if="showAlert" :alert="alertMessage" :user-interaction="alertType" v-on:close="alertClose"/>
-<ComponentBlur v-if="showAlert" />
+  <ComponentAlert
+    v-if="showAlert"
+    :alert="alertMessage"
+    :user-interaction="alertType"
+    v-on:close="alertClose"
+  />
+  <ComponentBlur v-if="showAlert" />
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
-const { id } = useRoute().params
+import {
+  BuildDocument,
+  ImageDocument,
+  InventoryDocument
+} from '@/utils/useTypes'
 
+const router = useRouter();
+const { id } = useRoute().params;
 
-const { 
-  buildData, buildInventory, buildImages, currentImage, buildFavorite, buildLoadStates,
+const loading = ref(false)
 
-  getBuildDoc, getBuildInventory, getImages, changeShownImage, checkFavoriteState
-} = useBuild()
+const favorite = ref(false);
+
+const buildDocumentData = ref<BuildDocument>({
+  buildId: '',
+
+  userId: '',
+  username: '',
+
+  title: '',
+  description: '',
+  difficulty: '',
+  blocks: 0,
+  thumbnailIndex: 0,
+  
+  views: 0,
+
+  date: {
+      created: 0,
+      lastEdit: 0
+  }
+});
+
+const imagesDocumentData = ref<ImageDocument>({
+  buildId: '',
+  links: [],
+})
+
+const InventoryItemsDocumentData = ref<InventoryDocument[]>([])
 
 onMounted(async () => {
-  await getBuildDoc(id as string)
-  getImages(id  as string)
-  getBuildInventory(id  as string)
-})
+  try {
+    buildDocumentData.value = await getBuildDoc(id as string);
+    imagesDocumentData.value = await getImages(id as string);
+    InventoryItemsDocumentData.value = await getBuildInventory(id as string);
+
+    loading.value = true
+  } catch (error) {
+    console.log(error);
+    console.log("error");
+  }
+});
 
 definePageMeta({
-  title: 'Build'
-})
+  title: "Build",
+});
 
-const showAlert = ref(false)
-const alertMessage = ref('')
-const alertType = ref(false)
+const showAlert = ref(false);
+const alertMessage = ref("");
+const alertType = ref(false);
 
 function alertClose() {
-  router.back()
+  router.back();
 }
 
 /* Change to auth id for prod */
-const userId = '123'
+const userId = "123";
 
 function share() {
-  console.log('share')
+  console.log("share");
 }
 
 function open3dEditor() {
-  console.log('open 3d editor')
+  console.log("open 3d editor");
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -8,35 +8,32 @@
 </template>
 
 <script setup lang="ts">
+interface InventoryItem {
+    buildId: string
+    block: string
+    count: number
+}
+
+interface InventoryItemFixedForRows {
+    stack: boolean
+    buildId: string
+    block: string
+    count: number
+}
+
+
 const prop = defineProps<{
-    inventory: {
-        amount: number
-        block_image: string
-        block_name: string
-    }[]
+    inventory: InventoryItem[]
 
     loading: boolean
 }>()
 
 const inventortFixedForRows = computed(()=>{
     const inventory = prop.inventory
-    const inventoryFixedForRows: {
-        amount: {
-            amount: number
-            stacks: boolean
-        }
-        block_image: string
-        block_name: string
-    }[][] = []
 
-    let currentRow: {
-        amount:  {
-            amount: number
-            stacks: boolean
-        }
-        block_image: string
-        block_name: string
-    }[] = []
+    const inventoryFixedForRows: InventoryItemFixedForRows[][] = []
+
+    let currentRow: InventoryItemFixedForRows[] = []
 
     for (let i = 0; i < inventory.length; i++) {
         if (currentRow.length == 9) {
@@ -44,28 +41,24 @@ const inventortFixedForRows = computed(()=>{
             currentRow = []
         }
         
-        const { amount, block_image, block_name } = inventory[i]
+        const { count, block, buildId } = inventory[i]
 
-        if(amount < 64) {
+        if(count < 64) {
             currentRow.push({
-                amount: {
-                    amount,
-                    stacks: false
-                },
-                block_image,
-                block_name
+                count: count,
+                stack: false,
+                block,
+                buildId
             })
         } else {
-            const stacks = Math.floor(amount / 64)
-            const remainder = (amount - (64*stacks))
+            const stacks = Math.floor(count / 64)
+            const remainder = (count - (64*stacks))
 
             currentRow.push({
-                amount: {
-                    amount: stacks,
-                    stacks: true
-                },
-                block_image,
-                block_name
+                count: stacks,
+                stack: true,
+                block,
+                buildId
             })
 
             if (currentRow.length == 9) {
@@ -74,12 +67,10 @@ const inventortFixedForRows = computed(()=>{
             }   
 
             currentRow.push({
-                amount: {
-                    amount: remainder,
-                    stacks: false
-                },
-                block_image,
-                block_name
+                count: remainder,
+                stack: false,
+                block,
+                buildId
             })
         }
 

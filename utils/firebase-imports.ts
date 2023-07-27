@@ -33,22 +33,25 @@ import {
     getDownloadURL
 } from '@firebase/storage'
 
-
+/* Firebase conections */
 export {
-    /* Firebase conections */
     db,
 	storage,
-	auth,
+	auth
+}
 
-	/* firestore refs */
-	userRef,
+/* firestore refs */
+export {
+    userRef,
 	buildRef,
     imageRef,
 	inventoryRef,
 	blockImagesRef,
-    favoriteRef,
+    favoriteRef
+}
 
-    /* Firestore function */
+/* firestore functions */
+export {
     doc,
     setDoc,
     getDoc,
@@ -61,8 +64,10 @@ export {
     where,
     orderBy,
     limit,
+}
 
-    /* Storage functions */
+/* Storage functions */
+export {
     fbRef,
     getDownloadURL
 }

@@ -7,7 +7,7 @@
         <h1 class="title">{{ title }}</h1>
         <div class="meta-data">
             <p>{{ formatDate(prop.date, 2) }}</p>
-            <p>@{{ user }}</p>
+            <p>@{{ username }}</p>
             <p>/{{ difficulty }}</p>
         </div>
         <div class="meta-data thick-data">
@@ -22,18 +22,29 @@
 </template>
 
 <script setup lang="ts">
+import { Timestamp } from 'firebase/firestore';
+
 const router = useRouter()
 
 const prop = defineProps<{
     buildId: string
-    image: string
+
+    userId: string
+    username: string
+
+    thumbnailIndex: number
+
     title: string
-    date: string
-    user: string
+    description: string
     difficulty: string
-    blocks: string
-    views: string
-    liked: boolean
+    blocks: number
+
+    views: number
+
+    date: {
+        created: Timestamp
+        lastEdit: Timestamp
+    }
 }>()
 
 let mouseDownX = 0
