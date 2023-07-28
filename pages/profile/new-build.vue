@@ -55,13 +55,6 @@ const userid = '1234test'
 const isButtonsDisabled = ref(false) // disables all buttons when true
 
 /* Input values */
-const buildId = ref('124124') // id of build in firebase
-
-type NewBuildDocument = omit<BuildDocument, "">
-
-
-const buildData = ref({}) // data of build in firebase
-
 const title = ref('') // max 35 characters
 const description = ref('') // max 350 characters
 const difficulty = ref('easy') // easy, medium, hard
@@ -165,7 +158,7 @@ async function createBuild(){
         },
 
         userId: userid,
-        user: userid,
+        username: userid,
     })
 
     uploadingStates.value.buildRef = build.id

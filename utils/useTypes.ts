@@ -1,5 +1,3 @@
-import { Timestamp } from '@firebase/firestore-types'
-
 type BuildDocument = {
     buildId: string
 

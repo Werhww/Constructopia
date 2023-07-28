@@ -1,14 +1,19 @@
 <template>
-  <BuildOpen
-    v-on:share="share"
-    v-on:3d-editor="open3dEditor"
-    :build-id="id"
-    :build="buildDocumentData"
-    :images="imagesDocumentData"
-    :favorite="favorite"
-    :inventory="InventoryItemsDocumentData"
-    :loading="loading"
-  />
+  <Suspense>
+    <BuildOpen
+      v-on:share="share"
+      v-on:3d-editor="open3dEditor"
+      v-on:delete="deleteBuildPromt"
+      v-on:save="saveBuildChangesPromt"
+      :build-id="id"
+
+
+    />
+
+    <template #fallback>
+      loading...
+    </template>
+  </Suspense>
 
   <!-- <BuildListRecommended title="Recommended" /> -->
 
@@ -17,77 +22,65 @@
     :alert="alertMessage"
     :user-interaction="alertType"
     v-on:close="alertClose"
+    v-on:confirm="alertConfirm"
   />
   <ComponentBlur v-if="showAlert" />
 </template>
 
 <script setup lang="ts">
-import {
-  BuildDocument,
-  ImageDocument,
-  InventoryDocument
-} from '@/utils/useTypes'
-
-const router = useRouter();
 const { id } = useRoute().params;
-
-const loading = ref(false)
-
-const favorite = ref(false);
-
-const buildDocumentData = ref<BuildDocument>({
-  buildId: '',
-
-  userId: '',
-  username: '',
-
-  title: '',
-  description: '',
-  difficulty: '',
-  blocks: 0,
-  thumbnailIndex: 0,
-  
-  views: 0,
-
-  date: {
-      created: 0,
-      lastEdit: 0
-  }
-});
-
-const imagesDocumentData = ref<ImageDocument>({
-  buildId: '',
-  links: [],
-})
-
-const InventoryItemsDocumentData = ref<InventoryDocument[]>([])
-
-onMounted(async () => {
-  try {
-    buildDocumentData.value = await getBuildDoc(id as string);
-    imagesDocumentData.value = await getImages(id as string);
-    InventoryItemsDocumentData.value = await getBuildInventory(id as string);
-
-    loading.value = true
-  } catch (error) {
-    console.log(error);
-  }
-});
 
 definePageMeta({
   title: "Build",
 });
 
+onErrorCaptured(() => {
+  console.log("maby an error");
+});
+
 const showAlert = ref(false);
 const alertMessage = ref("");
+const currentAlertType = ref("");
 const alertType = ref(false);
 
-function alertClose() {
-  router.back();
+const newBuildData = ref({
+  title: "",
+  description: "",
+  difficulty: "",
+});
+
+function deleteBuildPromt() {
+  currentAlertType.value = "delete"
+  alertMessage.value = "Are you sure you want to delete this build?"
+  alertType.value = true
+  showAlert.value = true
 }
 
-/* Change to auth id for prod */
-const userId = "123";
+function saveBuildChangesPromt(newData: any) {
+  currentAlertType.value = "save"
+  alertMessage.value = "Are you sure you want to save these changes?"
+  alertType.value = true
+  showAlert.value = true
+
+  newBuildData.value = newData
+}
+
+function alertClose() {
+  showAlert.value = false
+  currentAlertType.value = ""
+}
+
+function alertConfirm() {
+  if(currentAlertType.value == "delete") {
+    /* delete build from useBuild */
+    console.log("delete build")
+  } if (currentAlertType.value == "save") {
+    /* save build changes */
+    console.log("saveed build changes")
+  }
+
+  alertClose()
+}
 
 function share() {
   console.log("share");
@@ -97,5 +90,3 @@ function open3dEditor() {
   console.log("open 3d editor");
 }
 </script>
-
-<style scoped></style>

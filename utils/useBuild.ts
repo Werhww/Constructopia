@@ -22,9 +22,8 @@ export async function getBuildDoc(buildId: string) {
             throw new Error('Build document does not exist')
         }
 
-    } catch (error) {
-        console.log(error)
-        throw new Error('Error getting build document')
+    } catch {
+        throw new Error('Build document does not exist')
     }
 }
 
@@ -48,8 +47,7 @@ export async function getBuildInventory(buildId: string) {
         })
 
         return buildInventory
-    } catch (error) {
-        console.log(error)
+    } catch {
         throw new Error('Error getting build inventory')
     }
 }
@@ -59,16 +57,13 @@ export async function getImages(buildId: string) {
         const imageQuery = query(imageRef, where('buildId', '==', buildId))
         const imageData = await getDocs(imageQuery)
 
-        console.log(imageData.docs[0].data())
-
         if(imageData.empty) {
             throw new Error('No images found')
         } else {
             return imageData.docs[0].data() as ImageDocument
         }
 
-    } catch (error) {
-        console.log(error)
+    } catch {
         throw new Error('Error getting images')
     }
 }
