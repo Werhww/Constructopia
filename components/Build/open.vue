@@ -135,28 +135,6 @@ function changeEditState() {
 </script>
 
 <style scoped>
-.delete-prompt {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    padding: 1rem .75rem;
-    border-radius: var(--border-radius);
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-
-    position: absolute;
-    top: 20rem;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    background-color: var(--background);
-    color: var(--white);
-}
-
-.delete-prompt-buttons {
-    display: flex;
-    justify-content: space-between;
-}
 
 .edit-input {
     outline: none;
@@ -188,14 +166,6 @@ function changeEditState() {
     gap: 1rem;
 }
 
-.build-img {
-    width: 42.5rem;
-    height: 37.5rem;
-    object-fit: cover;
-
-    border-radius: var(--border-radius);
-}
-
 .build-info {
     display: flex;
     flex-direction: column;
@@ -210,19 +180,9 @@ function changeEditState() {
     color: var(--white);
 }
 
-.build-title-loading {
-    font-style: normal;
-    font: var(--title);
-}
-
 .build-text {
     font: var(--text);
     color: var(--lower-tone);
-}
-
-.build-text-loading {
-    font: var(--text);
-    flex: 1;
 }
 
 
@@ -231,18 +191,9 @@ function changeEditState() {
     gap: 1rem;
 }
 
-.metadata-loading {
-    display: flex;
-    gap: 1rem;
-}
-
 .metadata > p {
     font: var(--undertitle);
     color: var(--lower-tone);
-}
-
-.metadata-loading > p {
-    font: var(--undertitle);
 }
 
 .description {

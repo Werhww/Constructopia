@@ -6,14 +6,14 @@
       v-on:delete="deleteBuildPromt"
       v-on:save="saveBuildChangesPromt"
       :build-id="id"
-
-
     />
 
     <template #fallback>
       loading...
     </template>
   </Suspense>
+
+  <BuildLoading/>
 
   <!-- <BuildListRecommended title="Recommended" /> -->
 
