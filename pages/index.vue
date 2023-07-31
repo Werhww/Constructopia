@@ -1,9 +1,8 @@
 <template>
-  <BuildListNormal title="Popular"/>
-  
-  <BuildListNormal title="Newest"/>
-  
-  <BuildListNormal title="Dark forrest"/>
+  <BuildListNormal 
+    title="Popular"
+    :builds="testList"  
+  />
 </template>
 
 
@@ -15,6 +14,13 @@ definePageMeta({
 
 useHead({
   meta: [{ property: 'og:title', content: `App Name - ${route.meta.title}` }]
+})
+
+const testList = ref<any>([])
+
+onMounted(async () => {
+  const list = await getBuildList('test')
+  testList.value = list
 })
 </script>
 

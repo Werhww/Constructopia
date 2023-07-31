@@ -18,34 +18,42 @@ const prop = defineProps<{
     liked: boolean
 }>()
 
-const emit = defineEmits<{
-    (e: 'like', value: boolean): void
-}>()
+const emit = defineEmits(['clicked'])
 
 defineExpose({
     play: play
 })
 
-let isEnd = ref(prop.liked);
 let anim = ref();
 
 onMounted(() => {
     if (prop.liked) {
         anim.value.goToAndStop(30, true);
     }
+
+    setTimeout(() => {
+        firstChange = true
+    }, 1000);
 })
 
-watch(()=> prop.liked ,(newVal)=> {
-    if (newVal) {
-        anim.value.goToAndStop(30, true);
+let firstChange = false
+
+watch(() => prop.liked, (newVal)=> {
+    if (!firstChange && newVal) {
+        anim.value.goToAndPlay(30, true);
+        firstChange = true
     }
 })
 
 function play() {
-    isEnd.value? anim.value.setDirection(-1) : anim.value.setDirection(1);
-    isEnd.value = !isEnd.value;
+    if (prop.liked) {
+        anim.value.setDirection(-1);
+    } else {
+        anim.value.setDirection(1);
+    }
+
     anim.value.play()
-    emit('like', isEnd.value)
+    emit('clicked')
 }
 </script>
 

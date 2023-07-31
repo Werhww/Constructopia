@@ -21,7 +21,7 @@
 
         
         <div class="build-buttons" v-if="!isEditing">
-            <BuildOpenLikeButton v-if="!owner" :liked="favoriteRes" v-on:like="likeBuild(favoriteRes, buildData.userId)"/>
+            <BuildOpenFavoriteButton v-if="!owner" :liked="favorite" v-on:clicked="change_favorite"/>
             <BuildOpenIconButton text="3d editor" icon="/icons/build/3d-icon.svg" @click="emit('3d-editor')"/>
             <BuildOpenIconButton text="share" icon="/icons/build/share-icon.svg" @click="emit('share')"/>
             <BuildOpenIconButton v-if="owner" text="edit" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
@@ -52,21 +52,21 @@ onErrorCaptured(() => {
     console.log('error')
 })
 
-
-
 /* Data */
 let buildData: BuildDocument
 let imageData: ImageDocument
 let inventoryData: InventoryDocument[]
+const favorite = ref(false)
 
 try {
     buildData = await getBuildDoc(prop.buildId as string)
     imageData = await getImages(prop.buildId as string)
     inventoryData = await getBuildInventory(prop.buildId as string)
+    favorite.value = await checkIfFavorite('1234test', buildData.buildId)
 } catch {
     throw createError({ statusCode: 404, statusMessage: 'Build not found' })
 }
-const favoriteRes = false
+
 
 const owner = computed(() => {
     if(loggedInUserId === buildData.userId) {
@@ -116,9 +116,16 @@ function updateCarousel(index: number) {
     return newCarouselPromise
 }
 
+function change_favorite() {
+    /* change with auth */
+    console.log('change favorite')
+    updateFavorite('1234test', buildData.buildId, !favorite.value)
+    favorite.value = !favorite.value
+}
+
 
 /* swich userid with id form auth */
-const loggedInUserId = '1234test'
+const loggedInUserId = '12334test'
 
 /* Formatted data */
 

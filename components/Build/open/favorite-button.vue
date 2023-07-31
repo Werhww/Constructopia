@@ -1,18 +1,16 @@
 <template>
 <div class="like-button">
-    <AnimationsLike ref="likeBtn" :liked="liked" class="like-animation" v-on:like="emit('like', liked)"/>
+    <AnimationsLike ref="likeBtn" :liked="liked" class="like-animation" v-on:clicked="$emit('clicked')"/>
     <p @click="play">Favorite</p>
 </div>
 </template>
 
 <script setup lang="ts">
-const prop = defineProps<{
+defineProps<{
     liked: boolean
 }>()
 
-const emit = defineEmits<{
-    (e: 'like', value: boolean): void
-}>()
+defineEmits(['clicked'])
 
 const likeBtn = ref()
 

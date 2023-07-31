@@ -30,7 +30,8 @@ import {
 
 import {
     ref as fbRef, 
-    getDownloadURL
+    getDownloadURL,
+    deleteObject
 } from '@firebase/storage'
 
 /* Firebase conections */
@@ -69,5 +70,6 @@ export {
 /* Storage functions */
 export {
     fbRef,
-    getDownloadURL
+    getDownloadURL,
+    deleteObject
 }

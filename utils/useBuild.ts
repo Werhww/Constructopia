@@ -83,3 +83,74 @@ export async function checkFavoriteState(buildId: string) {
         throw new Error('Error checking favorite state')
     }
 }
+
+export async function deleteBuild(buildId: string) {
+    try {
+        const allRelatedDocs = await getAllRelatedDocs(buildId)
+
+        allRelatedDocs.forEach((docRef) => {
+            console.log(docRef)
+            deleteDoc(doc(db, docRef.collection, docRef.docId))
+        })
+
+        /* auth.currentUser?.uid */
+        const AmountOfImages = 6
+
+        for(let i = 0; i < AmountOfImages; i++) {
+            try {
+                await removeThisFile(`images/${'1234test'}/${buildId}/${i}.png`)
+            } catch {
+                break
+            }
+        }
+        
+        removeThisFile(`litematic/${'1234test'}/${buildId}/build.litematic`)
+        removeThisDoc(buildId, buildRef)
+
+        return
+    } catch (error) {
+        console.log(error)
+        throw new Error('Error deleting build')
+    }
+}
+
+async function getAllRelatedDocs(buildId: string) {
+    let allIds: {
+        docId: string,
+        collection: string
+    }[] = []
+
+    const collections = ['images', 'inventory']
+
+    const docQuerys = collections.map((col) => {
+        return {
+            query: query(collection(db, col), where('buildId', '==', buildId)),
+            collection: col
+        }
+    })
+
+    for(let i = 0; i < docQuerys.length; i++) {
+        const docs = await getDocs(docQuerys[i].query)
+
+        docs.forEach((doc) => {
+            allIds.push({
+                docId: doc.id,
+                collection: docQuerys[i].collection
+            })
+        })
+    }
+
+    return allIds
+}
+
+async function removeThisDoc(docRef: string, col: any) {
+    await deleteDoc(doc(col, docRef)).catch(() => {
+        throw new Error('Error deleting document')
+    })
+}
+
+async function removeThisFile(fileRef: string) {
+    await deleteObject(fbRef(storage, fileRef)).catch(() => {
+        throw new Error('Error deleting file')
+    })
+}

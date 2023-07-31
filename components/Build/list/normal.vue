@@ -6,17 +6,10 @@
         v-dragscroll.x    
     >
         <BuildCard
-            v-for="i in 10"
+            v-for="i in builds"
 
-            buildId="1"
-            image="https://i.pinimg.com/736x/f5/c0/a2/f5c0a23a575e40913a2056441a30412b.jpg"
-            title="House of the future"
-            date="2023-05-18T15:00:00"
-            user="John-Doe"
-            difficulty="easy"
-            blocks="5"
-            views="100" 
-            :liked="false"
+            :build="i.build"
+            :images="i.images"
         />
 
         <BuildLastCard />
@@ -25,18 +18,35 @@
 </template>
 
 <script setup lang="ts">
-
 defineProps<{
     title: string
-    builds?: Array<{
-        image: string
-        title: string
-        date: string
-        user: string
-        difficulty: string
-        blocks: string
-        views: string
-    }>
+    builds: {
+        build: {
+            buildId: string
+
+            userId: string
+            username: string
+
+            thumbnailIndex: number
+
+            title: string
+            description: string
+            difficulty: string
+            blocks: number
+
+            views: number
+
+            date: {
+                created: any
+                lastEdit: any
+            }
+        }
+
+        images: {
+            buildId: string
+            links: string[]
+        }
+    }[]
 }>()
 
 </script>

@@ -1,20 +1,20 @@
 <template>
 <div class="item">
-    <AnimationsLike v-on:like="like_build" :liked="liked" class="like-button"/>
+    <AnimationsLike v-on:clicked="change_favorite" :liked="favorite" class="like-button"/>
 
-    <img class="image" :src="image" @mousedown="mouseDownX = $event.clientX" @mouseup="open_build_check">
+    <img class="image" :src="thumbnail" @mousedown="mouseDownX = $event.clientX" @mouseup="open_build_check">
     <div class="item-data" @mousedown="mouseDownX = $event.clientX" @mouseup="open_build_check">
-        <h1 class="title">{{ title }}</h1>
+        <h1 class="title">{{ build.title }}</h1>
         <div class="meta-data">
-            <p>{{ formatDate(prop.date, 2) }}</p>
-            <p>@{{ username }}</p>
-            <p>/{{ difficulty }}</p>
+            <p>{{ formatDate(prop.build.date.created.seconds, 2) }}</p>
+            <p>@{{ build.username }}</p>
+            <p>/{{ build.difficulty }}</p>
         </div>
         <div class="meta-data thick-data">
-            <p>{{ blocks }} Blocks</p>
+            <p>{{ build.blocks }} Blocks</p>
             <div class="views">
                 <img src="/icons/build/view-icon.svg">
-                <p>{{ views }}</p>
+                <p>{{ build.views }}</p>
             </div>
         </div>
     </div>
@@ -23,29 +23,52 @@
 
 <script setup lang="ts">
 import { Timestamp } from 'firebase/firestore';
-
 const router = useRouter()
 
 const prop = defineProps<{
-    buildId: string
+    build : {
+        buildId: string
 
-    userId: string
-    username: string
+        userId: string
+        username: string
 
-    thumbnailIndex: number
+        thumbnailIndex: number
 
-    title: string
-    description: string
-    difficulty: string
-    blocks: number
+        title: string
+        description: string
+        difficulty: string
+        blocks: number
 
-    views: number
+        views: number
 
-    date: {
-        created: Timestamp
-        lastEdit: Timestamp
+        date: {
+            created: Timestamp
+            lastEdit: Timestamp
+        }
+    }
+
+    images: {
+        buildId: string
+        links: string[]
     }
 }>()
+
+const thumbnail = computed(() => {
+    return prop.images.links[prop.build.thumbnailIndex]
+})
+
+const favorite = ref(false)
+
+onMounted(async () => {
+    /* change with auth */
+    favorite.value = await checkIfFavorite('1234test', prop.build.buildId)
+})
+
+function change_favorite() {
+    /* change with auth */
+    updateFavorite('1234test', prop.build.buildId, !favorite.value)
+    favorite.value = !favorite.value
+}
 
 let mouseDownX = 0
 let mouseUpX = 0
@@ -57,13 +80,8 @@ function between(x:number, min:number, max:number) {
 function open_build_check(e: MouseEvent) {
     mouseUpX = e.clientX
     if (between(mouseUpX, mouseDownX - 15, mouseDownX + 15)) {
-        router.push(`/build/${prop.buildId}`)
+        router.push(`/build/${prop.build.buildId}`)
     }
-}
-
-function like_build(likeValue: boolean) {
-    likeBuild(likeValue, prop.buildId)
-    /* firebase function */
 }
 </script>
 

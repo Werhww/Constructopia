@@ -9,11 +9,9 @@
     />
 
     <template #fallback>
-      loading...
+      <BuildLoading/>
     </template>
   </Suspense>
-
-  <BuildLoading/>
 
   <!-- <BuildListRecommended title="Recommended" /> -->
 
@@ -29,6 +27,7 @@
 
 <script setup lang="ts">
 const { id } = useRoute().params;
+const router = useRouter();
 
 definePageMeta({
   title: "Build",
@@ -70,15 +69,18 @@ function alertClose() {
   currentAlertType.value = ""
 }
 
-function alertConfirm() {
+async function alertConfirm() {
+  
   if(currentAlertType.value == "delete") {
-    /* delete build from useBuild */
-    console.log("delete build")
+    await deleteBuild(id as string)
+    console.log("end of deleteing build")
+    router.push("/builds/test")
   } if (currentAlertType.value == "save") {
     /* save build changes */
     console.log("saveed build changes")
   }
 
+  
   alertClose()
 }
 

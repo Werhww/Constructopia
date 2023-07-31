@@ -174,7 +174,7 @@ async function createBuild(){
 /* Called by createBuild() */
 async function uploadImages(buildId: string) {
     /* Uploads all images from the build to firebase storage */
-    const storageRef = fbRef(storage, `builds/${userid}/${buildId}/images`)
+    const storageRef = fbRef(storage, `images/${userid}/${buildId}`)
     let uploadedImages = 0
 
     let links: string[] = []
@@ -208,7 +208,7 @@ async function uploadImages(buildId: string) {
 /* Called by createBuild() */
 async function uploadLitematic(buildId: string) {
     /* Uploads litematic file to the firebase storage */
-    const storageRef = fbRef(storage, `builds/${userid}/${buildId}/litematic`)
+    const storageRef = fbRef(storage, `litematic/${userid}/${buildId}`)
     const litematicRef = fbRef(storageRef, `build.litematic`)
 
     let reader = new FileReader()
