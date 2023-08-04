@@ -46,6 +46,7 @@ import {
     InventoryDocument
 } from '@/utils/useTypes'
 
+const route = useRoute()
 const emit = defineEmits(['3d-editor', 'share', 'delete', 'save'])
 
 const prop = defineProps<{
@@ -63,12 +64,35 @@ let inventoryData: InventoryDocument[]
 const favorite = ref(false)
 
 try {
-    buildData = await getBuildDoc(prop.buildId as string)
-    imageData = await getImages(prop.buildId as string)
+    const redirectId = useState('redirect-Build-Id')
+
+    if(!redirectId.value) {
+        buildData = await getBuildDoc(prop.buildId as string)
+        imageData = await getImages(prop.buildId as string)
+        favorite.value = await checkIfFavorite('1234test', buildData.buildId)
+        
+    } else if (redirectId.value === prop.buildId) {
+        buildData = useState('redirect-Build-Doc').value as BuildDocument
+        imageData = useState('redirect-Image-Doc').value as ImageDocument
+        const favoriteState = useState('redirect-Favorite-Status')
+
+        if(!favoriteState) {
+            favorite.value = await checkIfFavorite('1234test', buildData.buildId)
+        } else {
+            favorite.value = favoriteState.value as boolean
+        }
+
+    } else {
+        buildData = await getBuildDoc(prop.buildId as string)
+        imageData = await getImages(prop.buildId as string)
+        favorite.value = await checkIfFavorite('1234test', buildData.buildId)
+    }
+
+
     inventoryData = await getBuildInventory(prop.buildId as string)
-    favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-} catch {
-    throw createError({ statusCode: 404, statusMessage: 'Build not found' })
+} catch(error) {
+    console.log(error)
+    throw createError({ statusCode: 404, statusMessage: 'This build dosnt exist' })
 }
 
 

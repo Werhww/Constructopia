@@ -1,6 +1,9 @@
 <template>
 <header>
-    <h1 class="title" @click="router.push('/')">{{ title }}</h1>
+    <div>
+        <h1 class="title" @click="router.push('/')">{{ title }}</h1>
+        <HNavigation />
+    </div>
     <nav class="buttons">
         <HSearch />
         <HDropdown ref="dropdown" v-on:open="emit_open"/>
@@ -10,8 +13,7 @@
 
 <script setup lang="ts">
 const router = useRouter()
-
-const prop = defineProps<{
+defineProps<{
     title: string
 }>()
 
