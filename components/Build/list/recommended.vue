@@ -2,7 +2,7 @@
 <div class="wrapper">
     <div class="build-title">
         <h1>{{ title }}</h1>
-        <p @click="router.push(`/builds/${userId}`)">see more</p>
+        <p @click="router.push(`/builds/${categoryId}`)">see more</p>
     </div>
     <div 
         class="build-items"
@@ -21,12 +21,10 @@
 <script setup lang="ts">
 const router = useRouter()
 
-/* Endre til å hente direkte fra auth */
-/* userId skal ikke bruke i prod */
-const userId = '123'
-
 defineProps<{
     title: string
+    categoryId: string
+
     builds?: {
         build: {
             buildId: string

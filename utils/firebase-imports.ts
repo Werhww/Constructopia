@@ -7,6 +7,7 @@ import {
 	userRef,
 	buildRef,
     imageRef,
+    categoryRef,
 	inventoryRef,
 	blockImagesRef,
     favoriteRef
@@ -46,6 +47,7 @@ export {
     userRef,
 	buildRef,
     imageRef,
+    categoryRef,
 	inventoryRef,
 	blockImagesRef,
     favoriteRef

@@ -10,6 +10,10 @@
         <div class="metadata">
             <p>{{ formatDate(buildData.date.created.seconds, 1) }}</p>
             <p>@{{ buildData.username }}</p>
+            <div class="views">
+                <img src="/icons/build/view-icon.svg">
+                <p>{{ buildData.views }}</p>
+            </div>
             <p v-if="!isEditing">/{{ buildData.difficulty }}</p>
             <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
         </div>
@@ -127,8 +131,6 @@ function change_favorite() {
 /* swich userid with id form auth */
 const loggedInUserId = '12334test'
 
-/* Formatted data */
-
 const isEditing = ref(false)
 const editData = ref({
     title: buildData.title,
@@ -198,9 +200,14 @@ function changeEditState() {
     gap: 1rem;
 }
 
-.metadata > p {
+.metadata p {
     font: var(--undertitle);
     color: var(--lower-tone);
+}
+
+.views {
+    display: flex;
+    gap: 0.25rem;
 }
 
 .description {

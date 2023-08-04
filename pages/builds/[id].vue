@@ -5,26 +5,38 @@
 </div>
 <div class="Builds">
   <BuildCard
-    v-for="i in 20"
+    v-for="data in buildList"
     class="Builds_item"
 
-    buildId="1"
-    image="https://i.pinimg.com/736x/f5/c0/a2/f5c0a23a575e40913a2056441a30412b.jpg"
-    title="House of the future"
-    date="2023-05-18T15:00:00"
-    user="John-Doe"
-    difficulty="easy"
-    blocks="5"
-    views="100"
-    :liked="false"
+    :build="data.build"
+
+    :images="data.images"
   />
 </div>
 </template>
 
 <script setup lang="ts">
+import { BuildDocument, ImageDocument } from '~/utils/useTypes';
+
 const { id } = useRoute().params
 definePageMeta({
   title: 'Builds'
+})
+
+const fullBuildList = ref<{
+  build: BuildDocument
+  images: ImageDocument
+}[]>([])
+
+const buildList = ref<{
+  build: BuildDocument
+  images: ImageDocument
+}[]>([])
+
+onMounted(async () => {
+  const list = await getBuildListByUserId(id as string)
+  buildList.value = list
+  fullBuildList.value = list
 })
 
 const OrderDropdown = [
@@ -65,17 +77,30 @@ const FilterDropdown = [
   },
 ]
 
+const currentOrder = ref(OrderDropdown[0].label)
+const currentDirection = ref("asc")
 
-function changeFilter(newVal: string) {
-  console.log(newVal)
+
+async function changeFilter(newVal: string) {
+  if (newVal === "all") {
+    buildList.value = fullBuildList.value
+  } else {
+    const newBuildFiltered = await getBuildListByFilter(id as string, newVal)
+    const newBuildOrder = await updateBuildOrder(currentOrder.value, currentDirection.value, newBuildFiltered)
+
+    buildList.value = newBuildOrder
+  }
 }
 
-function changeOrder(newVal: string) {
-  console.log(newVal)
+async function changeOrder(newVal: string) {
+  currentOrder.value = newVal
+  const newBuildOrder = await updateBuildOrder(currentOrder.value, currentDirection.value, buildList.value)
+  buildList.value = newBuildOrder
 }
 
 function changeDirection(newVal: string) {
-  console.log(newVal)
+  currentDirection.value = newVal
+  buildList.value = buildList.value.reverse()
 }
 </script>
 

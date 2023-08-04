@@ -22,35 +22,16 @@
 </template>
 
 <script setup lang="ts">
-import { Timestamp } from 'firebase/firestore';
+import {
+    BuildDocument,
+    ImageDocument
+} from '~/utils/useTypes'
 const router = useRouter()
 
 const prop = defineProps<{
-    build : {
-        buildId: string
+    build : BuildDocument
 
-        userId: string
-        username: string
-
-        thumbnailIndex: number
-
-        title: string
-        description: string
-        difficulty: string
-        blocks: number
-
-        views: number
-
-        date: {
-            created: Timestamp
-            lastEdit: Timestamp
-        }
-    }
-
-    images: {
-        buildId: string
-        links: string[]
-    }
+    images: ImageDocument
 }>()
 
 const thumbnail = computed(() => {
@@ -138,9 +119,6 @@ function open_build_check(e: MouseEvent) {
 
     font: var(--metadata);
     color: var(--lower-tone);
-}
-
-.meta-data {
     font-weight: 700;
 }
 

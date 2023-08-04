@@ -2,24 +2,17 @@
 <div class="wrapper">
     <div class="build-title">
        <h1>{{ title }}</h1>
-       <p @click="router.push(`/builds/${userId}`)">see more</p>
+       <p @click="router.push(`/builds/${builds[0].build.userId}`)">see more</p>
     </div>
     <div 
         class="build-items"
         v-dragscroll.x    
     >
         <BuildCardMin
-            v-for="i in 10"
+            v-for="i in builds"
 
-            buildId="123"
-            image="https://i.pinimg.com/736x/f5/c0/a2/f5c0a23a575e40913a2056441a30412b.jpg"
-            title="House of the future"
-            date="2023-05-18T15:00:00"
-            user="John-Doe"
-            difficulty="easy"
-            blocks="5"
-            views="100" 
-            :liked="false"
+            :build="i.build"
+            :images="i.images"
         />
     </div>
 </div>
@@ -28,22 +21,37 @@
 <script setup lang="ts">
 const router = useRouter()
 
-/* Endre til å hente direkte fra auth */
-/* userId skal ikke bruke i prod */
-const userId = '123'
-
-const prop = defineProps<{
+defineProps<{
     title: string
-    builds?: Array<{
-        image: string
-        title: string
-        date: string
-        user: string
-        difficulty: string
-        blocks: string
-        views: string
-    }>
+    builds: {
+        build: {
+            buildId: string
+
+            userId: string
+            username: string
+
+            thumbnailIndex: number
+
+            title: string
+            description: string
+            difficulty: string
+            blocks: number
+
+            views: number
+
+            date: {
+                created: any
+                lastEdit: any
+            }
+        }
+
+        images: {
+            buildId: string
+            links: string[]
+        }
+    }[]
 }>()
+
 </script>
 
 <style scoped> 

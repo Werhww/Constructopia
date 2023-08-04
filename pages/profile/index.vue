@@ -22,18 +22,39 @@
   <ComponentButton v-on:click="saveChanges" label="Save changes" color="var(--background)" bg_color="var(--white)" class="save-button"/>
 </section>
 
-<BuildListProfile title="Builds"/>
+<BuildListProfile
+  title="My Builds"
+  :builds="usersBuilds"
+/>
 </template>
 
 <script setup lang="ts">
+import {
+  BuildDocument,
+  ImageDocument,
+} from '~/utils/useTypes'
+
 definePageMeta({
   title: 'Profile'
 })
+
+/* change with auth */
+const USERID = '1234test'
 
 const user = ref({
   username: "Werhw",
   minecraft_username: "Supergutt09",
   email: "leo@gmail.com"
+})
+
+const usersBuilds = ref<{
+  build: BuildDocument
+  images: ImageDocument
+}[]>([])
+
+onMounted(async () => {
+  const list = await getBuildListByCategory(USERID)
+  usersBuilds.value = list
 })
 
 function saveChanges() {

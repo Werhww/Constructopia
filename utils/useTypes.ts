@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore"
+
 type BuildDocument = {
     buildId: string
 
@@ -14,8 +16,8 @@ type BuildDocument = {
     views: number
 
     date: {
-        created: any
-        lastEdit: any
+        created: Timestamp
+        lastEdit: Timestamp
     }
 }
 
@@ -30,8 +32,14 @@ type InventoryDocument = {
     count: number
 }
 
+type CategoryDocument = {
+    buildId: string
+    category: string
+}
+
 export {
     BuildDocument,
     ImageDocument,
-    InventoryDocument
+    InventoryDocument,
+    CategoryDocument,
 }

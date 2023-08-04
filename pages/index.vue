@@ -3,6 +3,11 @@
     title="Popular"
     :builds="testList"  
   />
+
+  <BuildListProfile
+    title="My Builds"
+    :builds="testList"
+  />
 </template>
 
 
@@ -19,7 +24,7 @@ useHead({
 const testList = ref<any>([])
 
 onMounted(async () => {
-  const list = await getBuildList('test')
+  const list = await getBuildListByCategory('test')
   testList.value = list
 })
 </script>
