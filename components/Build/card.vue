@@ -65,7 +65,7 @@ function open_build_check(e: MouseEvent) {
         useState('redirect-Build-Doc', ()=> (prop.build))
         useState('redirect-Image-Doc', ()=> (prop.images))
         useState('redirect-Favorite-Status', ()=> (favorite.value))
-        router.push(`/build/${prop.build.buildId}`)
+        router.push({ path:`/build/${prop.build.buildId}`, query: { BuildOwner: prop.build.userId }})
     }
 }
 </script>

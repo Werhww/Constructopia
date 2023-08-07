@@ -11,55 +11,19 @@
 const router = useRouter()
 
 const navigationRoute = ref<any[]>([])
-const NAVAGATIONROUTES = [
-    {
-        name: 'Home',
-        path: '/'
-    },
-    {
-        name: 'about',
-        path: '/about'
-    },
-    {
-        name: 'build',
-        path: '/builds/'
-    }, 
-    {
-        name: 'builds',
-        path: '/builds/'
-    }, 
-    {
-        name: 'favorites',
-        path: '/favorites/'
-
-    },
-    {
-        name: 'profile',
-        path: '/profile/'
-    },
-    {
-        name: 'litematica',
-        path: '/litematica/'
-    },
-    {
-        name: 'new-build',
-        path: '/new-build/'
-    }
-]
+const NAVAGATIONROUTES = router.getRoutes()
 
 
 router.beforeEach((to, from, next) => {
     const SPLITPATH = to.path.split('/')
+    console.log(to)
+    console.log(router.getRoutes())
     let showRoute:any[] = []
 
     for(let i = 0; i < SPLITPATH.length; i++) {
-        if(i == 0) {
-            showRoute.push(NAVAGATIONROUTES[0])
-        } else {
-            for(let j = 0; j < NAVAGATIONROUTES.length; j++) {
-                if(NAVAGATIONROUTES[j].name == SPLITPATH[i]) {
-                    showRoute.push(NAVAGATIONROUTES[j])
-                }
+        for(let j = 0; j < NAVAGATIONROUTES.length; j++) {
+            if(NAVAGATIONROUTES[j].name == SPLITPATH[i]) {
+                showRoute.push(NAVAGATIONROUTES[j])
             }
         }
     }
@@ -67,6 +31,7 @@ router.beforeEach((to, from, next) => {
     navigationRoute.value = showRoute
     next()
 })
+
 </script>
 
 <style scoped>
