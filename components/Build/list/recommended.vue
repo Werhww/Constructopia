@@ -19,6 +19,10 @@
 </template>
 
 <script setup lang="ts">
+import {
+    BuildDocument,
+    ImageDocument
+} from '~/utils/useTypes'
 const router = useRouter()
 
 defineProps<{
@@ -26,31 +30,9 @@ defineProps<{
     categoryId: string
 
     builds?: {
-        build: {
-            buildId: string
+        build: BuildDocument
 
-            userId: string
-            username: string
-
-            thumbnailIndex: number
-
-            title: string
-            description: string
-            difficulty: string
-            blocks: number
-
-            views: number
-
-            date: {
-                created: any
-                lastEdit: any
-            }
-        }
-
-        images: {
-            buildId: string
-            links: string[]
-        }
+        images: ImageDocument
     }[]
 }>()
 </script>

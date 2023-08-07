@@ -70,18 +70,17 @@ try {
         buildData = await getBuildDoc(prop.buildId as string)
         imageData = await getImages(prop.buildId as string)
         favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-        
+        console.log('from server')
     } else if (redirectId.value === prop.buildId) {
         buildData = useState('redirect-Build-Doc').value as BuildDocument
         imageData = useState('redirect-Image-Doc').value as ImageDocument
         const favoriteState = useState('redirect-Favorite-Status')
 
-        if(!favoriteState) {
+        if(!favoriteState.value) {
             favorite.value = await checkIfFavorite('1234test', buildData.buildId)
         } else {
             favorite.value = favoriteState.value as boolean
         }
-
     } else {
         buildData = await getBuildDoc(prop.buildId as string)
         imageData = await getImages(prop.buildId as string)
