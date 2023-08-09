@@ -24,7 +24,12 @@
   <script setup lang="ts">
   const { id } = useRoute().params
   definePageMeta({
-    title: 'Favorites'
+    title: 'Favorites',
+    routesToHere: [
+      { name: 'Home', path: '/'},
+      { name: 'Profile', path: '/profile'},
+      { name: 'Favorites', path: '/profile/favorites'}
+    ]
   })
   
   const OrderDropdown = [

@@ -13,11 +13,18 @@
 </template>
 
 <script setup lang="ts">
-import { setDoc, doc } from 'firebase/firestore'
-import { db } from '~/assets/scripts/firebase';
+const route = useRoute()
 
 definePageMeta({
-  title: 'About'
+  title: 'About',
+  routesToHere: [
+    { name: 'Home', path: '/'},
+    { name: 'About', path: '/about'}
+  ]
+})
+
+useHead({
+  meta: [{ property: 'og:title', content: `Constructopia - ${route.meta.title}` }]
 })
 
 

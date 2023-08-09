@@ -35,7 +35,11 @@ import {
 } from '~/utils/useTypes'
 
 definePageMeta({
-  title: 'Profile'
+  title: 'Profile',
+  routesToHere: [
+    { name: 'Home', path: '/'},
+    { name: 'Profile', path: '/profile'},
+  ]
 })
 
 /* change with auth */

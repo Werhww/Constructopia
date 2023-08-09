@@ -14,11 +14,14 @@
 <script setup lang="ts">
 const route = useRoute()
 definePageMeta({
-  title: 'Constructopia'
+  title: 'Home',
+  routesToHere: [
+    { name: 'Home', path: '/'}
+  ]
 })
 
 useHead({
-  meta: [{ property: 'og:title', content: `App Name - ${route.meta.title}` }]
+  meta: [{ property: 'og:title', content: `Constructopia - ${route.meta.title}` }]
 })
 
 const testList = ref<any>([])

@@ -53,10 +53,6 @@ const prop = defineProps<{
     buildId: string | string[]
 }>()
 
-onErrorCaptured(() => {
-    console.log('error')
-})
-
 /* Data */
 let buildData: BuildDocument
 let imageData: ImageDocument
@@ -70,7 +66,6 @@ try {
         buildData = await getBuildDoc(prop.buildId as string)
         imageData = await getImages(prop.buildId as string)
         favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-        route.query.BuildOwner = buildData.buildId
 
     } else if (redirectId.value === prop.buildId) {
 
@@ -87,9 +82,19 @@ try {
         buildData = await getBuildDoc(prop.buildId as string)
         imageData = await getImages(prop.buildId as string)
         favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-        route.query.BuildOwner = buildData.buildId
     }
-
+    
+    useHead({
+        meta: [
+            { property: 'og:title', content: `Constructopia - ${buildData.title}` },
+            { property: 'og:description', content: buildData.description },
+            { property: 'og:image', content: imageData.links[0] },
+            { property: 'og:image:width', content: '1200' },
+            { property: 'og:image:height', content: '630' },
+            { property: 'og:url', content: `https://constructopia.net/build/${buildData.buildId}` },
+            { property: 'og:type', content: 'website'}
+        ]
+    })
 
     inventoryData = await getBuildInventory(prop.buildId as string)
 } catch(error) {

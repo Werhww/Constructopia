@@ -1,37 +1,38 @@
 <template>
 <div class="nav-viewer">
-    <div class="nav-item" v-for="nav in navigationRoute">
-        <NuxtLink :to="nav.path">{{ nav.name }}</NuxtLink>
+    <div class="nav-item" v-for="nav in navigation">
+            <NuxtLink :to="nav.path">{{ nav.title }}</NuxtLink>
         <p>/</p>
     </div>
 </div>
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
+const router = useRouter();
+const route = useRoute();
 
-const navigationRoute = ref<any[]>([])
-const NAVAGATIONROUTES = router.getRoutes()
-
-
-router.beforeEach((to, from, next) => {
-    const SPLITPATH = to.path.split('/')
-    console.log(to)
-    console.log(router.getRoutes())
-    let showRoute:any[] = []
-
-    for(let i = 0; i < SPLITPATH.length; i++) {
-        for(let j = 0; j < NAVAGATIONROUTES.length; j++) {
-            if(NAVAGATIONROUTES[j].name == SPLITPATH[i]) {
-                showRoute.push(NAVAGATIONROUTES[j])
-            }
-        }
+let navigation = [
+    {
+        title: "Home",
+        path: "/"
+    },
+    {
+        title: "Builds",
+        path: "/12351235"
+    },
+    {
+        title: "build",
+        path: "/12351235"
     }
+]
 
-    navigationRoute.value = showRoute
-    next()
+onMounted(()=> {
+    console.log(route.path)
+
+    let split = route.path.split("/")
+
+    console.log(split)
 })
-
 </script>
 
 <style scoped>
@@ -47,6 +48,10 @@ router.beforeEach((to, from, next) => {
     font-weight: 600;
     cursor: default;
     text-decoration: none;
+}
+
+.nav-viewer p {
+    font-weight: 700;
 }
 
 .nav-item {

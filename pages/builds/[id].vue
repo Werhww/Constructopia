@@ -20,7 +20,11 @@ import { BuildDocument, ImageDocument } from '~/utils/useTypes';
 
 const { id } = useRoute().params
 definePageMeta({
-  title: 'Builds'
+  title: 'Builds',
+  routesToHere: [
+    { name: 'Home', path: '/'},,
+    { name: 'Builds', path: '/builds'}
+  ]
 })
 
 const fullBuildList = ref<{
