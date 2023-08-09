@@ -8,31 +8,38 @@
 </template>
 
 <script setup lang="ts">
-const router = useRouter();
-const route = useRoute();
+const route = useRoute()
 
-let navigation = [
-    {
-        title: "Home",
-        path: "/"
-    },
-    {
-        title: "Builds",
-        path: "/12351235"
-    },
-    {
-        title: "build",
-        path: "/12351235"
+let navigation = ref<{
+    title: string
+    path: string
+}[]>([])
+
+function newPath() {    
+    navigation.value = []
+
+    const path = route.path
+    .split("/")
+    .filter((path) => path !== "" && path !== "/")
+
+    
+    let index = 0
+
+    for (const route of path) {
+        navigation.value.push({
+            title: route.replace(route[0], route[0].toUpperCase()),
+            path: `/${path.slice(0, index + 1).join("/")}`
+        })
+
+        index++
     }
-]
+}
 
-onMounted(()=> {
-    console.log(route.path)
-
-    let split = route.path.split("/")
-
-    console.log(split)
+watch(route, () => {
+    newPath()
 })
+
+onMounted(newPath)
 </script>
 
 <style scoped>

@@ -5,7 +5,7 @@
       v-on:3d-editor="open3dEditor"
       v-on:delete="deleteBuildPromt"
       v-on:save="saveBuildChangesPromt"
-      :build-id="id"
+      :build-id="build"
     />
 
     <template #fallback>
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-const { id } = useRoute().params;
+const { build } = useRoute().params;
 const router = useRouter();
 
 definePageMeta({
@@ -77,7 +77,7 @@ function alertClose() {
 async function alertConfirm() {
   
   if(currentAlertType.value == "delete") {
-    await deleteBuild(id as string)
+    await deleteBuild(build as string)
     console.log("end of deleteing build")
     router.push("/builds/test")
   } if (currentAlertType.value == "save") {

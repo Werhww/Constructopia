@@ -1,24 +1,26 @@
 <template>
-<div class="filter_order">
-  <ComponentDropdownFilter v-on:change="changeFilter" label="Filter:" :items="FilterDropdown" :withDirection="false"/>
-  <ComponentDropdownFilter v-on:change="changeOrder" v-on:change-direction="changeDirection" label="Order:" :items="OrderDropdown" :withDirection="true"/>
-</div>
-<div class="Builds">
-  <BuildCard
-    v-for="data in buildList"
-    class="Builds_item"
+  <NuxtPage></NuxtPage>
 
-    :build="data.build"
+  <div class="filter_order">
+    <ComponentDropdownFilter v-on:change="changeFilter" label="Filter:" :items="FilterDropdown" :withDirection="false"/>
+    <ComponentDropdownFilter v-on:change="changeOrder" v-on:change-direction="changeDirection" label="Order:" :items="OrderDropdown" :withDirection="true"/>
+  </div>
+  <div class="Builds">
+    <BuildCard
+      v-for="data in buildList"
+      class="Builds_item"
 
-    :images="data.images"
-  />
-</div>
+      :build="data.build"
+
+      :images="data.images"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { BuildDocument, ImageDocument } from '~/utils/useTypes';
 
-const { id } = useRoute().params
+const { user } = useRoute().params
 definePageMeta({
   title: 'Builds',
   routesToHere: [
@@ -38,7 +40,7 @@ const buildList = ref<{
 }[]>([])
 
 onMounted(async () => {
-  const list = await getBuildListByUserId(id as string)
+  const list = await getBuildListByUserId(user as string)
   buildList.value = list
   fullBuildList.value = list
 })
@@ -89,7 +91,7 @@ async function changeFilter(newVal: string) {
   if (newVal === "all") {
     buildList.value = fullBuildList.value
   } else {
-    const newBuildFiltered = await getBuildListByFilter(id as string, newVal)
+    const newBuildFiltered = await getBuildListByFilter(user as string, newVal)
     const newBuildOrder = await updateBuildOrder(currentOrder.value, currentDirection.value, newBuildFiltered)
 
     buildList.value = newBuildOrder
@@ -127,6 +129,6 @@ function changeDirection(newVal: string) {
 
 .Builds_item {
   flex: 1 15rem;
-  max-width: 15rem;
+  max-wuserth: 15rem;
 }
 </style>
