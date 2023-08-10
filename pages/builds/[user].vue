@@ -23,10 +23,6 @@ import { BuildDocument, ImageDocument } from '~/utils/useTypes';
 const { user } = useRoute().params
 definePageMeta({
   title: 'Builds',
-  routesToHere: [
-    { name: 'Home', path: '/'},,
-    { name: 'Builds', path: '/builds'}
-  ]
 })
 
 const fullBuildList = ref<{
@@ -129,6 +125,6 @@ function changeDirection(newVal: string) {
 
 .Builds_item {
   flex: 1 15rem;
-  max-wuserth: 15rem;
+  max-width: 15rem;
 }
 </style>

@@ -31,11 +31,6 @@ const router = useRouter();
 
 definePageMeta({
   title: "Build",
-  routesToHere: [
-    { name: 'Home', path: '/'},
-    { name: 'Builds', path: '/builds'},
-    { name: 'Build', path: '/build'}
-  ]
 });
 
 onErrorCaptured(() => {

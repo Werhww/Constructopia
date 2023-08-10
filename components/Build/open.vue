@@ -59,48 +59,41 @@ let imageData: ImageDocument
 let inventoryData: InventoryDocument[]
 const favorite = ref(false)
 
-try {
-    const redirectId = useState('redirect-Build-Id')
+/* Data fetching */
+const redirectId = useState('redirect-Build-Id')
+console.log(redirectId.value)
 
-    if(!redirectId.value) {
-        buildData = await getBuildDoc(prop.buildId as string)
-        imageData = await getImages(prop.buildId as string)
+if (redirectId.value === prop.buildId) {
+    console.log('using redirecting data')
+    buildData = useState('redirect-Build-Doc').value as BuildDocument
+    imageData = useState('redirect-Image-Doc').value as ImageDocument
+    const favoriteState = useState('redirect-Favorite-Status')
+
+    if(!favoriteState.value) {
         favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-
-    } else if (redirectId.value === prop.buildId) {
-
-        buildData = useState('redirect-Build-Doc').value as BuildDocument
-        imageData = useState('redirect-Image-Doc').value as ImageDocument
-        const favoriteState = useState('redirect-Favorite-Status')
-
-        if(!favoriteState.value) {
-            favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-        } else {
-            favorite.value = favoriteState.value as boolean
-        }
     } else {
-        buildData = await getBuildDoc(prop.buildId as string)
-        imageData = await getImages(prop.buildId as string)
-        favorite.value = await checkIfFavorite('1234test', buildData.buildId)
+        favorite.value = favoriteState.value as boolean
     }
-    
-    useHead({
-        meta: [
-            { property: 'og:title', content: `Constructopia - ${buildData.title}` },
-            { property: 'og:description', content: buildData.description },
-            { property: 'og:image', content: imageData.links[0] },
-            { property: 'og:image:width', content: '1200' },
-            { property: 'og:image:height', content: '630' },
-            { property: 'og:url', content: `https://constructopia.net/build/${buildData.buildId}` },
-            { property: 'og:type', content: 'website'}
-        ]
-    })
-
-    inventoryData = await getBuildInventory(prop.buildId as string)
-} catch(error) {
-    console.log(error)
-    throw createError({ statusCode: 404, statusMessage: 'This build dosnt exist' })
+} else {
+    console.log('fetching data')
+    buildData = await getBuildDoc(prop.buildId as string)
+    imageData = await getImages(prop.buildId as string)
+    favorite.value = await checkIfFavorite('1234test', buildData.buildId)
 }
+
+inventoryData = await getBuildInventory(prop.buildId as string)
+
+useHead({
+    meta: [
+        { property: 'og:title', content: `Constructopia - ${buildData.title}` },
+        { property: 'og:description', content: buildData.description },
+        { property: 'og:image', content: imageData.links[0] },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:url', content: `https://constructopia.net/build/${buildData.buildId}` },
+        { property: 'og:type', content: 'website'}
+    ]
+})
 
 
 const owner = computed(() => {

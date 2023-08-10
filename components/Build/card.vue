@@ -71,11 +71,12 @@ function between(x: number, min: number, max: number) {
 function open_build_check(e: MouseEvent) {
   mouseUpX = e.clientX;
   if (between(mouseUpX, mouseDownX - 15, mouseDownX + 15)) {
+    console.log("redirecting");
     useState("redirect-Build-Id", () => prop.build.buildId);
     useState("redirect-Build-Doc", () => prop.build);
     useState("redirect-Image-Doc", () => prop.images);
     useState("redirect-Favorite-Status", () => favorite.value);
-    router.push({ path: `/build/${prop.build.buildId}` });
+    router.push(`/builds/${prop.build.userId}/${prop.build.buildId}`);
   }
 }
 </script>

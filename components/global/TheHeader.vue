@@ -1,7 +1,7 @@
 <template>
 <header>
     <div>
-        <h1 class="title" @click="router.push('/')">{{ title }}</h1>
+        <h1 class="title" @click="router.push('/builds')">{{ title }}</h1>
         <HNavigation />
     </div>
     <nav class="buttons">

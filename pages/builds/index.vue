@@ -15,9 +15,6 @@
 const route = useRoute()
 definePageMeta({
   title: 'Home',
-  routesToHere: [
-    { name: 'Home', path: '/'}
-  ]
 })
 
 useHead({

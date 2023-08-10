@@ -48,11 +48,6 @@ import { ref as fbRef, uploadString } from "firebase/storage"
 
 definePageMeta({
     title: 'New Build',
-    routesToHere: [
-        { name: 'Home', path: '/'},
-        { name: 'Profile', path: '/profile'},
-        { name: 'New Build', path: '/profile/new-build'}
-    ]
 })
 
 const userid = '1234test'
