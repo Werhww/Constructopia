@@ -12,10 +12,11 @@
 
 
 <script setup lang="ts">
-const route = useRoute()
 definePageMeta({
   title: 'Home',
 })
+
+const route = useRoute()
 
 useHead({
   meta: [{ property: 'og:title', content: `Constructopia - ${route.meta.title}` }]

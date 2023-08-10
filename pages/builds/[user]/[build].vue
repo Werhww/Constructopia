@@ -13,8 +13,6 @@
     </template>
   </Suspense>
 
-  <!-- <BuildListRecommended title="Recommended" /> -->
-
   <ComponentAlert
     v-if="showAlert"
     :alert="alertMessage"
@@ -26,16 +24,13 @@
 </template>
 
 <script setup lang="ts">
-const { build } = useRoute().params;
-const router = useRouter();
-
 definePageMeta({
   title: "Build",
 });
 
-onErrorCaptured(() => {
-  console.log("maby an error");
-});
+const route = useRoute();
+const router = useRouter();
+const { build, user } = route.params;
 
 const showAlert = ref(false);
 const alertMessage = ref("");
@@ -73,8 +68,7 @@ async function alertConfirm() {
   
   if(currentAlertType.value == "delete") {
     await deleteBuild(build as string)
-    console.log("end of deleteing build")
-    router.push("/builds/test")
+    router.push(`builds/${user}`)
   } if (currentAlertType.value == "save") {
     /* save build changes */
     console.log("saveed build changes")

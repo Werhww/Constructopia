@@ -7,7 +7,7 @@
   </div>
   <div class="Builds">
     <BuildCard
-      v-for="data in buildList"
+      v-for="(data, index) in buildList"
       class="Builds_item"
 
       :build="data.build"
@@ -18,17 +18,17 @@
 </template>
 
 <script setup lang="ts">
-import { BuildDocument, ImageDocument } from '~/utils/useTypes';
-
-const { user } = useRoute().params
 definePageMeta({
   title: 'Builds',
 })
 
+import { BuildDocument, ImageDocument } from '~/utils/useTypes';
+const { user } = useRoute().params
+
 const fullBuildList = ref<{
   build: BuildDocument
   images: ImageDocument
-}[]>([])
+}[]>([]) /* Full list off all builds orignali from firebase */
 
 const buildList = ref<{
   build: BuildDocument
@@ -39,6 +39,7 @@ onMounted(async () => {
   const list = await getBuildListByUserId(user as string)
   buildList.value = list
   fullBuildList.value = list
+  useState('open-user-builds', ()=>list)
 })
 
 const OrderDropdown = [
@@ -82,7 +83,6 @@ const FilterDropdown = [
 const currentOrder = ref(OrderDropdown[0].label)
 const currentDirection = ref("asc")
 
-
 async function changeFilter(newVal: string) {
   if (newVal === "all") {
     buildList.value = fullBuildList.value
@@ -107,6 +107,7 @@ function changeDirection(newVal: string) {
 </script>
 
 <style scoped>
+
 .filter_order {
   display: flex;
   justify-content: space-between;

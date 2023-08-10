@@ -1,7 +1,7 @@
 <template>
 <section class="open-build">
     <BuildOpenImage :link="currentImage"/>
-    <BuildOpenImageCarousel :links="carouselItems" v-on:change-preview-image="changeImage" />
+    <BuildOpenImageCarousel :links="carouselImages" v-on:change-preview-image="changeImage" />
     
     <div class="build-info">
         <h1 v-if="!isEditing" class="build-title">{{ buildData.title }}</h1>
@@ -46,7 +46,6 @@ import {
     InventoryDocument
 } from '@/utils/useTypes'
 
-const route = useRoute()
 const emit = defineEmits(['3d-editor', 'share', 'delete', 'save'])
 
 const prop = defineProps<{
@@ -59,29 +58,11 @@ let imageData: ImageDocument
 let inventoryData: InventoryDocument[]
 const favorite = ref(false)
 
-/* Data fetching */
-const redirectId = useState('redirect-Build-Id')
-console.log(redirectId.value)
-
-if (redirectId.value === prop.buildId) {
-    console.log('using redirecting data')
-    buildData = useState('redirect-Build-Doc').value as BuildDocument
-    imageData = useState('redirect-Image-Doc').value as ImageDocument
-    const favoriteState = useState('redirect-Favorite-Status')
-
-    if(!favoriteState.value) {
-        favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-    } else {
-        favorite.value = favoriteState.value as boolean
-    }
-} else {
-    console.log('fetching data')
-    buildData = await getBuildDoc(prop.buildId as string)
-    imageData = await getImages(prop.buildId as string)
-    favorite.value = await checkIfFavorite('1234test', buildData.buildId)
-}
-
+buildData = await getBuildDoc(prop.buildId as string)
+imageData = await getImages(prop.buildId as string)
 inventoryData = await getBuildInventory(prop.buildId as string)
+favorite.value = await checkIfFavorite('1234test', buildData.buildId)
+
 
 useHead({
     meta: [
@@ -95,7 +76,6 @@ useHead({
     ]
 })
 
-
 const owner = computed(() => {
     if(loggedInUserId === buildData.userId) {
         return true
@@ -104,9 +84,9 @@ const owner = computed(() => {
     }
 })
 
-const currentImage = ref<string>('')
-const carouselItems = ref<any[]>([])
 
+const currentImage = ref<string>('')
+const carouselImages = ref<any[]>([])
 await changeImage(buildData.thumbnailIndex)
 
 async function changeImage(index: number) {
@@ -116,7 +96,7 @@ async function changeImage(index: number) {
     return
 }
 
-function updateCarousel(index: number) {
+function updateCarousel(index: number) {    
     const newCarouselPromise = new Promise((resolve) => {
         const newCarousel = imageData.links.map((link, i) => {
             if(i === index) {
@@ -138,7 +118,7 @@ function updateCarousel(index: number) {
     })
 
     newCarouselPromise.then((newCarousel) => {
-        carouselItems.value = newCarousel as any[]
+        carouselImages.value = newCarousel as any[]
     })
 
     return newCarouselPromise
@@ -153,7 +133,7 @@ function change_favorite() {
 
 
 /* swich userid with id form auth */
-const loggedInUserId = '12334test'
+const loggedInUserId = '1234test'
 
 const isEditing = ref(false)
 const editData = ref({
