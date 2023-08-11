@@ -1,47 +1,27 @@
 <script setup lang="ts">
 const emit = defineEmits(['change', 'change-direction'])
 
-const props = defineProps<{
-    
+const prop = defineProps<{
     label: string
-    items: {
-        label: string
-        index: number
-    }[]
+    items: string[]
     withDirection: boolean
 }>()
 
-const items = ref<{
-    label: string
-    index: number
-}[]>()
-
-const openItem = ref<{
-    label: string
-}>({
-    label: "",
-})
+const currentItemList = ref(prop.items.filter((item) => item != prop.items[0]))
+const currentItem = ref(prop.items[0])
 
 const isOpen = ref(false)
 
-function changeItem(i:number) {
-    fixList(i)
-    if (isOpen.value) {
-        emit('change', openItem.value.label)
-    }
+function changeItem(newItem:string) {
+    currentItemList.value = prop.items.filter((item) => item != newItem)
+    currentItem.value = newItem
+    emit('change', newItem)
     toggle()
 }
 
 function toggle() {
     isOpen.value = !isOpen.value
 }
-
-function fixList(i:number) {
-    openItem.value = props.items[i]
-    items.value = props.items.filter((item, index) => index != i)
-}
-
-fixList(0)
 
 const direction = ref(true)
 const directionSpeed = ref(0.5)
@@ -57,13 +37,13 @@ function changeDirection() {
     <p class="filter-title">{{ label }}</p>
     <img v-if="withDirection" :class="{'dir-ani': direction, 'direction': true}" @click="changeDirection" src="/icons/components/arrow-up-circle.svg">
     <div @click="toggle" class="hover">
-        <p>{{ openItem.label }}</p>
+        <p>{{ currentItem }}</p>
     </div>
     <img @click="toggle" src="/icons/global/dropdown-arrow.svg" class="arrow hover" :class="{'arrow-ani': isOpen}">
     <Transition name="slide">
         <div v-if="isOpen" class="dropdown">
-            <p class="hover" v-for="item in items" @click="changeItem(item.index)">
-                {{ item.label }}
+            <p class="hover" v-for="label in currentItemList" @click="changeItem(label)">
+                {{ label }}
             </p>
         </div>
     </Transition>

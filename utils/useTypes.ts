@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore"
 
-type BuildDocument = {
+interface BuildDocument {
     buildId: string
 
     userId: string
@@ -21,25 +21,35 @@ type BuildDocument = {
     }
 }
 
-type ImageDocument = {
+interface ImageDocument {
     buildId: string
     links: string[]
 }
 
-type InventoryDocument = {
+interface InventoryDocument {
     buildId: string
     block: string
     count: number
 }
 
-type CategoryDocument = {
+interface CategoryDocument {
     buildId: string
     category: string
 }
+
+type DifficultyKeys = 'all' | 'easy' | 'medium' | 'hard' | 'expert' | 'nightmare'
+type OrderKeys = 'views' | 'blocks' | 'modified' | 'created'
+
+type Prettify<T> = {
+   [K in keyof T]: T[K];
+} & {};
 
 export {
     BuildDocument,
     ImageDocument,
     InventoryDocument,
     CategoryDocument,
+    DifficultyKeys,
+    OrderKeys,
+    Prettify
 }

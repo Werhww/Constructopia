@@ -1,8 +1,10 @@
 import {
     BuildDocument,
     ImageDocument,
-    InventoryDocument
+    InventoryDocument,
+    Prettify
 } from './useTypes'
+import { DocumentData, Query } from '@firebase/firestore'
 
 type BuildDataDoc = Omit<BuildDocument, 'buildId'>
 
@@ -12,12 +14,12 @@ export async function getBuildDoc(buildId: string) {
 
     return {
         buildId: buildDocumentData.id,
-        ...buildDocumentData.data() as BuildDataDoc 
-    } as BuildDocument
+        ...buildDocumentData.data()
+    } as Prettify<BuildDocument>
 }
 
 export async function getBuildInventory(buildId: string) {
-    let buildInventory: InventoryDocument[] = []
+    let buildInventory: Prettify<InventoryDocument>[] = []
 
     const inventoryQuery = query(inventoryRef, where('buildId', '==', buildId))
     const inventory = await getDocs(inventoryQuery)
@@ -31,7 +33,7 @@ export async function getBuildInventory(buildId: string) {
         })
     })
 
-    return buildInventory
+    return buildInventory 
 }
 
 export async function getImages(buildId: string) {
@@ -40,7 +42,7 @@ export async function getImages(buildId: string) {
 
     if(imageData.empty) throw new Error('No images found')
 
-    return imageData.docs[0].data() as ImageDocument
+    return imageData.docs[0].data() as Prettify<ImageDocument>
 }
 
 export async function checkFavoriteState(buildId: string) {
@@ -49,6 +51,17 @@ export async function checkFavoriteState(buildId: string) {
 
     if(favoriteData.empty) return false
     else return true
+}
+
+export function updateFavorite(userId:string, buildId: string, status: boolean) {
+    if(status == true) {
+        setDoc(doc(favoriteRef, `${userId}-${buildId}`), {
+            userId: userId,
+            buildId: buildId,
+        })
+    } else {
+        deleteDoc(doc(favoriteRef, `${userId}-${buildId}`))
+    }
 }
 
 export async function deleteBuild(buildId: string) {
@@ -105,13 +118,58 @@ async function getAllRelatedDocs(buildId: string) {
 }
 
 async function removeThisDoc(docRef: string, col: any) {
-    await deleteDoc(doc(col, docRef)).catch(() => {
+    const Deleted = await deleteDoc(doc(col, docRef)).catch(() => {
         throw new Error('Error deleting document')
     })
+
+    return 200
 }
 
 async function removeThisFile(fileRef: string) {
     await deleteObject(fbRef(storage, fileRef)).catch(() => {
         throw new Error('Error deleting file')
     })
+
+    return 200
+}
+
+/* List getters */
+export async function getBuildListByUserId (userId:string) {
+    const buildQuery = query(buildRef, where('userId', '==', userId), orderBy('views', 'desc'))
+
+    return await getBuildList(buildQuery)
+}
+
+export async function getBuildListByCategory (userId:string, category:string) {
+    const buildQuery = query(buildRef, limit(10))
+
+    return await getBuildList(buildQuery)
+}
+
+export async function getBuildList( listQuery: Query<DocumentData, DocumentData> ) {
+    const buildList:{
+        build:  BuildDocument,
+        images: ImageDocument
+    }[] = []
+
+    const buildData = await getDocs(listQuery)
+
+    for (const doc of buildData.docs) {
+        const images = await getImages(doc.id)
+
+        buildList.push({
+            build: {
+                buildId: doc.id,
+                ...doc.data() as BuildDataDoc
+            },
+            images: images
+        })
+    }
+
+    return buildList
+}
+
+/* Not finished */
+export async function getBuildListBySearch (userId:string, search:string) {
+
 }

@@ -17,7 +17,7 @@ const prop = defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
-const difficulty_range = ['easy', 'medium', 'hard']
+const difficulty_range = ['easy', 'medium', 'hard', 'expert', 'nightmare']
 
 const difficulty = ref(prop.modelValue)
 const dropdown_content = ref<string[]>([])

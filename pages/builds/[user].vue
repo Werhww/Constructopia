@@ -2,17 +2,17 @@
   <NuxtPage></NuxtPage>
 
   <div class="filter_order">
-    <ComponentDropdownFilter v-on:change="changeFilter" label="Filter:" :items="FilterDropdown" :withDirection="false"/>
+    <ComponentDropdownFilter v-on:change="changeDifficulty" label="Filter:" :items="FilterDropdown" :withDirection="false"/>
     <ComponentDropdownFilter v-on:change="changeOrder" v-on:change-direction="changeDirection" label="Order:" :items="OrderDropdown" :withDirection="true"/>
   </div>
   <div class="Builds">
     <BuildCard
-      v-for="(data, index) in buildList"
+      v-for="{build, images} in buildList"
       class="Builds_item"
 
-      :build="data.build"
+      :build="build"
 
-      :images="data.images"
+      :images="images"
     />
   </div>
 </template>
@@ -21,88 +21,32 @@
 definePageMeta({
   title: 'Builds',
 })
-
-import { BuildDocument, ImageDocument } from '~/utils/useTypes';
+import { User } from '~/models/builds'
+import { DifficultyKeys, OrderKeys } from "~/utils/useTypes"
 const { user } = useRoute().params
 
-const fullBuildList = ref<{
-  build: BuildDocument
-  images: ImageDocument
-}[]>([]) /* Full list off all builds orignali from firebase */
+const CurrentUser = new User(user as string)
 
-const buildList = ref<{
-  build: BuildDocument
-  images: ImageDocument
-}[]>([])
+const buildList = ref(await CurrentUser.getBuilds())
 
-onMounted(async () => {
-  const list = await getBuildListByUserId(user as string)
-  buildList.value = list
-  fullBuildList.value = list
-  useState('open-user-builds', ()=>list)
-})
+const OrderDropdown = ['views', 'blocks', 'modified', 'created']
 
-const OrderDropdown = [
-  {
-    label: "views",
-    index: 0
-  },
-  {
-    label: "blocks",
-    index: 1
-  },
-  {
-    label: "modified",
-    index: 2
-  },
-  {
-    label: "created",
-    index: 3
-  },
-]
+const FilterDropdown = ['all', 'easy', 'medium', 'hard', 'expert', 'nightmare']
 
-const FilterDropdown = [
-  {
-    label: "all",
-    index: 0
-  },
-  {
-    label: "easy",
-    index: 1
-  },
-  {
-    label: "medium",
-    index: 2
-  },
-  {
-    label: "hard",
-    index: 3
-  },
-]
-
-const currentOrder = ref(OrderDropdown[0].label)
+const currentOrder = ref(OrderDropdown[0])
 const currentDirection = ref("asc")
 
-async function changeFilter(newVal: string) {
-  if (newVal === "all") {
-    buildList.value = fullBuildList.value
-  } else {
-    const newBuildFiltered = await getBuildListByFilter(user as string, newVal)
-    const newBuildOrder = await updateBuildOrder(currentOrder.value, currentDirection.value, newBuildFiltered)
-
-    buildList.value = newBuildOrder
-  }
+function changeDifficulty(newDifficulty: DifficultyKeys) {
+  buildList.value = CurrentUser.filterByDifficulty(newDifficulty)
 }
 
-async function changeOrder(newVal: string) {
-  currentOrder.value = newVal
-  const newBuildOrder = await updateBuildOrder(currentOrder.value, currentDirection.value, buildList.value)
-  buildList.value = newBuildOrder
+function changeOrder(newOrder: OrderKeys) {
+  buildList.value = CurrentUser.changeListOrder(newOrder, currentDirection.value)
 }
 
-function changeDirection(newVal: string) {
-  currentDirection.value = newVal
-  buildList.value = buildList.value.reverse()
+function changeDirection(newDirection: string) {
+  currentDirection.value = newDirection
+  buildList.value = CurrentUser.reverseBuildList()
 }
 </script>
 
