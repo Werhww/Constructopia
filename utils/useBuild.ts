@@ -2,7 +2,9 @@ import {
     BuildDocument,
     ImageDocument,
     InventoryDocument,
-    Prettify
+    Prettify,
+    PreviewBuildData,
+    UpdateBuildData
 } from './useTypes'
 import { DocumentData, Query } from '@firebase/firestore'
 
@@ -53,36 +55,37 @@ export async function checkFavoriteState(buildId: string) {
     else return true
 }
 
-export function updateFavorite(userId:string, buildId: string, status: boolean) {
-    if(status == true) {
+export function updateFavorite(userId:string, buildId: string, oldStatus: boolean) {
+    if(!oldStatus == true) {
         setDoc(doc(favoriteRef, `${userId}-${buildId}`), {
             userId: userId,
             buildId: buildId,
         })
+        return true
     } else {
         deleteDoc(doc(favoriteRef, `${userId}-${buildId}`))
+        return false
     }
 }
 
-export async function deleteBuild(buildId: string) {
+export async function deleteBuild(buildId: string, userId: string) {
     const allRelatedDocs = await getAllRelatedDocs(buildId)
 
     allRelatedDocs.forEach((docRef) => {
         deleteDoc(doc(db, docRef.collection, docRef.docId))
     })
 
-    /* auth.currentUser?.uid */
     const AmountOfImages = 6
 
     for(let i = 0; i < AmountOfImages; i++) {
         try {
-            await removeThisFile(`images/${'1234test'}/${buildId}/${i}.png`)
+            await removeThisFile(`images/${userId}/${buildId}/${i}.png`)
         } catch {
             break
         }
     }
     
-    removeThisFile(`litematic/${'1234test'}/${buildId}/build.litematic`)
+    removeThisFile(`litematic/${userId}/${buildId}/build.litematic`)
     removeThisDoc(buildId, buildRef)
 
     return 200
@@ -94,7 +97,7 @@ async function getAllRelatedDocs(buildId: string) {
         collection: string
     }[] = []
 
-    const collections = ['images', 'inventory']
+    const collections = ['images', 'inventory', 'categories']
 
     const docQuerys = collections.map((col) => {
         return {
@@ -118,7 +121,7 @@ async function getAllRelatedDocs(buildId: string) {
 }
 
 async function removeThisDoc(docRef: string, col: any) {
-    const Deleted = await deleteDoc(doc(col, docRef)).catch(() => {
+    await deleteDoc(doc(col, docRef)).catch(() => {
         throw new Error('Error deleting document')
     })
 
@@ -128,6 +131,14 @@ async function removeThisDoc(docRef: string, col: any) {
 async function removeThisFile(fileRef: string) {
     await deleteObject(fbRef(storage, fileRef)).catch(() => {
         throw new Error('Error deleting file')
+    })
+
+    return 200
+}
+
+export async function saveNewBuildData(buildId: string, buildData: UpdateBuildData) {
+    await setDoc(doc(buildRef, buildId), buildData).catch(() => {
+        throw new Error('Error saving build data')
     })
 
     return 200
@@ -147,22 +158,21 @@ export async function getBuildListByCategory (userId:string, category:string) {
 }
 
 export async function getBuildList( listQuery: Query<DocumentData, DocumentData> ) {
-    const buildList:{
-        build:  BuildDocument,
-        images: ImageDocument
-    }[] = []
+    const buildList:PreviewBuildData[] = []
 
     const buildData = await getDocs(listQuery)
 
     for (const doc of buildData.docs) {
         const images = await getImages(doc.id)
+        const favorite = await checkFavoriteState(doc.id)
 
         buildList.push({
             build: {
                 buildId: doc.id,
                 ...doc.data() as BuildDataDoc
             },
-            images: images
+            images: images,
+            favorite: favorite
         })
     }
 

@@ -4,23 +4,23 @@
     <BuildOpenImageCarousel :links="carouselImages" v-on:change-preview-image="changeImage" />
     
     <div class="build-info">
-        <h1 v-if="!isEditing" class="build-title">{{ buildData.title }}</h1>
+        <h1 v-if="!isEditing" class="build-title">{{ build.title }}</h1>
         <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
 
         <div class="metadata">
-            <p>{{ formatDate(buildData.date.created.seconds, 1) }}</p>
-            <p>@{{ buildData.username }}</p>
+            <p>{{ formatDate(build.date.created.seconds, 1) }}</p>
+            <p>@{{ build.username }}</p>
             <div class="views">
                 <img src="/icons/build/view-icon.svg">
-                <p>{{ buildData.views }}</p>
+                <p>{{ build.views }}</p>
             </div>
-            <p v-if="!isEditing">/{{ buildData.difficulty }}</p>
+            <p v-if="!isEditing">/{{ build.difficulty }}</p>
             <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
         </div>
 
-        <BuildInventory :inventory="inventoryData"/>
+        <BuildInventory :inventory="inventory"/>
 
-        <p v-if="!isEditing" class="description build-text">{{ buildData.description }}</p>
+        <p v-if="!isEditing" class="description build-text">{{ build.description }}</p>
         <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
 
         
@@ -40,65 +40,48 @@
 </template>
 
 <script setup lang="ts">
-import {
-    BuildDocument,
-    ImageDocument,
-    InventoryDocument
-} from '@/utils/useTypes'
-
-const emit = defineEmits(['3d-editor', 'share', 'delete', 'save'])
+import { UserBuild } from '@/models/builds'
+const emit = defineEmits(['3d-editor', 'share'])
 
 const prop = defineProps<{
     buildId: string | string[]
 }>()
 
-/* Data */
-let buildData: BuildDocument
-let imageData: ImageDocument
-let inventoryData: InventoryDocument[]
-const favorite = ref(false)
+/* auth.currentuser.id */
+/* swich userid with id form auth */
+const loggedInUserId = '1234test'
 
-buildData = await getBuildDoc(prop.buildId as string)
-imageData = await getImages(prop.buildId as string)
-inventoryData = await getBuildInventory(prop.buildId as string)
-favorite.value = await checkIfFavorite('1234test', buildData.buildId)
+const builder = new UserBuild(prop.buildId as string, '1234tesdt')
+
+let { build, images, inventory, favorite, owner } = await builder.getBuild()
 
 
 useHead({
     meta: [
-        { property: 'og:title', content: `Constructopia - ${buildData.title}` },
-        { property: 'og:description', content: buildData.description },
-        { property: 'og:image', content: imageData.links[0] },
+        { property: 'og:title', content: `Constructopia - ${build.title}` },
+        { property: 'og:description', content: build.description },
+        { property: 'og:image', content: images.links[build.thumbnailIndex] },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
-        { property: 'og:url', content: `https://constructopia.net/build/${buildData.buildId}` },
+        { property: 'og:url', content: `https://constructopia.net/build/${build.buildId}` },
         { property: 'og:type', content: 'website'}
     ]
 })
 
-const owner = computed(() => {
-    if(loggedInUserId === buildData.userId) {
-        return true
-    } else {
-        return false
-    }
-})
-
-
 const currentImage = ref<string>('')
 const carouselImages = ref<any[]>([])
-await changeImage(buildData.thumbnailIndex)
+await changeImage(build.thumbnailIndex)
 
 async function changeImage(index: number) {
     await updateCarousel(index)
-    currentImage.value = imageData.links[index]
+    currentImage.value = images.links[index]
 
     return
 }
 
 function updateCarousel(index: number) {    
     const newCarouselPromise = new Promise((resolve) => {
-        const newCarousel = imageData.links.map((link, i) => {
+        const newCarousel = images.links.map((link, i) => {
             if(i === index) {
                 return {
                     index: i,
@@ -127,19 +110,15 @@ function updateCarousel(index: number) {
 function change_favorite() {
     /* change with auth */
     console.log('change favorite')
-    updateFavorite('1234test', buildData.buildId, !favorite.value)
-    favorite.value = !favorite.value
+    updateFavorite('1234test', build.buildId, !favorite)
+    favorite = !favorite
 }
-
-
-/* swich userid with id form auth */
-const loggedInUserId = '1234test'
 
 const isEditing = ref(false)
 const editData = ref({
-    title: buildData.title,
-    description: buildData.description,
-    difficulty: buildData.difficulty
+    title: build.title,
+    description: build.description,
+    difficulty: build.difficulty
 })
 
 function changeEditState() {

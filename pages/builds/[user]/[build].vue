@@ -3,8 +3,6 @@
     <BuildOpen
       v-on:share="share"
       v-on:3d-editor="open3dEditor"
-      v-on:delete="deleteBuildPromt"
-      v-on:save="saveBuildChangesPromt"
       :build-id="build"
     />
 
@@ -24,6 +22,9 @@
 </template>
 
 <script setup lang="ts">
+
+
+
 definePageMeta({
   title: "Build",
 });
@@ -36,12 +37,6 @@ const showAlert = ref(false);
 const alertMessage = ref("");
 const currentAlertType = ref("");
 const alertType = ref(false);
-
-const newBuildData = ref({
-  title: "",
-  description: "",
-  difficulty: "",
-});
 
 function deleteBuildPromt() {
   currentAlertType.value = "delete"

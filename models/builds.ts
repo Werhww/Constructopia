@@ -1,22 +1,15 @@
-import { BuildDocument, CategoryDocument, ImageDocument, InventoryDocument, Prettify, DifficultyKeys } from "~/utils/useTypes"
-
-interface PreviewBuildData {
-    build: Prettify<BuildDocument>,
-    images: Prettify<ImageDocument>
-}
-
-interface BuildData extends PreviewBuildData {
-    inventory: Prettify<InventoryDocument>[],
-    categories?: Prettify<CategoryDocument>[],
-    favorite: boolean
-}
-
-type OrderKeys = 'views' | 'blocks' | 'modified' | 'created'
+import {
+    UpdateBuildData,
+    PreviewBuildData,
+    BuildData,
+    DifficultyKeys,
+    OrderKeys,
+    Prettify
+} from "~/utils/useTypes"
 
 export class User {
     private OriginalBuilds: Prettify<PreviewBuildData>[] = []
     private CurrentBuilds: Prettify<PreviewBuildData>[] = []
-    public OpenBuild?: Prettify<BuildData>
 
     constructor(private userId: string) {}
 
@@ -24,23 +17,6 @@ export class User {
         this.OriginalBuilds = await getBuildListByUserId(this.userId)
         this.CurrentBuilds = this.OriginalBuilds
         return this.OriginalBuilds
-    }
-
-    async getBuild(buildId: string) {
-        let buildData: Prettify<BuildData> | undefined
-
-        for(let i = 0; i < this.OriginalBuilds!.length; i++) {
-            if(this.OriginalBuilds![i].build.buildId === buildId) {
-                buildData = {
-                    ...this.OriginalBuilds![i],
-                    inventory: await getBuildInventory(buildId),
-                    favorite: await checkFavoriteState(buildId)
-                }
-                break
-            }
-        }
-
-        return this.OpenBuild = buildData
     }
 
     /* Builds List Ordering and Filtering */
@@ -73,4 +49,37 @@ export class User {
         return this.CurrentBuilds
     }
 
+}
+
+export class UserBuild {
+    private BuildOwnerId:string = 'noIdYetttt'
+
+    constructor(private buildId: string, private userId: string) {}
+
+    async getBuild() {
+        const buildDoc = await getBuildDoc(this.buildId)
+
+        this.BuildOwnerId = buildDoc.userId
+        return {
+            build: buildDoc,
+            images: await getImages(this.buildId),
+            inventory: await getBuildInventory(this.buildId),
+            favorite: await checkFavoriteState(this.buildId),
+            owner: this.userId === this.BuildOwnerId
+        }
+    }
+
+    updateFavoriteState(state:boolean):boolean {
+        return updateFavorite(this.userId, this.buildId, state)
+    }
+
+    async saveBuild(newData:UpdateBuildData) {
+        if(this.userId !== this.BuildOwnerId) throw new Error('User is not owner of this build')
+        return await saveNewBuildData(this.buildId, newData)
+    }    
+
+    async deleteBuild() {
+        if(this.userId !== this.BuildOwnerId) throw new Error('User is not owner of this build')
+        await deleteBuild(this.buildId, this.userId)
+    }
 }

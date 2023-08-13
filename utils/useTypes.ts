@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore"
 
-interface BuildDocument {
+interface BuildDocumentWithoutDate {
     buildId: string
 
     userId: string
@@ -16,10 +16,11 @@ interface BuildDocument {
     views: number
 
     date: {
-        created: Timestamp
         lastEdit: Timestamp
     }
 }
+
+type BuildDocument = BuildDocumentWithoutDate & {date: {created: Timestamp}}
 
 interface ImageDocument {
     buildId: string
@@ -37,6 +38,20 @@ interface CategoryDocument {
     category: string
 }
 
+interface PreviewBuildData {
+    build: Prettify<BuildDocument>
+    images: Prettify<ImageDocument>
+    favorite: boolean
+}
+
+interface BuildData extends PreviewBuildData {
+    inventory: Prettify<InventoryDocument>[]
+    categories?: Prettify<CategoryDocument>[]
+}
+
+type UpdateBuildData = Omit<BuildDocumentWithoutDate, 'buildId' | 'userId' | 'username' | 'views' | 'blocks'> 
+
+
 type DifficultyKeys = 'all' | 'easy' | 'medium' | 'hard' | 'expert' | 'nightmare'
 type OrderKeys = 'views' | 'blocks' | 'modified' | 'created'
 
@@ -45,11 +60,15 @@ type Prettify<T> = {
 } & {};
 
 export {
+    UpdateBuildData,
     BuildDocument,
     ImageDocument,
     InventoryDocument,
     CategoryDocument,
     DifficultyKeys,
     OrderKeys,
-    Prettify
+    Prettify,
+
+    PreviewBuildData,
+    BuildData
 }

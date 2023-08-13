@@ -2,7 +2,7 @@
   <div class="item">
     <AnimationsLike
       v-on:clicked="change_favorite"
-      :liked="favorite"
+      :liked="isFavorite"
       class="like-button"
     />
 
@@ -37,27 +37,22 @@
 <script setup lang="ts">
 import { BuildDocument, ImageDocument } from "~/utils/useTypes";
 const router = useRouter();
-
 const prop = defineProps<{
   build: BuildDocument;
   images: ImageDocument;
+  favorite: boolean;
 }>();
 
 const thumbnail = computed(() => {
   return prop.images.links[prop.build.thumbnailIndex];
 });
 
-const favorite = ref(false);
-
-onMounted(async () => {
-  /* change with auth */
-  favorite.value = await checkIfFavorite("1234test", prop.build.buildId);
-});
+const isFavorite = ref(prop.favorite);
 
 function change_favorite() {
   /* change with auth */
-  updateFavorite("1234test", prop.build.buildId, !favorite.value);
-  favorite.value = !favorite.value;
+  updateFavorite("1234test", prop.build.buildId, !isFavorite.value);
+  isFavorite.value = !isFavorite.value;
 }
 
 let mouseDownX = 0;
@@ -70,8 +65,7 @@ function between(x: number, min: number, max: number) {
 function open_build_check(e: MouseEvent) {
   mouseUpX = e.clientX;
   if (between(mouseUpX, mouseDownX - 15, mouseDownX + 15)) {
-    console.log("redirecting");
-    router.push(`/builds/${prop.build.userId}/${prop.build.buildId}`);
+    router.push(`/builds/${prop.build.userId}/${prop.build.buildId}`)
   }
 }
 </script>

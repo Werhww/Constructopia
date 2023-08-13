@@ -7,12 +7,12 @@
   </div>
   <div class="Builds">
     <BuildCard
-      v-for="{build, images} in buildList"
+      v-for="{build, images, favorite} in buildList"
       class="Builds_item"
 
       :build="build"
-
       :images="images"
+      :favorite="favorite"
     />
   </div>
 </template>
@@ -21,12 +21,12 @@
 definePageMeta({
   title: 'Builds',
 })
+
 import { User } from '~/models/builds'
 import { DifficultyKeys, OrderKeys } from "~/utils/useTypes"
 const { user } = useRoute().params
 
 const CurrentUser = new User(user as string)
-
 const buildList = ref(await CurrentUser.getBuilds())
 
 const OrderDropdown = ['views', 'blocks', 'modified', 'created']
