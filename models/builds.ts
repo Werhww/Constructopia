@@ -64,13 +64,13 @@ export class UserBuild {
             build: buildDoc,
             images: await getImages(this.buildId),
             inventory: await getBuildInventory(this.buildId),
-            favorite: await checkFavoriteState(this.buildId),
+            favorite: (await checkFavoriteState(this.userId, this.buildId)).state,
             owner: this.userId === this.BuildOwnerId
         }
     }
 
-    updateFavoriteState(state:boolean):boolean {
-        return updateFavorite(this.userId, this.buildId, state)
+    async updateFavoriteState() {
+        return await updateFavorite(this.userId, this.buildId)
     }
 
     async saveBuild(newData:UpdateBuildData) {

@@ -47,25 +47,20 @@ export async function getImages(buildId: string) {
     return imageData.docs[0].data() as Prettify<ImageDocument>
 }
 
-export async function checkFavoriteState(buildId: string) {
-    const favoriteQuery = query(favoriteRef, where('buildId', '==', buildId))
-    const favoriteData = await getDocs(favoriteQuery)
+export async function checkFavoriteState(userId:string, buildId: string) {
+    const favoriteData = await getDoc(doc(favoriteRef, `${userId}-${buildId}`))
 
-    if(favoriteData.empty) return false
-    else return true
+    return {
+        state: favoriteData.exists(),
+        ref: favoriteData.ref
+    }
 }
 
-export function updateFavorite(userId:string, buildId: string, oldStatus: boolean) {
-    if(!oldStatus == true) {
-        setDoc(doc(favoriteRef, `${userId}-${buildId}`), {
-            userId: userId,
-            buildId: buildId,
-        })
-        return true
-    } else {
-        deleteDoc(doc(favoriteRef, `${userId}-${buildId}`))
-        return false
-    }
+export async function updateFavorite(userId:string, buildId: string) {
+    const oldStatus = await checkFavoriteState(userId, buildId)
+
+    console.log(oldStatus)
+    return false
 }
 
 export async function deleteBuild(buildId: string, userId: string) {

@@ -55,6 +55,8 @@ const builder = new UserBuild(prop.buildId as string, '1234tesdt')
 
 let { build, images, inventory, favorite, owner } = await builder.getBuild()
 
+builder.updateFavoriteState()
+
 
 useHead({
     meta: [
@@ -110,8 +112,7 @@ function updateCarousel(index: number) {
 function change_favorite() {
     /* change with auth */
     console.log('change favorite')
-    updateFavorite('1234test', build.buildId, !favorite)
-    favorite = !favorite
+    updateFavorite('1234test', build.buildId)
 }
 
 const isEditing = ref(false)
