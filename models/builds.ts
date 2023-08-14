@@ -4,7 +4,8 @@ import {
     BuildData,
     DifficultyKeys,
     OrderKeys,
-    Prettify
+    Prettify,
+    BuildDocument
 } from "~/utils/useTypes"
 
 export class User {
@@ -53,19 +54,19 @@ export class User {
 
 export class UserBuild {
     private BuildOwnerId:string = 'noIdYetttt'
+    private BuildDoc: Prettify<BuildDocument> = {} as Prettify<BuildDocument>
 
     constructor(private buildId: string, private userId: string) {}
 
     async getBuild() {
-        const buildDoc = await getBuildDoc(this.buildId)
+        this.BuildDoc = await getBuildDoc(this.buildId)
 
-        this.BuildOwnerId = buildDoc.userId
         return {
-            build: buildDoc,
+            build: this.BuildDoc,
             images: await getImages(this.buildId),
             inventory: await getBuildInventory(this.buildId),
             favorite: (await checkFavoriteState(this.userId, this.buildId)).state,
-            owner: this.userId === this.BuildOwnerId
+            owner: this.userId === this.BuildDoc.userId
         }
     }
 
@@ -80,6 +81,6 @@ export class UserBuild {
 
     async deleteBuild() {
         if(this.userId !== this.BuildOwnerId) throw new Error('User is not owner of this build')
-        await deleteBuild(this.buildId, this.userId)
+        return await deleteBuild(this.buildId, this.userId)
     }
 }

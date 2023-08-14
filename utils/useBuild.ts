@@ -2,9 +2,9 @@ import {
     BuildDocument,
     ImageDocument,
     InventoryDocument,
-    Prettify,
     PreviewBuildData,
-    UpdateBuildData
+    UpdateBuildData,
+    Prettify,
 } from './useTypes'
 import { DocumentData, Query } from '@firebase/firestore'
 
@@ -131,7 +131,7 @@ async function removeThisFile(fileRef: string) {
     return 200
 }
 
-export async function saveNewBuildData(buildId: string, buildData: UpdateBuildData) {
+export async function saveNewBuildData(buildId: string, buildData: Prettify<UpdateBuildData>) {
     await setDoc(doc(buildRef, buildId), buildData).catch(() => {
         throw new Error('Error saving build data')
     })
@@ -146,14 +146,14 @@ export async function getBuildListByUserId (userId:string) {
     return await getBuildList(buildQuery, userId)
 }
 
-export async function getBuildListByCategory (userId:string, category:string) {
+export async function getBuildListByCategory (userId:string, category?:string) {
     const buildQuery = query(buildRef, limit(10))
 
     return await getBuildList(buildQuery, userId)
 }
 
 export async function getBuildList( listQuery: Query<DocumentData, DocumentData>, userId:string ) {
-    const buildList:PreviewBuildData[] = []
+    const buildList:Prettify<PreviewBuildData>[] = []
 
     const buildData = await getDocs(listQuery)
 

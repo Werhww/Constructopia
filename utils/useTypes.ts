@@ -33,6 +33,11 @@ interface InventoryDocument {
     count: number
 }
 
+/* For inventory components */
+interface InventoryItemFixedForRows extends InventoryDocument {
+    stack: boolean
+}
+
 interface CategoryDocument {
     buildId: string
     category: string
@@ -64,6 +69,7 @@ export {
     BuildDocument,
     ImageDocument,
     InventoryDocument,
+    InventoryItemFixedForRows,
     CategoryDocument,
     DifficultyKeys,
     OrderKeys,

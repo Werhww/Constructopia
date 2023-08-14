@@ -1,23 +1,24 @@
 <template>
 <div class="alert">
     <p class="title">Wow, big man</p>
-    <p class="alertText">{{ alert }}</p>
+    <p :class="{alertText: true, warning: isWarining, default: !isWarining}">{{ alert }}</p>
 
     <div class="buttons" v-if="userInteraction">
-        <ComponentButton @click="$emit('close')" label="cancel" bg_color="var(--red)"  color="var(--white)" />
+        <ComponentButton @click="$emit('cancel')" label="cancel" bg_color="var(--red)"  color="var(--white)" />
         <ComponentButton @click="$emit('confirm')" label="confirm" bg_color="var(--green)" color="var(--white)"/>
     </div>
 
-    <ComponentButton v-else @click="$emit('close')" label="ok" bg_color="var(--green)" color="var(--white)"/>
+    <ComponentButton v-else @click="$emit('confirm')" label="ok" bg_color="var(--green)" color="var(--white)"/>
 </div>
 </template>
 
 <script setup lang="ts">
-defineEmits(['close', 'confirm'])
+defineEmits(['cancel', 'confirm'])
 
 defineProps<{
     alert: string
     userInteraction: boolean
+    isWarining: boolean
 }>()
 </script>
 
@@ -25,7 +26,7 @@ defineProps<{
 .alert {
     z-index: 11;
 
-    position: absolute;
+    position: fixed;
     top: 20rem;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -49,15 +50,20 @@ defineProps<{
 
 .alertText {
     font: var(--text);
-    color: var(--red);
     width: 30rem;
     text-align: center;
 }
-
 .buttons {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
 }
 
+.warning {
+    color: var(--red);
+}
+
+.default {
+    color: var(--white);
+}
 </style>

@@ -17,8 +17,6 @@ const prop = defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
-const difficulty_range = ['easy', 'medium', 'hard', 'expert', 'nightmare']
-
 const difficulty = ref(prop.modelValue)
 const dropdown_content = ref<string[]>([])
 
@@ -27,7 +25,7 @@ const isOpen = ref(false)
 function changeDifficulty(click_difficulty: string) {
     if (prop.disabled) return /* if disabled, do nothing */
 
-    const new_dropdown_content = difficulty_range.filter((item) => item !== click_difficulty) /* filtes out clicked difficulty item */
+    const new_dropdown_content = ALL_DIFFICULTIES.filter((item) => item !== click_difficulty) /* filtes out clicked difficulty item */
     difficulty.value = click_difficulty /* change current showed difficulty */
     emit('update:modelValue', click_difficulty) /* emit event to parent */
     dropdown_content.value = new_dropdown_content /* change dropdown content */

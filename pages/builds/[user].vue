@@ -2,8 +2,8 @@
   <NuxtPage></NuxtPage>
 
   <div class="filter_order">
-    <ComponentDropdownFilter v-on:change="changeDifficulty" label="Filter:" :items="FilterDropdown" :withDirection="false"/>
-    <ComponentDropdownFilter v-on:change="changeOrder" v-on:change-direction="changeDirection" label="Order:" :items="OrderDropdown" :withDirection="true"/>
+    <ComponentDropdownFilter v-on:change="changeDifficulty" label="Filter:" :items="ALL_DIFFICULTIES" :withDirection="false"/>
+    <ComponentDropdownFilter v-on:change="changeOrder" v-on:change-direction="changeDirection" label="Order:" :items="ALL_ORDER_OPTIONS" :withDirection="true"/>
   </div>
   <div class="Builds">
     <BuildCard
@@ -29,11 +29,6 @@ const { user } = useRoute().params
 const CurrentUser = new User(user as string)
 const buildList = ref(await CurrentUser.getBuilds())
 
-const OrderDropdown = ['views', 'blocks', 'modified', 'created']
-
-const FilterDropdown = ['all', 'easy', 'medium', 'hard', 'expert', 'nightmare']
-
-const currentOrder = ref(OrderDropdown[0])
 const currentDirection = ref("asc")
 
 function changeDifficulty(newDifficulty: DifficultyKeys) {

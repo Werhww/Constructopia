@@ -22,7 +22,7 @@
 </section>
 
 <ComponentBlur v-if="openAlert || isLoading"/>
-<ComponentAlert v-if="openAlert" v-on:close="alertAction(false)"  v-on:confirm="alertAction(true)" :alert="alertMessage" :user-interaction="alertInteraction"/>
+<ComponentAlert v-if="openAlert" v-on:cancel="alertAction(false)"  v-on:confirm="alertAction(true)" :alert="alertMessage" :user-interaction="alertInteraction" :is-warining="true"/>
 
 <AnimationsLoading v-if="isLoading" :full-screen="true"/>
 <ComponentUploadingStatus v-if="isLoading" 
@@ -291,9 +291,9 @@ router.beforeResolve((to, from, next) => {
         next(true)
     } else {
         if (uploadingStates.value.uploadStarted) {
-            alertMessage.value = 'You are still uploading your build, are you sure you want to leave?'
+            alertMessage.value = ALERT_MESSAGES.duringUpload
         } else {
-            alertMessage.value = 'You have not uploaded your build, are you sure you want to leave?'
+            alertMessage.value = ALERT_MESSAGES.beforeUpload
         }
         alertInteraction.value = true
         openAlert.value = true

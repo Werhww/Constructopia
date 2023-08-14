@@ -5,7 +5,7 @@
     
     <div class="build-info">
         <h1 v-if="!isEditing" class="build-title">{{ build.title }}</h1>
-        <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" maxlength="45">
+        <input v-if="isEditing" v-model="editData.title" type="text" class="edit-input edit-title" :maxlength="MAX_TITLE_LENGTH">
 
         <div class="metadata">
             <p>{{ formatDate(build.date.created.seconds, 1) }}</p>
@@ -15,13 +15,13 @@
                 <p>{{ build.views }}</p>
             </div>
             <p v-if="!isEditing">/{{ build.difficulty }}</p>
-            <BuildOpenDifficulty v-if="isEditing" v-model="editData.difficulty"/>
+            <BuildOpenDifficulty v-else v-model="editData.difficulty"/>
         </div>
 
         <BuildInventory :inventory="inventory"/>
 
         <p v-if="!isEditing" class="description build-text">{{ build.description }}</p>
-        <textarea v-if="isEditing" v-model="editData.description" rows="18" maxlength="350" class="edit-input edit-description"></textarea>
+        <textarea v-else v-model="editData.description" :rows="18" :maxlength="MAX_COMMENT_LENGTH" class="edit-input edit-description"></textarea>
 
         
         <div class="build-buttons" v-if="!isEditing">
@@ -31,12 +31,23 @@
             <BuildOpenIconButton v-if="owner" text="edit" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
         <div class="edit-buttons" v-if="owner && isEditing">
-            <BuildOpenIconButton text="delete" icon="/icons/build/delete-icon.svg" color="var(--red)"  @click="$emit('delete')"/>
-            <BuildOpenIconButton text="save" icon="/icons/build/save-icon.svg" @click="$emit('save', editData)"/>
+            <BuildOpenIconButton text="delete" icon="/icons/build/delete-icon.svg" color="var(--red)"  @click="openAlert(ALERT_MESSAGES.delete, true)"/>
+            <BuildOpenIconButton text="save" icon="/icons/build/save-icon.svg" @click="openAlert(ALERT_MESSAGES.save, false)"/>
             <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
     </div>
 </section>
+
+<ComponentAlert 
+    v-if="isAlertOpen" 
+    :alert="alertMessage" 
+    :user-interaction="true" 
+    :is-warining="isAlertWarning"
+
+    v-on:confirm="confirmAlert"
+    v-on:cancel="cancelAlert"
+/>
+<ComponentBlur v-if="isAlertOpen"/>
 </template>
 
 <script setup lang="ts">
@@ -49,12 +60,9 @@ const prop = defineProps<{
 
 /* auth.currentuser.id */
 /* swich userid with id form auth */
-const loggedInUserId = '1234test'
-
-const builder = new UserBuild(prop.buildId as string, '1234tesdt')
+const builder = new UserBuild(prop.buildId as string, '1234test')
 
 let { build, images, inventory, favorite, owner } = await builder.getBuild()
-
 
 useHead({
     meta: [
@@ -88,12 +96,12 @@ function updateCarousel(index: number) {
                     link: link,
                     active: true
                 }
-            } else {
-                return {
-                    index: i,
-                    link: link,
-                    active: false
-                }
+            }
+            
+            return {
+                index: i,
+                link: link,
+                active: false
             }
         })
 
@@ -107,6 +115,10 @@ function updateCarousel(index: number) {
     return newCarouselPromise
 }
 
+const isAlertOpen = ref(false)
+const isAlertWarning = ref(false)
+const alertMessage = ref('')
+
 const isEditing = ref(false)
 const editData = ref({
     title: build.title,
@@ -117,6 +129,22 @@ const editData = ref({
 function changeEditState() {
     isEditing.value = !isEditing.value
 }
+
+
+function openAlert(message: string, isWarning: boolean) {
+    alertMessage.value = message
+    isAlertWarning.value = isWarning
+    isAlertOpen.value = true
+}
+
+function confirmAlert() {
+
+}
+
+function cancelAlert() {
+    isAlertOpen.value = false
+}
+
 </script>
 
 <style scoped>

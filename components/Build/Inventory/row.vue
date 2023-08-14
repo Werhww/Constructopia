@@ -5,6 +5,9 @@
 </template>
 
 <script setup lang="ts">
+import { 
+    InventoryItemFixedForRows
+} from '~/utils/useTypes';
 const prop = defineProps<{
     inventory: {
         stack: boolean
@@ -17,12 +20,7 @@ const prop = defineProps<{
 const inventoryFixed = computed(() => {
     const inventory = prop.inventory
 
-    const inventoryFixed: {
-        stack: boolean
-        buildId: string
-        block: string
-        count: number
-    }[] = []
+    const inventoryFixed:InventoryItemFixedForRows[] = []
 
     if (inventory.length == 9) {
         return inventory

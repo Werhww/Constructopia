@@ -5,18 +5,14 @@
 </template>
 
 <script setup lang="ts">
-import { InventoryDocument } from '~/utils/useTypes';
+import { 
+    InventoryDocument,
+    InventoryItemFixedForRows
+} from '~/utils/useTypes';
 
 const prop = defineProps<{
     inventory: InventoryDocument[]
 }>()
-
-interface InventoryItemFixedForRows {
-    stack: boolean
-    buildId: string
-    block: string
-    count: number
-}
 
 const inventortFixedForRows = computed(()=>{
     const inventory = prop.inventory
