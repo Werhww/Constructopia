@@ -25,7 +25,7 @@
 
         
         <div class="build-buttons" v-if="!isEditing">
-            <BuildOpenFavoriteButton v-if="!owner" :liked="favorite" v-on:clicked="change_favorite"/>
+            <BuildOpenFavoriteButton v-if="!owner" :liked="favorite" v-on:clicked="builder.updateFavoriteState()"/>
             <BuildOpenIconButton text="3d editor" icon="/icons/build/3d-icon.svg" @click="emit('3d-editor')"/>
             <BuildOpenIconButton text="share" icon="/icons/build/share-icon.svg" @click="emit('share')"/>
             <BuildOpenIconButton v-if="owner" text="edit" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
@@ -54,8 +54,6 @@ const loggedInUserId = '1234test'
 const builder = new UserBuild(prop.buildId as string, '1234tesdt')
 
 let { build, images, inventory, favorite, owner } = await builder.getBuild()
-
-builder.updateFavoriteState()
 
 
 useHead({
@@ -107,12 +105,6 @@ function updateCarousel(index: number) {
     })
 
     return newCarouselPromise
-}
-
-function change_favorite() {
-    /* change with auth */
-    console.log('change favorite')
-    updateFavorite('1234test', build.buildId)
 }
 
 const isEditing = ref(false)

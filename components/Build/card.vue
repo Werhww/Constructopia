@@ -2,7 +2,7 @@
   <div class="item">
     <AnimationsLike
       v-on:clicked="change_favorite"
-      :liked="isFavorite"
+      :liked="favorite"
       class="like-button"
     />
 
@@ -47,12 +47,9 @@ const thumbnail = computed(() => {
   return prop.images.links[prop.build.thumbnailIndex];
 });
 
-const isFavorite = ref(prop.favorite);
-
 function change_favorite() {
   /* change with auth */
-  updateFavorite("1234test", prop.build.buildId, !isFavorite.value);
-  isFavorite.value = !isFavorite.value;
+  updateFavorite("1234test", prop.build.buildId);
 }
 
 let mouseDownX = 0;

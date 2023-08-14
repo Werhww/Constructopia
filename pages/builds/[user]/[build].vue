@@ -10,68 +10,15 @@
       <BuildLoading/>
     </template>
   </Suspense>
-
-  <ComponentAlert
-    v-if="showAlert"
-    :alert="alertMessage"
-    :user-interaction="alertType"
-    v-on:close="alertClose"
-    v-on:confirm="alertConfirm"
-  />
-  <ComponentBlur v-if="showAlert" />
 </template>
 
 <script setup lang="ts">
-
-
-
 definePageMeta({
   title: "Build",
 });
 
-const route = useRoute();
 const router = useRouter();
-const { build, user } = route.params;
-
-const showAlert = ref(false);
-const alertMessage = ref("");
-const currentAlertType = ref("");
-const alertType = ref(false);
-
-function deleteBuildPromt() {
-  currentAlertType.value = "delete"
-  alertMessage.value = "Are you sure you want to delete this build?"
-  alertType.value = true
-  showAlert.value = true
-}
-
-function saveBuildChangesPromt(newData: any) {
-  currentAlertType.value = "save"
-  alertMessage.value = "Are you sure you want to save these changes?"
-  alertType.value = true
-  showAlert.value = true
-
-  newBuildData.value = newData
-}
-
-function alertClose() {
-  showAlert.value = false
-  currentAlertType.value = ""
-}
-
-async function alertConfirm() {
-  
-  if(currentAlertType.value == "delete") {
-    await deleteBuild(build as string)
-    router.push(`builds/${user}`)
-  } if (currentAlertType.value == "save") {
-    /* save build changes */
-    console.log("saveed build changes")
-  }
-
-  
-  alertClose()
-}
+const { build, user } =  useRoute().params;
 
 function share() {
   console.log("share");

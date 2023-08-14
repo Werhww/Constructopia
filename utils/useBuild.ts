@@ -143,23 +143,23 @@ export async function saveNewBuildData(buildId: string, buildData: UpdateBuildDa
 export async function getBuildListByUserId (userId:string) {
     const buildQuery = query(buildRef, where('userId', '==', userId), orderBy('views', 'desc'))
 
-    return await getBuildList(buildQuery)
+    return await getBuildList(buildQuery, userId)
 }
 
 export async function getBuildListByCategory (userId:string, category:string) {
     const buildQuery = query(buildRef, limit(10))
 
-    return await getBuildList(buildQuery)
+    return await getBuildList(buildQuery, userId)
 }
 
-export async function getBuildList( listQuery: Query<DocumentData, DocumentData> ) {
+export async function getBuildList( listQuery: Query<DocumentData, DocumentData>, userId:string ) {
     const buildList:PreviewBuildData[] = []
 
     const buildData = await getDocs(listQuery)
 
     for (const doc of buildData.docs) {
         const images = await getImages(doc.id)
-        const favorite = await checkFavoriteState(doc.id)
+        const favorite = await checkFavoriteState(userId, doc.id)
 
         buildList.push({
             build: {
@@ -167,7 +167,7 @@ export async function getBuildList( listQuery: Query<DocumentData, DocumentData>
                 ...doc.data() as BuildDataDoc
             },
             images: images,
-            favorite: favorite
+            favorite: favorite.state
         })
     }
 

@@ -24,6 +24,7 @@ defineExpose({
     play: play
 })
 
+let state = ref(prop.liked)
 let anim = ref();
 
 onMounted(() => {
@@ -42,16 +43,18 @@ watch(() => prop.liked, (newVal)=> {
     if (!firstChange && newVal) {
         anim.value.goToAndPlay(30, true);
         firstChange = true
+        state.value = true
     }
 })
 
 function play() {
-    if (prop.liked) {
+    if (state.value) {
         anim.value.setDirection(-1);
     } else {
         anim.value.setDirection(1);
     }
 
+    state.value = !state.value
     anim.value.play()
     emit('clicked')
 }
