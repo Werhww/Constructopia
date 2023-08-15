@@ -1,6 +1,6 @@
 <template>
 <LottieAnimation
-    :class="{'wrapper': fullScreen}"
+    :class="{'fullscreen': fullScreen}"
     :animationData="animation"
     :loop="true"
     :autoPlay="true"
@@ -19,7 +19,7 @@ defineProps<{
 
 
 <style scoped>
-.wrapper {
+.fullscreen {
     position: absolute;
     top: 50%;
     left: 50%;

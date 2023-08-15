@@ -1,12 +1,13 @@
 import {
-    UpdateBuildData,
+    InitalUpdateBuildData,
     PreviewBuildData,
-    BuildData,
     DifficultyKeys,
     OrderKeys,
     Prettify,
     BuildDocument
 } from "~/utils/useTypes"
+
+import { serverTimestamp } from "firebase/firestore"
 
 export class User {
     private OriginalBuilds: Prettify<PreviewBuildData>[] = []
@@ -60,6 +61,7 @@ export class UserBuild {
 
     async getBuild() {
         this.BuildDoc = await getBuildDoc(this.buildId)
+        this.BuildOwnerId = this.BuildDoc.userId
 
         return {
             build: this.BuildDoc,
@@ -74,9 +76,20 @@ export class UserBuild {
         return await updateFavorite(this.userId, this.buildId)
     }
 
-    async saveBuild(newData:UpdateBuildData) {
+    async saveBuild(newData:Prettify<InitalUpdateBuildData>) {
+        const NewDataWithDate = {
+            ...newData,
+            date: {
+                lastEdit: serverTimestamp(),
+            }
+        }
+
+        console.log('new data', NewDataWithDate)
+        console.log('owner id', this.BuildOwnerId)
+        console.log('user id', this.userId)
+
         if(this.userId !== this.BuildOwnerId) throw new Error('User is not owner of this build')
-        return await saveNewBuildData(this.buildId, newData)
+        return await saveNewBuildData(this.buildId, NewDataWithDate)
     }    
 
     async deleteBuild() {

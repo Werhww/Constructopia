@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore"
 
-interface BuildDocumentWithoutDate {
+interface BuildDocumentWithoutCreatedDate {
     buildId: string
 
     userId: string
@@ -16,11 +16,16 @@ interface BuildDocumentWithoutDate {
     views: number
 
     date: {
-        lastEdit: Timestamp
+        lastEdit: any
     }
 }
 
-type BuildDocument = BuildDocumentWithoutDate & {date: {created: Timestamp}}
+interface BuildDocument extends BuildDocumentWithoutCreatedDate {
+    date: {
+        lastEdit: Timestamp
+        created: Timestamp
+    }
+}
 
 interface ImageDocument {
     buildId: string
@@ -33,10 +38,9 @@ interface InventoryDocument {
     count: number
 }
 
-/* For inventory components */
 interface InventoryItemFixedForRows extends InventoryDocument {
     stack: boolean
-}
+} /* For inventory components */
 
 interface CategoryDocument {
     buildId: string
@@ -54,8 +58,8 @@ interface BuildData extends PreviewBuildData {
     categories?: Prettify<CategoryDocument>[]
 }
 
-type UpdateBuildData = Omit<BuildDocumentWithoutDate, 'buildId' | 'userId' | 'username' | 'views' | 'blocks'> 
-
+type InitalUpdateBuildData = Omit<BuildDocumentWithoutCreatedDate, 'buildId' | 'userId' | 'username' | 'views' | 'blocks' | 'date'> 
+type FinalUpdateBuildData = InitalUpdateBuildData & Pick<BuildDocumentWithoutCreatedDate, 'date'>
 
 type DifficultyKeys = 'all' | 'easy' | 'medium' | 'hard' | 'expert' | 'nightmare'
 type OrderKeys = 'views' | 'blocks' | 'modified' | 'created'
@@ -65,7 +69,8 @@ type Prettify<T> = {
 } & {};
 
 export {
-    UpdateBuildData,
+    FinalUpdateBuildData,
+    InitalUpdateBuildData,
     BuildDocument,
     ImageDocument,
     InventoryDocument,

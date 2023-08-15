@@ -3,7 +3,7 @@ import {
     ImageDocument,
     InventoryDocument,
     PreviewBuildData,
-    UpdateBuildData,
+    FinalUpdateBuildData,
     Prettify,
 } from './useTypes'
 import { DocumentData, Query } from '@firebase/firestore'
@@ -131,8 +131,8 @@ async function removeThisFile(fileRef: string) {
     return 200
 }
 
-export async function saveNewBuildData(buildId: string, buildData: Prettify<UpdateBuildData>) {
-    await setDoc(doc(buildRef, buildId), buildData).catch(() => {
+export async function saveNewBuildData(buildId: string, buildData: Prettify<FinalUpdateBuildData>) {
+    await setDoc(doc(buildRef, buildId), buildData, { merge: true }).catch(() => {
         throw new Error('Error saving build data')
     })
 

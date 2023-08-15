@@ -31,8 +31,8 @@
             <BuildOpenIconButton v-if="owner" text="edit" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
         <div class="edit-buttons" v-if="owner && isEditing">
-            <BuildOpenIconButton text="delete" icon="/icons/build/delete-icon.svg" color="var(--red)"  @click="openAlert(ALERT_MESSAGES.delete, true)"/>
-            <BuildOpenIconButton text="save" icon="/icons/build/save-icon.svg" @click="openAlert(ALERT_MESSAGES.save, false)"/>
+            <BuildOpenIconButton text="delete" icon="/icons/build/delete-icon.svg" color="var(--red)"  @click="openAlert(ALERT_MESSAGES.delete, true, 'delete')"/>
+            <BuildOpenIconButton text="save" icon="/icons/build/save-icon.svg" @click="openAlert(ALERT_MESSAGES.save, false, 'save')"/>
             <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
     </div>
@@ -40,9 +40,9 @@
 
 <ComponentAlert 
     v-if="isAlertOpen" 
-    :alert="alertMessage" 
+    :alert="Alert.message" 
     :user-interaction="true" 
-    :is-warining="isAlertWarning"
+    :is-warining="Alert.isWarning"
 
     v-on:confirm="confirmAlert"
     v-on:cancel="cancelAlert"
@@ -76,12 +76,22 @@ useHead({
     ]
 })
 
+
+const isEditing = ref(false)
+const editData = ref({
+    thumbnailIndex: build.thumbnailIndex,
+    title: build.title,
+    description: build.description,
+    difficulty: build.difficulty,
+})
+
 const currentImage = ref<string>('')
 const carouselImages = ref<any[]>([])
 await changeImage(build.thumbnailIndex)
 
 async function changeImage(index: number) {
     await updateCarousel(index)
+    editData.value.thumbnailIndex = index
     currentImage.value = images.links[index]
 
     return
@@ -116,14 +126,11 @@ function updateCarousel(index: number) {
 }
 
 const isAlertOpen = ref(false)
-const isAlertWarning = ref(false)
-const alertMessage = ref('')
 
-const isEditing = ref(false)
-const editData = ref({
-    title: build.title,
-    description: build.description,
-    difficulty: build.difficulty
+const Alert = ref({
+    message: "",
+    isWarning: false,
+    type: ""
 })
 
 function changeEditState() {
@@ -131,14 +138,23 @@ function changeEditState() {
 }
 
 
-function openAlert(message: string, isWarning: boolean) {
-    alertMessage.value = message
-    isAlertWarning.value = isWarning
+function openAlert(message: string, isWarning: boolean, alertType:string) {
+    Alert.value = {
+        message: message,
+        isWarning: isWarning,
+        type: alertType
+    }
     isAlertOpen.value = true
 }
 
 function confirmAlert() {
+    if(Alert.value.type === 'delete') {
+        builder.deleteBuild()
+    } else if(Alert.value.type === 'save') {
+        builder.saveBuild(editData.value)
+    }
 
+    isAlertOpen.value = false
 }
 
 function cancelAlert() {
@@ -216,6 +232,7 @@ function cancelAlert() {
 
 .description {
     flex: 1;
+    white-space: break-spaces;
 }
 
 .build-buttons, .edit-buttons {
