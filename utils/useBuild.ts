@@ -8,6 +8,8 @@ import {
 } from './useTypes'
 import { DocumentData, Query } from '@firebase/firestore'
 
+import CardDataWorker from '@/assets/workers/CardDataWorker?worker'
+
 type BuildDataDoc = Omit<BuildDocument, 'buildId'>
 
 export async function getBuildDoc(buildId: string) {
@@ -153,25 +155,30 @@ export async function getBuildListByCategory (userId:string, category?:string) {
 }
 
 export async function getBuildList( listQuery: Query<DocumentData, DocumentData>, userId:string ) {
-    const buildList:Prettify<PreviewBuildData>[] = []
+    return new Promise<PreviewBuildData[]>(async (resolve, reject) => {
+        const buildData = await getDocs(listQuery)
+        const buildList:Prettify<PreviewBuildData>[] = []
+        const worker = new CardDataWorker()
 
-    const buildData = await getDocs(listQuery)
+        const buildListLength = buildData.docs.length
+        let returnedBuilds = 0
 
-    for (const doc of buildData.docs) {
-        const images = await getImages(doc.id)
-        const favorite = await checkFavoriteState(userId, doc.id)
+        for (const doc of buildData.docs) {
+            console.log('sending message')
+            worker.postMessage([doc.data(), doc.id, userId, Date.now()])
+        }
 
-        buildList.push({
-            build: {
-                buildId: doc.id,
-                ...doc.data() as BuildDataDoc
-            },
-            images: images,
-            favorite: favorite.state
-        })
-    }
 
-    return buildList
+        worker.onmessage = function(e) {
+            returnedBuilds++
+            buildList.push(e.data)
+
+            if(buildListLength === returnedBuilds) {
+                worker.terminate()
+                resolve(buildList)
+            }
+        }
+    })
 }
 
 /* Not finished */

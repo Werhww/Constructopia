@@ -12,33 +12,33 @@
     </div>
     </template>
     
-    <script setup lang="ts">
-    const route = useRoute()
-    
-    definePageMeta({
-      title: 'Constructopia',
+<script setup lang="ts">
+const route = useRoute()
+
+definePageMeta({
+    title: 'Constructopia',
+})
+
+
+const blockId = ref('')
+const blockImageLink = ref('')
+
+
+function addBlock() {
+
+    setDoc(doc(db, "blockImages", `minecraft:${blockId.value}`), {
+        url: `${blockImageLink.value}`
     })
+
+
+    blockId.value = ''
+    blockImageLink.value = ''
+}
+/* har gjort Button neste er Jack O’Lantern */
+/* https://wiingy.com/blog/minecraft-blocks/ */
+/* https://minecraft.fandom.com/wiki/Wood */
+</script>
     
-    
-    const blockId = ref('')
-    const blockImageLink = ref('')
-    
-    
-    function addBlock() {
-    
-        setDoc(doc(db, "blockImages", `minecraft:${blockId.value}`), {
-            url: `${blockImageLink.value}`
-        })
-    
-    
-        blockId.value = ''
-        blockImageLink.value = ''
-    }
-    /* har gjort Button neste er Jack O’Lantern */
-    /* https://wiingy.com/blog/minecraft-blocks/ */
-    /* https://minecraft.fandom.com/wiki/Wood */
-    </script>
-    
-    <style scoped>
-    
-    </style>
+<style scoped>
+
+</style>
