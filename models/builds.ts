@@ -4,7 +4,10 @@ import {
     DifficultyKeys,
     OrderKeys,
     Prettify,
-    BuildDocument
+
+    BuildDocument,
+    ImageDocument,
+    InventoryDocument,
 } from "~/utils/useTypes"
 
 import { serverTimestamp } from "firebase/firestore"
@@ -55,25 +58,29 @@ export class User {
 
 export class UserBuild {
     private BuildOwnerId:string = 'noIdYetttt'
-    private BuildDoc: Prettify<BuildDocument> = {} as Prettify<BuildDocument>
+    private BuildDoc: BuildDocument = {} as BuildDocument
+    private ImagesDoc: ImageDocument = {} as ImageDocument
+    private InventoryDocs: InventoryDocument[] = []
 
     constructor(private buildId: string, private userId: string) {}
 
     async getBuild() {
         this.BuildDoc = await getBuildDoc(this.buildId)
         this.BuildOwnerId = this.BuildDoc.userId
+        this.ImagesDoc = await getImages(this.buildId)
+        this.InventoryDocs = await getBuildInventory(this.buildId)
 
         return {
             build: this.BuildDoc,
-            images: await getImages(this.buildId),
-            inventory: await getBuildInventory(this.buildId),
+            images: this.ImagesDoc,
+            inventory: this.InventoryDocs,
             favorite: (await checkFavoriteState(this.userId, this.buildId)).state,
             owner: this.userId === this.BuildDoc.userId
         }
     }
 
-    async updateFavoriteState() {
-        return await updateFavorite(this.userId, this.buildId)
+    updateFavoriteState() {
+        return updateFavorite(this.userId, this.buildId)
     }
 
     async saveBuild(newData:Prettify<InitalUpdateBuildData>) {
@@ -84,16 +91,13 @@ export class UserBuild {
             }
         }
 
-        console.log('new data', NewDataWithDate)
-        console.log('owner id', this.BuildOwnerId)
-        console.log('user id', this.userId)
-
         if(this.userId !== this.BuildOwnerId) throw new Error('User is not owner of this build')
         return await saveNewBuildData(this.buildId, NewDataWithDate)
     }    
 
-    async deleteBuild() {
+    deleteBuild() {
         if(this.userId !== this.BuildOwnerId) throw new Error('User is not owner of this build')
-        return await deleteBuild(this.buildId, this.userId)
+        deleteBuild(this.BuildDoc, this.ImagesDoc, this.InventoryDocs)
+        return this.BuildOwnerId
     }
 }

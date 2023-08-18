@@ -28,11 +28,13 @@ interface BuildDocument extends BuildDocumentWithoutCreatedDate {
 }
 
 interface ImageDocument {
+    docId: string
     buildId: string
     links: string[]
 }
 
 interface InventoryDocument {
+    docId: string
     buildId: string
     block: string
     count: number

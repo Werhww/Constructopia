@@ -3,14 +3,14 @@ import {
 } from '@/utils/useTypes'
 import CardDataWorker from '@/assets/workers/CardDataWorker?worker'
 
+
 onmessage = async function(e) {
-    console.log(`Worker: Message received from main script`)
-    const [listQuery, userId] = e.data
-    console.log(listQuery)
-    const buildData = await getDocs(listQuery)
+    const [queryObject, userId] = e.data
     const buildList:PreviewBuildData[] = []
     const worker = new CardDataWorker()
-
+    
+    const buildData = await getDocs(firebaseQueryMaker(queryObject))
+    
     const buildListLength = buildData.docs.length
     let returnedBuilds = 0
 

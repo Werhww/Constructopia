@@ -52,6 +52,8 @@
 
 <script setup lang="ts">
 import { UserBuild } from '@/models/builds'
+
+const router = useRouter()
 const emit = defineEmits(['3d-editor', 'share'])
 
 const prop = defineProps<{
@@ -60,7 +62,7 @@ const prop = defineProps<{
 
 /* auth.currentuser.id */
 /* swich userid with id form auth */
-const builder = new UserBuild(prop.buildId as string, '1234test')
+const builder = new UserBuild(prop.buildId as string, TestUserId)
 
 let { build, images, inventory, favorite, owner } = await builder.getBuild()
 
@@ -149,7 +151,8 @@ function openAlert(message: string, isWarning: boolean, alertType:string) {
 
 function confirmAlert() {
     if(Alert.value.type === 'delete') {
-        builder.deleteBuild()
+        const BuildOwnerId = builder.deleteBuild()
+        router.push(`/builds/${BuildOwnerId}`)
     } else if(Alert.value.type === 'save') {
         builder.saveBuild(editData.value)
     }

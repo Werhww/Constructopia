@@ -49,7 +49,7 @@ const thumbnail = computed(() => {
 
 function change_favorite() {
   /* change with auth */
-  updateFavorite("1234test", prop.build.buildId);
+  updateFavorite(TestUserId, prop.build.buildId);
 }
 
 let mouseDownX = 0;

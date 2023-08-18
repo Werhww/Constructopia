@@ -17,8 +17,7 @@ definePageMeta({
   title: "Build",
 });
 
-const router = useRouter();
-const { build, user } =  useRoute().params;
+const { build } =  useRoute().params;
 
 function share() {
   console.log("share");

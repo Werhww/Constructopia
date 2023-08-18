@@ -10,3 +10,5 @@ export const ALERT_MESSAGES = {
     beforeUpload: 'You have not uploaded your build, are you sure you want to leave?',
     duringUpload: 'You are still uploading your build, are you sure you want to leave?'
 }
+
+export const TestUserId = 'testUser'

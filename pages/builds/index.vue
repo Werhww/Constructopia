@@ -25,8 +25,7 @@ useHead({
 const testList = ref<any>([])
 
 onMounted(async () => {
-  const list = await getBuildListByCategory('1234test')
-  testList.value = list
+  testList.value = await getBuildListByCategory('1234test')
 })
 </script>
 
