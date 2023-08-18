@@ -1,13 +1,6 @@
 import {
-    BuildDocument,
-    ImageDocument,
-    InventoryDocument,
     PreviewBuildData,
-    FinalUpdateBuildData,
-    Prettify,
 } from './useTypes'
-
-import BuildListWorker from '@/assets/workers/BuildListWorker?worker'
 
 export async function getBuildListByUserId (userId:string) {
     /* query(buildRef, where('userId', '==', userId), orderBy('views', 'desc')) */
@@ -42,7 +35,7 @@ export async function getBuildListBySearch (userId:string, search:string) {
 
 export async function getBuildList( listQuery: any, userId:string ) {
     return new Promise<PreviewBuildData[]>(async (resolve, reject) => {
-        const worker = new BuildListWorker()
+        const worker = new Worker('/workers/BuildListWorker.ts')
         worker.postMessage([JSON.parse(JSON.stringify(listQuery)), userId])
         
         worker.onmessage = function(e) {

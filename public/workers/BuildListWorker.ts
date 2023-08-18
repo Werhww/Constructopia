@@ -1,13 +1,10 @@
-import {
-    PreviewBuildData,
-} from '@/utils/useTypes'
-import CardDataWorker from '@/assets/workers/CardDataWorker?worker'
-
+import { PreviewBuildData } from '@/utils/useTypes'
 
 onmessage = async function(e) {
+    console.log('worker started')
     const [queryObject, userId] = e.data
     const buildList:PreviewBuildData[] = []
-    const worker = new CardDataWorker()
+    const worker = new Worker('/workers/CardDataWorker.ts')
     
     const buildData = await getDocs(firebaseQueryMaker(queryObject))
     
@@ -24,7 +21,6 @@ onmessage = async function(e) {
         buildList.push(e.data)
 
         if(buildListLength === returnedBuilds) {
-            worker.terminate()
             postMessage(buildList)
         }
     }
