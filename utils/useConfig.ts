@@ -11,4 +11,4 @@ export const ALERT_MESSAGES = {
     duringUpload: 'You are still uploading your build, are you sure you want to leave?'
 }
 
-export const TestUserId = 'testUser'
+export const TestUserId = '1234test'

@@ -25,17 +25,15 @@
 </template>
 
 <script setup lang="ts">
-import { BuildDocument, ImageDocument } from "~/utils/useTypes";
+import { BuildDocument } from "~/utils/useTypes";
 const router = useRouter();
 
 const prop = defineProps<{
   build: BuildDocument;
-
-  images: ImageDocument;
 }>();
 
 const thumbnail = computed(() => {
-  return prop.images.links[prop.build.thumbnailIndex];
+  return prop.build.links[prop.build.thumbnailIndex];
 });
 
 let mouseDownX = 0;
@@ -48,9 +46,6 @@ function between(x: number, min: number, max: number) {
 function open_build_check(e: MouseEvent) {
   mouseUpX = e.clientX;
   if (between(mouseUpX, mouseDownX - 15, mouseDownX + 15)) {
-    useState("redirect-Build-Id", () => prop.build.buildId);
-    useState("redirect-Build-Doc", () => prop.build);
-    useState("redirect-Image-Doc", () => prop.images);
     router.push(`/builds/${prop.build.userId}/${prop.build.buildId}`);
   }
 }

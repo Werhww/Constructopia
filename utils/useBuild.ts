@@ -1,8 +1,6 @@
 import {
     BuildDocument,
-    ImageDocument,
     InventoryDocument,
-    PreviewBuildData,
     FinalUpdateBuildData,
     Prettify,
 } from './useTypes'
@@ -19,15 +17,12 @@ export async function getBuildDoc(buildId: string) {
 
 export async function getBuildInventory(buildId: string) {
     let buildInventory: Prettify<InventoryDocument>[] = []
-
-    const inventoryQuery = query(inventoryRef, where('buildId', '==', buildId))
-    const inventory = await getDocs(inventoryQuery)
+    const inventory = await getDocs(collection(buildRef, buildId, 'inventory'))
     if (inventory.empty) throw new Error('No inventory found')
 
     inventory.docs.forEach((data) => {
         buildInventory.push({
             docId: data.id,
-            buildId: data.data().buildId,
             count: data.data().count,
             block: data.data().block
         })
@@ -36,17 +31,6 @@ export async function getBuildInventory(buildId: string) {
     return buildInventory 
 }
 
-export async function getImages(buildId: string):Promise<Prettify<ImageDocument>> {
-    const imageQuery = query(imageRef, where('buildId', '==', buildId))
-    const imageData = await getDocs(imageQuery)
-
-    if(imageData.empty) throw new Error('No images found')
-
-    return {
-        docId: imageData.docs[0].id,
-        ...imageData.docs[0].data()
-    } as Prettify<ImageDocument>
-}
 
 export async function checkFavoriteState(userId:string, buildId: string) {
     const favoriteData = await getDoc(doc(favoriteRef, `${userId}-${buildId}`))
@@ -71,26 +55,26 @@ export async function updateFavorite(userId:string, buildId: string) {
 }
 
 
+export function deleteBuild(BuildDoc: BuildDocument, InventoryDocuments: InventoryDocument[]) {
+    const { buildId, userId, imageIds, litematicId } = BuildDoc
 
-export function deleteBuild(BuildDoc: BuildDocument, ImageDocument: ImageDocument, InventoryDocuments: InventoryDocument[]) {
-    const { buildId, userId } = BuildDoc
     
     removeThisDoc(buildId, buildRef) /* Removes build Doc */
-    removeThisDoc(ImageDocument.docId, imageRef) /* Removes image Doc */
-    removeThisFile(`litematic/${userId}/${buildId}/build.litematic`) /* Removes litematic file */
+    removeThisFile(`user/${userId}/litematic/${litematicId}.litematic`) /* Removes litematic file */
     
-    const AmountOfImages = ImageDocument.links.length
+    const AmountOfImages = BuildDoc.links.length
     for(let i = 0; i < AmountOfImages; i++) {
-        console.log(`images/${userId}/${buildId}/${i}.png`)
-        removeThisFile(`images/${userId}/${buildId}/${i}.png`)
+        console.log('deleteing image ', i)
+        removeThisFile(`users/${userId}/images/${imageIds[i]}.png`)
     }
 
     for(let i = 0; i < InventoryDocuments.length; i++) {
-        console.log(InventoryDocuments[i].docId)
-        removeThisDoc(InventoryDocuments[i].docId, inventoryRef)
+        console.log('deleteing inventory ', i)
+        removeThisDoc(InventoryDocuments[i].docId, doc(buildRef, buildId, 'inventory', InventoryDocuments[i].docId))
     }
 
-    return 200
+    console.log('done deleting build')
+
 }
 
 function removeThisDoc(docRef: string, col: any) {

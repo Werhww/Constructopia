@@ -1,6 +1,4 @@
-import {
-    PreviewBuildData,
-} from './useTypes'
+import { PreviewBuildData } from './useTypes'
 
 export async function getBuildListByUserId (userId:string) {
     /* query(buildRef, where('userId', '==', userId), orderBy('views', 'desc')) */
@@ -19,10 +17,10 @@ export async function getBuildListByUserId (userId:string) {
     return await getBuildList(buildQuery, userId)
 }
 
-export async function getBuildListByCategory (userId:string, category?:string) {
+export async function getBuildListByCategory (userId:string, categorys?:string[]) {
     /* query(buildRef, limit(10)) */
     const buildQuery = {
-        limit: 10
+        limit: 10,
     }
 
     return await getBuildList(buildQuery, userId)
@@ -33,9 +31,11 @@ export async function getBuildListBySearch (userId:string, search:string) {
 
 }
 
+import BuildListWorker from '@/assets/workers/BuildListWorker?worker'
+
 export async function getBuildList( listQuery: any, userId:string ) {
     return new Promise<PreviewBuildData[]>(async (resolve, reject) => {
-        const worker = new Worker('/workers/BuildListWorker.ts')
+        const worker = new BuildListWorker()
         worker.postMessage([JSON.parse(JSON.stringify(listQuery)), userId])
         
         worker.onmessage = function(e) {

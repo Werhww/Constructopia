@@ -21,36 +21,19 @@
     </div>
 </section>
 
-<ComponentBlur v-if="openAlert || isLoading"/>
+<ComponentBlur v-if="openAlert"/>
 <ComponentAlert v-if="openAlert" v-on:cancel="alertAction(false)"  v-on:confirm="alertAction(true)" :alert="alertMessage" :user-interaction="alertInteraction" :is-warining="true"/>
 
-<AnimationsLoading v-if="isLoading" :full-screen="true"/>
-<ComponentUploadingStatus v-if="isLoading" 
-    :uploadStarted="uploadingStates.uploadStarted"
-    :document="uploadingStates.document"
-    :images="uploadingStates.images"
-    :litematic="uploadingStates.litematic"
-    :inventory="uploadingStates.inventory"
-/>
 </template>
 
 <script setup lang="ts">
+import { newBuild } from '@/models/upload'
 const router = useRouter()
-
-import { 
-    buildRef,
-    imageRef,
-    inventoryRef,
-    storage 
-} from '@/assets/scripts/firebase'
-import { addDoc, serverTimestamp } from "firebase/firestore" 
-import { ref as fbRef, uploadString } from "firebase/storage"
-
 definePageMeta({
     title: 'New Build',
 })
 
-const userid = '1234test'
+const Build = new newBuild(TestUserId)
 
 const isButtonsDisabled = ref(false) // disables all buttons when true
 
@@ -58,7 +41,6 @@ const isButtonsDisabled = ref(false) // disables all buttons when true
 const title = ref('') // max 35 characters
 const description = ref('') // max 350 characters
 const difficulty = ref('easy') // easy, medium, hard
-const totelBlocks = ref(0) // totel blocks in litematic file
 const inventory = ref<{[key: string]: {
     block: string;
     count: number;
@@ -78,19 +60,6 @@ const alertMessage = ref('') // message of alert popup
 const alertTo = ref() // route to go to when alert is confirmed
 const alertInteraction = ref(true) // type of action to take when alert is confirmed
 
-/* loading */
-const isLoading = ref(false) // shows loading animation
-
-/* states of uploading fase */
-const uploadingStates = ref({
-    buildRef: "",
-    uploadStarted: false,
-    document: false,
-    images: false,
-    litematic: false,
-    inventory: false,
-})
-
 /* Asings all imported images to images ref */
 /* Called by image import componenet */
 async function asignImages(image: string[], imagesLength: number){
@@ -106,19 +75,8 @@ function asignThumbnail(index: number){
 
 /* Called by litematic import componenet */
 async function asignLitematic(file: any){
-    /*  
-    *   Asings litematic file to litematic ref
-    *   Counts all blocks in litematic file and asings it to totelBlocks ref
-    *   Get block palett and count in litematic file and asings it to inventory ref
-    */
-
-
     litematic.value = file
-
     isLitematicImported.value = true
-
-    inventory.value =  await countBuild(file) as any
-    totelBlocks.value = await countBlocks(file) as number
 }
 
 /* Called when and action is taken on the alert popup */
@@ -137,114 +95,17 @@ function alertAction(state:boolean) {
 async function createBuild(){
     if(!checkIfSomethingIsMissing()) return
 
-
-    isLoading.value = true
     isButtonsDisabled.value = true
-    uploadingStates.value.uploadStarted = true
-
-    const build = await addDoc(buildRef, {
+    Build.upload({
         title: title.value,
         description: description.value,
         difficulty: difficulty.value,
-        views: 0,
-        blocks: totelBlocks.value,
-
-        thumbnailIndex: thumbnailIndex.value,
-        images: images.value.length,
-
-        date: {
-            created: serverTimestamp(),
-            lastEdit: serverTimestamp()
-        },
-
-        userId: userid,
-        username: userid,
+        images: images.value,
+        thumbnailIndex: thumbnailIndex.value as number,
+        litematicFile: litematic.value,
+        categorys: [],
+        username: 'test',
     })
-
-    uploadingStates.value.buildRef = build.id
-    uploadingStates.value.document = true
-
-
-
-    uploadImages(build.id)
-    uploadLitematic(build.id)
-    uploadInventory(build.id)
-}
-
-/* Called by createBuild() */
-async function uploadImages(buildId: string) {
-    /* Uploads all images from the build to firebase storage */
-    const storageRef = fbRef(storage, `images/${userid}/${buildId}`)
-    let uploadedImages = 0
-
-    let links: string[] = []
-
-    for (let i = 0; i < images.value.length; i++) {
-        const image = images.value[i]
-        const imagesRef = fbRef(storageRef, `${i}.png`)
-
-        await uploadString(imagesRef, image, 'data_url').then((snapshot) => {
-            console.log(`Uploaded image ${i}`)
-            uploadedImages++
-        })
-
-        await getDownloadURL(imagesRef).then((url) => {
-            links.push(url)
-        })
-
-        
-        if (uploadedImages == images.value.length) {
-            console.log('Uploaded all images')
-            uploadingStates.value.images = true
-        }
-    }
-
-    addDoc(imageRef, {
-        buildId: buildId,
-        links: links
-    })
-}
-
-/* Called by createBuild() */
-async function uploadLitematic(buildId: string) {
-    /* Uploads litematic file to the firebase storage */
-    const storageRef = fbRef(storage, `litematic/${userid}/${buildId}`)
-    const litematicRef = fbRef(storageRef, `build.litematic`)
-
-    let reader = new FileReader()
-
-    reader.onload = function(e:any) {
-        uploadString(litematicRef, e.target?.result, 'data_url').then((snapshot) => {
-        console.log('Uploaded litematic file')
-        uploadingStates.value.litematic = true
-    })}
-
-    reader.readAsDataURL(litematic.value)
-}
-
-/* Called by createBuild() */
-async function uploadInventory(buildId: string) {
-    /* Uploads inventory documents to firebase firestore */
-    let uploadedInventory = 0
-
-    for(let key in inventory.value) {
-        if (inventory.value[key].block == "minecraft:air") continue
-
-
-        await addDoc(inventoryRef, {
-            buildId: buildId,
-            block: inventory.value[key].block,
-            count: inventory.value[key].count
-        }).then(() => {
-            console.log(`Uploaded inventory ${key}`)
-            uploadedInventory++
-
-            if (uploadedInventory == Object.keys(inventory.value).length - 1) {
-                console.log('Uploaded all inventory')
-                uploadingStates.value.inventory = true
-            }
-        })
-    }
 }
 
 /* Called by createBuild() */
@@ -270,38 +131,6 @@ function checkIfSomethingIsMissing() {
     openAlert.value = false
     return true
 }
-
-/* watch uploading states */
-watch(uploadingStates.value, (newVal) => {
-    /* when all is finished it opens minecraft build page  */
-    if (newVal.document && newVal.images && newVal.litematic && newVal.inventory) {
-        setTimeout(() => {
-            router.push(`/build/${newVal.buildRef}`)
-        }, 1500)
-    }
-})
-
-/* fires before router change */
-router.beforeResolve((to, from, next) => {
-    /* checks if upload is done or trow a warning for user */
-
-    if (uploadingStates.value.document && uploadingStates.value.images && uploadingStates.value.litematic && uploadingStates.value.inventory) {
-        next(true)
-    } else if (alertConfirm.value) {
-        next(true)
-    } else {
-        if (uploadingStates.value.uploadStarted) {
-            alertMessage.value = ALERT_MESSAGES.duringUpload
-        } else {
-            alertMessage.value = ALERT_MESSAGES.beforeUpload
-        }
-        alertInteraction.value = true
-        openAlert.value = true
-        alertTo.value = to
-
-        next(false)
-    }
-})
 
 </script>
 

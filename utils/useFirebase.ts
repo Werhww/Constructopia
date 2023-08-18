@@ -6,9 +6,6 @@ import {
 	/* firestore refs */
 	userRef,
 	buildRef,
-    imageRef,
-    categoryRef,
-	inventoryRef,
 	blockImagesRef,
     favoriteRef
 } from "@/assets/scripts/firebase"
@@ -26,13 +23,16 @@ import {
     where,
     orderBy,
     limit,
+    serverTimestamp,
+    Timestamp
 
 } from '@firebase/firestore'
 
 import {
     ref as fbRef, 
     getDownloadURL,
-    deleteObject
+    deleteObject,
+    uploadString 
 } from '@firebase/storage'
 
 /* Firebase conections */
@@ -46,9 +46,6 @@ export {
 export {
     userRef,
 	buildRef,
-    imageRef,
-    categoryRef,
-	inventoryRef,
 	blockImagesRef,
     favoriteRef
 }
@@ -67,11 +64,14 @@ export {
     where,
     orderBy,
     limit,
+    serverTimestamp,
+    Timestamp
 }
 
 /* Storage functions */
 export {
     fbRef,
     getDownloadURL,
-    deleteObject
+    deleteObject,
+    uploadString
 }

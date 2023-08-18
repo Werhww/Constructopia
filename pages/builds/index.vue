@@ -26,6 +26,7 @@ const testList = ref<any>([])
 
 onMounted(async () => {
   testList.value = await getBuildListByCategory('1234test')
+  console.log(testList.value)
 })
 </script>
 

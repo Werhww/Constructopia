@@ -7,7 +7,7 @@
     <div class="descripton">
         We take use of the <a href="https://www.curseforge.com/minecraft/mc-mods/litematica" target="_blank" rel="noopener noreferrer">litematica mod</a> to import builds.
         Litematic is a file format that contains Minecraft builds.
-        <span><NuxtLink to="/build/litematica">Learn more</NuxtLink></span>
+        <span><NuxtLink to="/litematica">Learn more</NuxtLink></span>
     </div>
 </div>
 </template>

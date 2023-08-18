@@ -16,8 +16,16 @@ interface BuildDocumentWithoutCreatedDate {
     views: number
 
     date: {
-        lastEdit: any
+        lastEdit: Timestamp
     }
+
+    litematicId: string
+    litematic: string
+    
+    categorys: string[]
+
+    imageIds: string[]
+    links: string[]
 }
 
 interface BuildDocument extends BuildDocumentWithoutCreatedDate {
@@ -27,15 +35,8 @@ interface BuildDocument extends BuildDocumentWithoutCreatedDate {
     }
 }
 
-interface ImageDocument {
-    docId: string
-    buildId: string
-    links: string[]
-}
-
 interface InventoryDocument {
     docId: string
-    buildId: string
     block: string
     count: number
 }
@@ -44,23 +45,12 @@ interface InventoryItemFixedForRows extends InventoryDocument {
     stack: boolean
 } /* For inventory components */
 
-interface CategoryDocument {
-    buildId: string
-    category: string
-}
-
 interface PreviewBuildData {
     build: Prettify<BuildDocument>
-    images: Prettify<ImageDocument>
     favorite: boolean
 }
 
-interface BuildData extends PreviewBuildData {
-    inventory: Prettify<InventoryDocument>[]
-    categories?: Prettify<CategoryDocument>[]
-}
-
-type InitalUpdateBuildData = Omit<BuildDocumentWithoutCreatedDate, 'buildId' | 'userId' | 'username' | 'views' | 'blocks' | 'date'> 
+type InitalUpdateBuildData = Omit<BuildDocumentWithoutCreatedDate, 'buildId' | 'userId' | 'username' | 'views' | 'blocks' | 'date' | 'links' | 'categorys' | 'imageIds' | 'litematic' | 'litematicId'> 
 type FinalUpdateBuildData = InitalUpdateBuildData & Pick<BuildDocumentWithoutCreatedDate, 'date'>
 
 type DifficultyKeys = 'all' | 'easy' | 'medium' | 'hard' | 'expert' | 'nightmare'
@@ -70,18 +60,21 @@ type Prettify<T> = {
    [K in keyof T]: T[K];
 } & {};
 
+
+
+
 export {
-    FinalUpdateBuildData,
-    InitalUpdateBuildData,
     BuildDocument,
-    ImageDocument,
     InventoryDocument,
     InventoryItemFixedForRows,
-    CategoryDocument,
+
     DifficultyKeys,
     OrderKeys,
-    Prettify,
 
     PreviewBuildData,
-    BuildData
+
+    InitalUpdateBuildData,
+    FinalUpdateBuildData,
+
+    Prettify
 }

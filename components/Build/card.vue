@@ -35,16 +35,15 @@
 </template>
 
 <script setup lang="ts">
-import { BuildDocument, ImageDocument } from "~/utils/useTypes";
+import { BuildDocument } from "~/utils/useTypes";
 const router = useRouter();
 const prop = defineProps<{
   build: BuildDocument;
-  images: ImageDocument;
   favorite: boolean;
 }>();
 
 const thumbnail = computed(() => {
-  return prop.images.links[prop.build.thumbnailIndex];
+  return prop.build.links[prop.build.thumbnailIndex];
 });
 
 function change_favorite() {

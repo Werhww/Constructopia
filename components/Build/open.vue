@@ -64,13 +64,13 @@ const prop = defineProps<{
 /* swich userid with id form auth */
 const builder = new UserBuild(prop.buildId as string, TestUserId)
 
-let { build, images, inventory, favorite, owner } = await builder.getBuild()
+let { build, inventory, favorite, owner } = await builder.getBuild()
 
 useHead({
     meta: [
         { property: 'og:title', content: `Constructopia - ${build.title}` },
         { property: 'og:description', content: build.description },
-        { property: 'og:image', content: images.links[build.thumbnailIndex] },
+        { property: 'og:image', content: build.links[build.thumbnailIndex] },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
         { property: 'og:url', content: `https://constructopia.net/build/${build.buildId}` },
@@ -94,14 +94,14 @@ await changeImage(build.thumbnailIndex)
 async function changeImage(index: number) {
     await updateCarousel(index)
     editData.value.thumbnailIndex = index
-    currentImage.value = images.links[index]
+    currentImage.value = build.links[index]
 
     return
 }
 
 function updateCarousel(index: number) {    
     const newCarouselPromise = new Promise((resolve) => {
-        const newCarousel = images.links.map((link, i) => {
+        const newCarousel = build.links.map((link, i) => {
             if(i === index) {
                 return {
                     index: i,
