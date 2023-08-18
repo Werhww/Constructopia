@@ -9,8 +9,7 @@ import {
 import { DocumentData, Query } from '@firebase/firestore'
 
 import CardDataWorker from '@/assets/workers/CardDataWorker?worker'
-
-type BuildDataDoc = Omit<BuildDocument, 'buildId'>
+import BuildListWorker from '@/assets/workers/BuildListWorker?worker'
 
 export async function getBuildDoc(buildId: string) {
     const buildDocumentData = await getDoc(doc(buildRef, buildId))
@@ -156,27 +155,12 @@ export async function getBuildListByCategory (userId:string, category?:string) {
 
 export async function getBuildList( listQuery: Query<DocumentData, DocumentData>, userId:string ) {
     return new Promise<PreviewBuildData[]>(async (resolve, reject) => {
-        const buildData = await getDocs(listQuery)
-        const buildList:Prettify<PreviewBuildData>[] = []
-        const worker = new CardDataWorker()
-
-        const buildListLength = buildData.docs.length
-        let returnedBuilds = 0
-
-        for (const doc of buildData.docs) {
-            console.log('sending message')
-            worker.postMessage([doc.data(), doc.id, userId, Date.now()])
-        }
-
-
+        const worker = new BuildListWorker()
+        const query = JSON.parse(JSON.stringify(listQuery))
+        worker.postMessage([query, userId])
+        
         worker.onmessage = function(e) {
-            returnedBuilds++
-            buildList.push(e.data)
-
-            if(buildListLength === returnedBuilds) {
-                worker.terminate()
-                resolve(buildList)
-            }
+            resolve(e.data)
         }
     })
 }

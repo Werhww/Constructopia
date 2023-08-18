@@ -43,7 +43,7 @@ import {
     inventoryRef,
     storage 
 } from '@/assets/scripts/firebase'
-import { addDoc, serverTimestamp } from "firebase/firestore"; 
+import { addDoc, serverTimestamp } from "firebase/firestore" 
 import { ref as fbRef, uploadString } from "firebase/storage"
 
 definePageMeta({
