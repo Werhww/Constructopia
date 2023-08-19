@@ -18,7 +18,7 @@
             <BuildOpenDifficulty v-else v-model="editData.difficulty"/>
         </div>
 
-        <BuildInventory :inventory="inventory"/>
+        <BuildInventory v-if="inventory.length < 20" :inventory="inventory"/>
 
         <p v-if="!isEditing" class="description build-text">{{ build.description }}</p>
         <textarea v-else v-model="editData.description" :rows="18" :maxlength="MAX_COMMENT_LENGTH" class="edit-input edit-description"></textarea>
@@ -36,6 +36,7 @@
             <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
     </div>
+    <BuildInventory v-if="inventory.length > 20"  :inventory="inventory"/>
 </section>
 
 <ComponentAlert 
@@ -183,12 +184,12 @@ function cancelAlert() {
 .edit-title {
     font: var(--title);
     font-style: normal;
-    width: fit-content;
+    width: 31.75rem;
 }
 
 .edit-description {
     font: var(--text);
-    width: 42.5rem;
+    width: 31.75rem;
     flex: 1;
 }
 
