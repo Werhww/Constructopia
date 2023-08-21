@@ -9,8 +9,6 @@ import {
     InventoryDocument,
 } from "~/utils/useTypes"
 
-import { serverTimestamp } from "firebase/firestore"
-
 export class User {
     private OriginalBuilds: Prettify<PreviewBuildData>[] = []
     private CurrentBuilds: Prettify<PreviewBuildData>[] = []

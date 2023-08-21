@@ -22,6 +22,7 @@ const auth = getAuth(app)
 const userRef = collection(db, 'users')
 const buildRef = collection(db, "builds")
 const blockImagesRef = collection(db, "blockImages") /* production fase */
+const categoryRef = collection(db, "categories")
 const favoriteRef = collection(db, "favorites")
 
 
@@ -34,5 +35,6 @@ export {
 	userRef,
 	buildRef,
 	blockImagesRef,
+	categoryRef,
 	favoriteRef
 }

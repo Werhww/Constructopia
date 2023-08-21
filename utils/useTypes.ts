@@ -35,6 +35,13 @@ interface BuildDocument extends BuildDocumentWithoutCreatedDate {
     }
 }
 
+interface CatergoryDocument {
+    id:string 
+    name: string
+    count: number
+    description: string
+}
+
 interface InventoryDocument {
     docId: string
     block: string
@@ -68,6 +75,7 @@ export {
     InventoryDocument,
     InventoryItemFixedForRows,
 
+    CatergoryDocument,
     DifficultyKeys,
     OrderKeys,
 

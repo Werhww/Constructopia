@@ -41,12 +41,7 @@ const isButtonsDisabled = ref(false) // disables all buttons when true
 /* Input values */
 const title = ref('') // max 35 characters
 const description = ref('') // max 350 characters
-const difficulty = ref('easy') // easy, medium, hard
-const inventory = ref<{[key: string]: {
-    block: string;
-    count: number;
-}}>({}) // inventory of litematic file
-
+const difficulty = ref('easy') // easy, medium, hard, expert, insane
 
 const litematic = ref() // litematic file
 const isLitematicImported = ref(false) // true when litematic file is imported

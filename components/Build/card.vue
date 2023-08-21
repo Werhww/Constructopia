@@ -54,13 +54,9 @@ function change_favorite() {
 let mouseDownX = 0;
 let mouseUpX = 0;
 
-function between(x: number, min: number, max: number) {
-  return x >= min && x <= max;
-}
-
 function open_build_check(e: MouseEvent) {
   mouseUpX = e.clientX;
-  if (between(mouseUpX, mouseDownX - 15, mouseDownX + 15)) {
+  if (dragOpenCheck(e, mouseDownX, mouseUpX)) {
     router.push(`/builds/${prop.build.userId}/${prop.build.buildId}`)
   }
 }
