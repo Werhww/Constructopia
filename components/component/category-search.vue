@@ -9,7 +9,10 @@
         v-for="category in categorys"
         :category="category"/>
         <AnimationsDots class="loading" v-if="loading"/>
-        <p v-if="!loading && noCategorys">No categorys found</p>
+        <div class="empty-category" v-if="!loading && noCategorys">
+            <p>Whow!! That was emtpy.</p>
+            <p @click="">Wanna create the category?</p>
+        </div>
     </div>
 </div>
 </template>
@@ -95,5 +98,23 @@ watch(search, (value) => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.empty-category {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+    color: var(--white);
+    font: var(--text);
+    font-weight: 300;
+}
+
+.empty-category p:last-child {
+    cursor: pointer;
+    text-decoration: underline;
 }
 </style>

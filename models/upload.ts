@@ -1,3 +1,4 @@
+import { StorageReference } from 'firebase/storage'
 import {
     BuildDocument,
     Prettify
@@ -97,16 +98,22 @@ export class newBuild {
         const storageRef = fbRef(storage, `users/${this.userId}/litematic`)
         const litematicRef = fbRef(storageRef, `${this.litematicId}.litematic`)
 
-        let reader = new FileReader()
-
-        reader.onload = function(e:any) {
-            uploadString(litematicRef, e.target?.result, 'data_url')
-        }
-
-        reader.readAsDataURL(file)
         this.blocks = await countBlocks(file)
-        console.log('done uploading litematic')
+
+        return new Promise((resolve) => {
+            let reader = new FileReader()
+
+            reader.onload = async (e:any) => {
+                await uploadString(litematicRef, e.target?.result, 'data_url')
+                this.litematic = await getDownloadURL(litematicRef)
+                resolve(200)
+            }
+
+
+            reader.readAsDataURL(file)
+        })
     }
+
 
     async uploadInventory(file:any) {
         const inventory = await countBuild(file)
