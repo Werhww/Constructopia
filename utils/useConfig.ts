@@ -1,5 +1,8 @@
 export const MAX_COMMENT_LENGTH = 350;
 export const MAX_TITLE_LENGTH = 45;
+export const MAX_CATEGORY_LENGTH = 20;
+export const MAX_CATEGORY_DESCRIPTION = 500;
+
 
 export const ALL_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert', 'nightmare']
 export const ALL_ORDER_OPTIONS = ['views', 'blocks', 'modified', 'created']
