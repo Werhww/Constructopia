@@ -12,7 +12,7 @@
                     <p>open 3d editor</p>
                 </div>
             </div>
-            <ComponentCategorySearch></ComponentCategorySearch>
+            <ComponentCategorySearch />
             <textarea v-model="description" :disabled="isButtonsDisabled" rows="18" maxlength="350" placeholder="description...." class="edit-input edit-description"></textarea>
         </div>
     </div>

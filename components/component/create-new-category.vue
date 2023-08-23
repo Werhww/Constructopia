@@ -4,16 +4,16 @@
 
     <ComponentInput 
         placeholder="category name" 
-        v-model="prop.seach"
+        v-model="newName"
         font_size="1.5rem"
         width="stretch"
         :maxlength="MAX_CATEGORY_LENGTH"
     />
-    <textarea placeholder="description..." :maxlength="MAX_CATEGORY_DESCRIPTION_LENGTH"></textarea>
+    <textarea placeholder="description..." :maxlength="MAX_CATEGORY_DESCRIPTION_LENGTH" :value="newDescription"></textarea>
 
     <div class="buttons">
         <ComponentButton label="cancel" bg_color="var(--red)" color="var(--white)" @click="$emit('close')" />
-        <ComponentButton label="create" bg_color="var(--green)" color="var(--white)" />
+        <ComponentButton label="create" bg_color="var(--green)" color="var(--white)" @click="createNewCategory(newName, newDescription)"/>
     </div>
 </div>
 </template>
@@ -22,6 +22,10 @@
 const prop = defineProps<{
     seach: string
 }>()
+
+const newName = ref(prop.seach)
+const newDescription = ref('')
+
 
 defineEmits(['close'])
 </script>

@@ -85,6 +85,7 @@ async function importLitematic(event: any){
 
     z-index: 100;
     background-color: var(--dark);
+    border: var(--lower-tone) 0.1rem solid;
     font: var(--text);
     color: var(--white);
 
