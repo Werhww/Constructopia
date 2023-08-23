@@ -11,10 +11,13 @@
         <AnimationsDots class="loading" v-if="loading"/>
         <div class="empty-category" v-if="!loading && noCategorys">
             <p>Whow!! That was emtpy.</p>
-            <p @click="">Wanna create the category?</p>
+            <p @click="newCategory = true">Wanna create the category?</p>
         </div>
     </div>
+
 </div>
+<ComponentBlur v-if="newCategory" @click="newCategory = false"/>
+<ComponentCreateNewCategory :seach="search" v-if="newCategory" v-on:close="newCategory = false"/>
 </template>
 
 <script setup lang="ts">
@@ -26,6 +29,7 @@ const openRecommendations = ref(false)
 
 const loading = ref(true)
 const noCategorys = ref(false)
+const newCategory = ref(false)
 
 let seachWatch: NodeJS.Timeout | null = null
 

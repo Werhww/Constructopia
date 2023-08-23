@@ -30,16 +30,12 @@
 
 <script setup lang="ts">
 import {
-  BuildDocument,
-  ImageDocument,
+  PreviewBuildData,
 } from '~/utils/useTypes'
 
 definePageMeta({
   title: 'Profile',
 })
-
-/* change with auth */
-const USERID = '1234test'
 
 const user = ref({
   username: "Werhw",
@@ -47,14 +43,10 @@ const user = ref({
   email: "leo@gmail.com"
 })
 
-const usersBuilds = ref<{
-  build: BuildDocument
-  images: ImageDocument
-}[]>([])
+const usersBuilds = ref<PreviewBuildData[]>([])
 
 onMounted(async () => {
-  const list = await getBuildListByCategory(USERID)
-  usersBuilds.value = list
+  usersBuilds.value = await getBuildListByCategory(TestUserId)
 })
 
 function saveChanges() {

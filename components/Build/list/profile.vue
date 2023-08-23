@@ -12,44 +12,18 @@
             v-for="i in builds"
 
             :build="i.build"
-            :images="i.images"
         />
     </div>
 </div>
 </template>
 
 <script setup lang="ts">
+import { PreviewBuildData } from '~/utils/useTypes';
 const router = useRouter()
 
 defineProps<{
     title: string
-    builds: {
-        build: {
-            buildId: string
-
-            userId: string
-            username: string
-
-            thumbnailIndex: number
-
-            title: string
-            description: string
-            difficulty: string
-            blocks: number
-
-            views: number
-
-            date: {
-                created: any
-                lastEdit: any
-            }
-        }
-
-        images: {
-            buildId: string
-            links: string[]
-        }
-    }[]
+    builds: PreviewBuildData[]
 }>()
 
 </script>
