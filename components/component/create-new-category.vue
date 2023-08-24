@@ -25,7 +25,7 @@ const prop = defineProps<{
 }>()
 
 const newName = ref(prop.seach)
-const newDescription = ref('')
+const newDescription = ref()
 
 
 defineEmits(['close'])

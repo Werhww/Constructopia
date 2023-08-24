@@ -2,16 +2,16 @@
   <NuxtPage></NuxtPage>
 
   <div class="filter_order">
-    <ComponentDropdownFilter v-on:change="changeDifficulty" label="Filter:" :items="ALL_DIFFICULTIES" :withDirection="false"/>
+    <ComponentDropdownFilter v-on:change="changeDifficulty" label="Filter:" :items="['all', ...ALL_DIFFICULTIES]" :withDirection="false"/>
     <ComponentDropdownFilter v-on:change="changeOrder" v-on:change-direction="changeDirection" label="Order:" :items="ALL_ORDER_OPTIONS" :withDirection="true"/>
   </div>
+  
   <div class="Builds">
     <BuildCard
-      v-for="{build, images, favorite} in buildList"
+      v-for="{build, favorite} in buildList"
       class="Builds_item"
 
       :build="build"
-      :images="images"
       :favorite="favorite"
     />
   </div>

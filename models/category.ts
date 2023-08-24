@@ -1,4 +1,4 @@
-
+import { CatergoryDocument } from "~/utils/useTypes"
 
 export class Category {
     private ids: string[] = []
@@ -8,10 +8,27 @@ export class Category {
     }
 
     async getIds() {
-        this.ids = (await getDoc(categoryIdsRef)).data()?.ids as string[]
+        this.ids = (await getDoc(categoryIdsRef)).data()?.ids as string[] || ['testerer']
+        console.log('Category ids: ', this.ids)
     }
 
-    seach(seach: string) {
+    
+
+    async seach(seach: string) {
+        const FoundIds = this.getSimilarIds(seach)
+        const categories: CatergoryDocument[] = []
+        const MaxCategories = 10
+
+        for (const id of FoundIds) {
+            const category = await this.getCategory(id)
+            categories.push(category)
+            if (categories.length >= MaxCategories) break
+        }
+
+        return categories
+    }
+
+    getSimilarIds(seach: string) {
         return this.ids.filter(id => id.toLowerCase().includes(seach.toLowerCase()))
     }
 
@@ -33,6 +50,16 @@ export class Category {
     
         console.log('Category created')
 
+    }
+
+    async getCategory(id:string):Promise<CatergoryDocument> {
+        const category = await getDoc(doc(categoryRef, id))
+        return {
+            id: category.id,
+            name: category.data()?.name,
+            description: category.data()?.description,
+            count: category.data()?.count
+        }
     }
 
 }

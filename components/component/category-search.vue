@@ -17,14 +17,14 @@
 
 </div>
 <ComponentBlur v-if="newCategory" @click="newCategory = false"/>
-<ComponentCreateNewCategory :seach="search" :create-new-category="category.create" v-if="newCategory" v-on:close="newCategory = false"/>
+<ComponentCreateNewCategory :seach="search" :create-new-category="CategoryFinder.create" v-if="newCategory" v-on:close="newCategory = false"/>
 </template>
 
 <script setup lang="ts">
 import { CatergoryDocument } from '~/utils/useTypes';
 import { Category } from '~/models/category';
 
-const category = new Category()
+const CategoryFinder = new Category()
 
 const search = ref('')
 const categorys = ref<CatergoryDocument[]>([])
@@ -49,14 +49,11 @@ watch(search, (value) => {
     openRecommendations.value = true 
     loading.value = true
     seachWatch = setTimeout(() => {
-        seachCategory(value).then((res) => {
-            categorys.value = res
-            console.log(res)
+        CategoryFinder.seach(value).then((SimilareCategorys) => {
             loading.value = false
             noCategorys.value = false
-        }).catch(() => {
-            loading.value = false
-            noCategorys.value = true
+
+            categorys.value = SimilareCategorys
         })
         seachWatch = null
     }, 500)
