@@ -8,6 +8,7 @@ import {
 	buildRef,
 	blockImagesRef,
     categoryRef,
+    categoryIdsRef,
     favoriteRef
 } from "@/assets/scripts/firebase"
 
@@ -49,7 +50,8 @@ export {
 	buildRef,
 	blockImagesRef,
     favoriteRef,
-    categoryRef
+    categoryRef,
+    categoryIdsRef
 }
 
 /* firestore functions */

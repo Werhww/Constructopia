@@ -9,7 +9,7 @@
         width="stretch"
         :maxlength="MAX_CATEGORY_LENGTH"
     />
-    <textarea placeholder="description..." :maxlength="MAX_CATEGORY_DESCRIPTION_LENGTH" :value="newDescription"></textarea>
+    <textarea placeholder="description..." :maxlength="MAX_CATEGORY_DESCRIPTION_LENGTH" v-model="newDescription"></textarea>
 
     <div class="buttons">
         <ComponentButton label="cancel" bg_color="var(--red)" color="var(--white)" @click="$emit('close')" />
@@ -21,6 +21,7 @@
 <script setup lang="ts">
 const prop = defineProps<{
     seach: string
+    createNewCategory: (name: string, description: string) => void
 }>()
 
 const newName = ref(prop.seach)

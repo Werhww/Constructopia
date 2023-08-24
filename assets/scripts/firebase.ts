@@ -23,6 +23,8 @@ const userRef = collection(db, 'users')
 const buildRef = collection(db, "builds")
 const blockImagesRef = collection(db, "blockImages") /* production fase */
 const categoryRef = collection(db, "categories")
+const categoryIdsRef = doc(categoryRef, "ALL_IDS_LIST")
+
 const favoriteRef = collection(db, "favorites")
 
 
@@ -36,5 +38,6 @@ export {
 	buildRef,
 	blockImagesRef,
 	categoryRef,
+	categoryIdsRef,
 	favoriteRef
 }

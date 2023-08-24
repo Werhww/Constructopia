@@ -17,11 +17,14 @@
 
 </div>
 <ComponentBlur v-if="newCategory" @click="newCategory = false"/>
-<ComponentCreateNewCategory :seach="search" v-if="newCategory" v-on:close="newCategory = false"/>
+<ComponentCreateNewCategory :seach="search" :create-new-category="category.create" v-if="newCategory" v-on:close="newCategory = false"/>
 </template>
 
 <script setup lang="ts">
 import { CatergoryDocument } from '~/utils/useTypes';
+import { Category } from '~/models/category';
+
+const category = new Category()
 
 const search = ref('')
 const categorys = ref<CatergoryDocument[]>([])
@@ -35,6 +38,8 @@ let seachWatch: NodeJS.Timeout | null = null
 
 
 watch(search, (value) => {
+    categorys.value = []
+
     if (seachWatch) clearTimeout(seachWatch)
     if(value.length == 0) {
         openRecommendations.value = false
@@ -48,6 +53,7 @@ watch(search, (value) => {
             categorys.value = res
             console.log(res)
             loading.value = false
+            noCategorys.value = false
         }).catch(() => {
             loading.value = false
             noCategorys.value = true
