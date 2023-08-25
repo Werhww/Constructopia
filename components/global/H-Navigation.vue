@@ -30,7 +30,7 @@ function newPath(routePath: RouteLocationNormalized | RouteLocationNormalizedLoa
     for (const route of path) {
         navigation.value.push({
             title: route.replace(route[0], route[0].toUpperCase()),
-            path: `/${path.slice(0, index + 1).join("/")}`
+            path: `/${path.slice(0, index + 1).join("/")}/`
         })
 
         index++

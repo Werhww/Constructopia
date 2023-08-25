@@ -1,5 +1,5 @@
 <template>
-  <NuxtPage page-key="static" />
+  <NuxtPage />
 
   <div class="filter_order">
     <ComponentDropdownFilter v-on:change="changeDifficulty" label="Filter:" :items="['all', ...ALL_DIFFICULTIES]" :withDirection="false"/>
@@ -31,7 +31,7 @@ const metadata = await CurrentUser.getMetaData()
 
 useSeoMeta({
   title: `User - ${metadata.MinecraftName}`,
-  description: ``,
+  description: `${metadata.MinecraftName} is a proud member of Constructopia, with ${metadata.BuildAmount} posted builds, and a total of ${metadata.MostViewedBuild.views} views on his biggest build.`,
   ogTitle: `User - ${metadata.MinecraftName}`,
   ogDescription: `${metadata.MinecraftName} is a proud member of Constructopia, with ${metadata.BuildAmount} posted builds, and a total of ${metadata.MostViewedBuild.views} views on his biggest build.`,
   ogImage: metadata.MostViewedBuild.links[metadata.MostViewedBuild.thumbnailIndex],
@@ -41,8 +41,6 @@ useSeoMeta({
   twitterImage: metadata.MostViewedBuild.links[metadata.MostViewedBuild.thumbnailIndex],
   twitterCard: 'summary'
 })
-
-
 
 const currentDirection = ref("asc")
 
