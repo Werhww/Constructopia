@@ -1,5 +1,5 @@
 <template>
-  <NuxtPage></NuxtPage>
+  <NuxtPage page-key="static" />
 
   <div class="filter_order">
     <ComponentDropdownFilter v-on:change="changeDifficulty" label="Filter:" :items="['all', ...ALL_DIFFICULTIES]" :withDirection="false"/>
@@ -26,21 +26,22 @@ import { DifficultyKeys, OrderKeys } from "~/utils/useTypes"
 const { user } = useRoute().params
 
 const CurrentUser = new User(user as string)
-const buildList = ref()
+const buildList = ref(await CurrentUser.getBuilds())
+const metadata = await CurrentUser.getMetaData()
 
-onMounted(async () => {
-  buildList.value = await CurrentUser.getBuilds()
-  const metadata = await CurrentUser.getMetaData()
+useSeoMeta({
+  title: `User - ${metadata.MinecraftName}`,
+  description: ``,
+  ogTitle: `User - ${metadata.MinecraftName}`,
+  ogDescription: `${metadata.MinecraftName} is a proud member of Constructopia, with ${metadata.BuildAmount} posted builds, and a total of ${metadata.MostViewedBuild.views} views on his biggest build.`,
+  ogImage: metadata.MostViewedBuild.links[metadata.MostViewedBuild.thumbnailIndex],
+  ogUrl: `https://constructopia.net/build/${user}`,
+  twitterTitle: `User - ${metadata.MinecraftName}`,
+  twitterDescription:`${metadata.MinecraftName} is a proud member of Constructopia, with ${metadata.BuildAmount} posted builds, and a total of ${metadata.MostViewedBuild.views} views on his biggest build.`,
+  twitterImage: metadata.MostViewedBuild.links[metadata.MostViewedBuild.thumbnailIndex],
+  twitterCard: 'summary'
+})
 
-  useHead({
-    meta: [
-      { property: 'og:title', content: `User - ${metadata.MinecraftName}` },
-      { property: 'og:description', content: `${metadata.MinecraftName} is a proud member of Constructopia, with ${metadata.BuildAmount} posted builds, and a total of ${metadata.MostViewedBuild.views} views on his biggest build.`},
-      { property: 'og:type', content: 'website'}
-    ]
-})
-  
-})
 
 
 const currentDirection = ref("asc")

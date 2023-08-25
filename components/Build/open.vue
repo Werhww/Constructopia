@@ -64,19 +64,19 @@ const prop = defineProps<{
 /* auth.currentuser.id */
 /* swich userid with id form auth */
 const builder = new UserBuild(prop.buildId as string, TestUserId)
+const { build, inventory, favorite, owner } = await builder.getBuild()
 
-let { build, inventory, favorite, owner } = await builder.getBuild()
-
-useHead({
-    meta: [
-        { property: 'og:title', content: `Constructopia - ${build.title}` },
-        { property: 'og:description', content: build.description },
-        { property: 'og:image', content: build.links[build.thumbnailIndex] },
-        { property: 'og:image:width', content: '1200' },
-        { property: 'og:image:height', content: '630' },
-        { property: 'og:url', content: `https://constructopia.net/build/${build.buildId}` },
-        { property: 'og:type', content: 'website'}
-    ]
+useSeoMeta({
+    title: `Build - ${build.title}`,
+    description:build.description,
+    ogTitle: `Constructopia - ${build.title}`,
+    ogDescription: build.description,
+    ogImage: build.links[build.thumbnailIndex],
+    ogUrl: `https://constructopia.net/build/${build.userId}/${build.buildId}`,
+    twitterTitle: build.title,
+    twitterDescription: build.description,
+    twitterImage: build.links[build.thumbnailIndex],
+    twitterCard: 'summary'
 })
 
 const isEditing = ref(false)
@@ -236,6 +236,7 @@ function cancelAlert() {
 .description {
     flex: 1;
     white-space: break-spaces;
+    width: 31.75rem;
 }
 
 .build-buttons, .edit-buttons {
