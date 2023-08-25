@@ -1,6 +1,6 @@
+import { Timestamp } from "firebase/firestore"
 import {
     InitalUpdateBuildData,
-    PreviewBuildData,
     DifficultyKeys,
     OrderKeys,
     Prettify,
@@ -10,8 +10,8 @@ import {
 } from "~/utils/useTypes"
 
 export class User {
-    private OriginalBuilds: Prettify<PreviewBuildData>[] = []
-    private CurrentBuilds: Prettify<PreviewBuildData>[] = []
+    private OriginalBuilds: Prettify<BuildDocument>[] = []
+    private CurrentBuilds: Prettify<BuildDocument>[] = []
 
     constructor(private userId: string) {}
 
@@ -34,19 +34,19 @@ export class User {
     }
 
     private listSortDesc(key:OrderKeys) {
-        if(key == 'modified') return [...this.CurrentBuilds].sort((a, b) => a.build.date.lastEdit.seconds - b.build.date.lastEdit.seconds)
-        if(key == 'created') return [...this.CurrentBuilds].sort((a, b) => a.build.date.created.seconds - b.build.date.created.seconds)
-        return [...this.CurrentBuilds].sort((a, b) => a.build[key] - b.build[key])
+        if(key == 'modified') return [...this.CurrentBuilds].sort((a, b) => a.date.lastEdit.seconds - b.date.lastEdit.seconds)
+        if(key == 'created') return [...this.CurrentBuilds].sort((a, b) => a.date.created.seconds - b.date.created.seconds)
+        return [...this.CurrentBuilds].sort((a, b) => a[key] - b[key])
     }
 
     private listSortAsc(key:OrderKeys) {
-        if(key == 'modified') return [...this.CurrentBuilds].sort((a, b) => b.build.date.lastEdit.seconds - a.build.date.lastEdit.seconds)
-        if(key == 'created') return [...this.CurrentBuilds].sort((a, b) => b.build.date.created.seconds - a.build.date.created.seconds)
-        return [...this.CurrentBuilds].sort((a, b) => b.build[key] - a.build[key])
+        if(key == 'modified') return [...this.CurrentBuilds].sort((a, b) => b.date.lastEdit.seconds - a.date.lastEdit.seconds)
+        if(key == 'created') return [...this.CurrentBuilds].sort((a, b) => b.date.created.seconds - a.date.created.seconds)
+        return [...this.CurrentBuilds].sort((a, b) => b[key] - a[key])
     }
 
     filterByDifficulty(difficulty:DifficultyKeys) {
-        this.CurrentBuilds = [...this.OriginalBuilds].filter((build) => build.build.difficulty === difficulty)
+        this.CurrentBuilds = [...this.OriginalBuilds].filter((build) => build.difficulty === difficulty)
         if (difficulty === 'all') this.CurrentBuilds = this.OriginalBuilds
         return this.CurrentBuilds
     }

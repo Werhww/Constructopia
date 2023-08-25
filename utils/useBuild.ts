@@ -1,9 +1,14 @@
+import { buildRef, favoriteRef, storage } from 'assets/scripts/firebase'
+import { getDoc, doc, getDocs, collection, setDoc, deleteDoc } from 'firebase/firestore'
+import { deleteObject, ref as fbRef } from 'firebase/storage'
 import {
     BuildDocument,
     InventoryDocument,
     FinalUpdateBuildData,
     Prettify,
 } from './useTypes'
+
+
 
 export async function getBuildDoc(buildId: string) {
     const buildDocumentData = await getDoc(doc(buildRef, buildId))
@@ -44,14 +49,14 @@ export async function checkFavoriteState(userId:string, buildId: string) {
 export async function updateFavorite(userId:string, buildId: string) {
     const oldStatus = await checkFavoriteState(userId, buildId)
 
-    if(!oldStatus.state) {
-        console.log('Adding favorite')
+    if(oldStatus.state == false) {
         setDoc(doc(favoriteRef, `${userId}-${buildId}`), {
             userId: userId,
             buildId: buildId,
         })
+    } else {
+        deleteDoc(oldStatus.ref)
     }
-    return false
 }
 
 

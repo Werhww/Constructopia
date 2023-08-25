@@ -11,8 +11,7 @@
         <BuildCard
             v-for="i in builds"
 
-            :build="i.build"
-            :images="i.images"
+            :build="i"
         />
     </div>
 </div>
@@ -21,7 +20,6 @@
 <script setup lang="ts">
 import {
     BuildDocument,
-    ImageDocument
 } from '~/utils/useTypes'
 const router = useRouter()
 
@@ -29,11 +27,7 @@ defineProps<{
     title: string
     categoryId: string
 
-    builds?: {
-        build: BuildDocument
-
-        images: ImageDocument
-    }[]
+    builds: BuildDocument[]
 }>()
 </script>
 

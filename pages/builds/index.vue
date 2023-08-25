@@ -22,8 +22,6 @@ useHead({
   meta: [{ property: 'og:title', content: `Constructopia - ${route.meta.title}` }]
 })
 
-
-
 onMounted(async () => {
   testList.value = await getBuildListByCategory(TestUserId)
   console.log(testList.value)

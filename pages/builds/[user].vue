@@ -8,11 +8,10 @@
   
   <div class="Builds">
     <BuildCard
-      v-for="{build, favorite} in buildList"
+      v-for="build in buildList"
       class="Builds_item"
 
       :build="build"
-      :favorite="favorite"
     />
   </div>
 </template>

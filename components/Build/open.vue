@@ -79,7 +79,6 @@ useHead({
     ]
 })
 
-
 const isEditing = ref(false)
 const editData = ref({
     thumbnailIndex: build.thumbnailIndex,

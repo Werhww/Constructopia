@@ -13,16 +13,13 @@
     </template>
     
 <script setup lang="ts">
-const route = useRoute()
 
 definePageMeta({
     title: 'Constructopia',
 })
 
-
 const blockId = ref('')
 const blockImageLink = ref('')
-
 
 function addBlock() {
 

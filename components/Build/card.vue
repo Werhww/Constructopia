@@ -1,7 +1,7 @@
 <template>
   <div class="item">
-    <AnimationsLike
-      v-on:clicked="change_favorite"
+    <LazyAnimationsLike
+      v-on:clicked="updateFavorite(TestUserId, build.buildId)"
       :liked="favorite"
       class="like-button"
     />
@@ -39,17 +39,15 @@ import { BuildDocument } from "~/utils/useTypes";
 const router = useRouter();
 const prop = defineProps<{
   build: BuildDocument;
-  favorite: boolean;
 }>();
 
 const thumbnail = computed(() => {
   return prop.build.links[prop.build.thumbnailIndex];
 });
 
-function change_favorite() {
-  /* change with auth */
-  updateFavorite(TestUserId, prop.build.buildId);
-}
+const favorite = computed(async () => {
+  return (await checkFavoriteState(TestUserId, prop.build.buildId)).state
+})
 
 let mouseDownX = 0;
 let mouseUpX = 0;

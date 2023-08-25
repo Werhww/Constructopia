@@ -1,3 +1,6 @@
+import { buildRef } from "assets/scripts/firebase"
+import { query, limit, where, orderBy } from "firebase/firestore"
+
 export default function (queryObject: any) {
     let newQuery = query(buildRef)
     if(queryObject['limit']) {

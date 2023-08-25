@@ -2,7 +2,7 @@
 <div class="wrapper">
     <div class="build-title">
        <h1>{{ title }}</h1>
-       <p @click="router.push(`/builds/${builds[0].build.userId}`)">see more</p>
+       <p @click="router.push(`/builds/${builds[0].userId}`)">see more</p>
     </div>
     <div 
         class="build-items"
@@ -11,19 +11,19 @@
         <BuildCardMin
             v-for="i in builds"
 
-            :build="i.build"
+            :build="i"
         />
     </div>
 </div>
 </template>
 
 <script setup lang="ts">
-import { PreviewBuildData } from '~/utils/useTypes';
+import { BuildDocument } from '~/utils/useTypes';
 const router = useRouter()
 
 defineProps<{
     title: string
-    builds: PreviewBuildData[]
+    builds: BuildDocument[]
 }>()
 
 </script>

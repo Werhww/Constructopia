@@ -8,9 +8,7 @@
         <BuildCard
             v-for="i in builds"
 
-            :build="i.build"
-            :images="i.images"
-            :favorite="i.favorite"
+            :build="i"
         />
 
         <BuildLastCard />
@@ -19,11 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import { PreviewBuildData } from '~/utils/useTypes'
+import { BuildDocument } from '~/utils/useTypes'
 
 defineProps<{
     title: string
-    builds: PreviewBuildData[]
+    builds: BuildDocument[]
 }>()
 
 </script>

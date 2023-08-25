@@ -35,6 +35,10 @@ interface BuildDocument extends BuildDocumentWithoutCreatedDate {
     }
 }
 
+interface CategoryIdDocument {
+    ids: string[]
+}
+
 interface CatergoryDocument {
     id:string 
     name: string
@@ -51,11 +55,6 @@ interface InventoryDocument {
 interface InventoryItemFixedForRows extends InventoryDocument {
     stack: boolean
 } /* For inventory components */
-
-interface PreviewBuildData {
-    build: Prettify<BuildDocument>
-    favorite: boolean
-}
 
 type InitalUpdateBuildData = Omit<BuildDocumentWithoutCreatedDate, 'buildId' | 'userId' | 'username' | 'views' | 'blocks' | 'date' | 'links' | 'categorys' | 'imageIds' | 'litematic' | 'litematicId'> 
 type FinalUpdateBuildData = InitalUpdateBuildData & Pick<BuildDocumentWithoutCreatedDate, 'date'>
@@ -76,10 +75,9 @@ export {
     InventoryItemFixedForRows,
 
     CatergoryDocument,
+    CategoryIdDocument,
     DifficultyKeys,
     OrderKeys,
-
-    PreviewBuildData,
 
     InitalUpdateBuildData,
     FinalUpdateBuildData,

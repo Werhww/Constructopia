@@ -1,4 +1,6 @@
-import { CatergoryDocument } from "~/utils/useTypes"
+import { categoryIdsRef, categoryRef } from "assets/scripts/firebase"
+import { getDoc, setDoc, doc } from "firebase/firestore"
+import { CatergoryDocument, CategoryIdDocument } from "~/utils/useTypes"
 
 export class Category {
     private ids: string[] = []
@@ -8,7 +10,7 @@ export class Category {
     }
 
     async getIds() {
-        this.ids = (await getDoc(categoryIdsRef)).data()?.ids as string[] || ['testerer']
+        this.ids = ((await getDoc(categoryIdsRef)).data() as CategoryIdDocument).ids || ['testerer']
         console.log('Category ids: ', this.ids)
     }
 
