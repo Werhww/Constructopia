@@ -6,32 +6,30 @@
     </div>
     <nav class="buttons">
         <HSearch />
-        <HDropdown ref="dropdown" v-on:open="emit_open"/>
+        <HDropdown/>
     </nav>
 </header>
 </template>
 
 <script setup lang="ts">
 const router = useRouter()
-defineProps<{
-    title: string
-}>()
+const route = useRoute()
+const title = ref('')
 
-defineExpose({
-    open
+const HeaderDropdownState = ref(false)
+
+function updateDropdownState(value: boolean) {
+    HeaderDropdownState.value = value
+}
+
+router.afterEach((to, from) => {
+    updateDropdownState(false)
+    title.value = to.meta.title as string
 })
 
-const emit = defineEmits(['open'])
-
-const dropdown = ref()
-
-function emit_open(value: boolean) {
-    emit('open', value)
-}
-
-function open() {
-    dropdown.value.open()
-}
+onMounted(() => {
+    title.value = route.meta.title as string
+})
 </script>
 
 <style scoped>

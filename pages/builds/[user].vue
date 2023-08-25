@@ -26,7 +26,22 @@ import { DifficultyKeys, OrderKeys } from "~/utils/useTypes"
 const { user } = useRoute().params
 
 const CurrentUser = new User(user as string)
-const buildList = ref(await CurrentUser.getBuilds())
+const buildList = ref()
+
+onMounted(async () => {
+  buildList.value = await CurrentUser.getBuilds()
+  const metadata = await CurrentUser.getMetaData()
+
+  useHead({
+    meta: [
+      { property: 'og:title', content: `User - ${metadata.MinecraftName}` },
+      { property: 'og:description', content: `${metadata.MinecraftName} is a proud member of Constructopia, with ${metadata.BuildAmount} posted builds, and a total of ${metadata.MostViewedBuild.views} views on his biggest build.`},
+      { property: 'og:type', content: 'website'}
+    ]
+})
+  
+})
+
 
 const currentDirection = ref("asc")
 

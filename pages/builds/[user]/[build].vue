@@ -1,10 +1,11 @@
 <template>
   <Suspense>
-        <BuildOpen
+      <BuildOpen
         v-on:share="share"
         v-on:3d-editor="open3dEditor"
         :build-id="build"
       />
+
     <template #fallback>
       <BuildLoading/>
     </template>

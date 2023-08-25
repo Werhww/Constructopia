@@ -12,6 +12,11 @@ import {
 export class User {
     private OriginalBuilds: Prettify<BuildDocument>[] = []
     private CurrentBuilds: Prettify<BuildDocument>[] = []
+    private MetaData: {
+        BuildAmount: number,
+        MinecraftName: string,
+        MostViewedBuild: Prettify<BuildDocument>,
+    } = {} as any
 
     constructor(private userId: string) {}
 
@@ -19,6 +24,15 @@ export class User {
         this.OriginalBuilds = await getBuildListByUserId(this.userId)
         this.CurrentBuilds = this.OriginalBuilds
         return this.OriginalBuilds
+    }
+
+    async getMetaData(){
+        this.MetaData = {
+            BuildAmount: this.OriginalBuilds.length,
+            MinecraftName: this.OriginalBuilds[0].username,
+            MostViewedBuild: this.OriginalBuilds.sort((a, b) => b.views - a.views)[0],
+        }
+        return this.MetaData
     }
 
     /* Builds List Ordering and Filtering */

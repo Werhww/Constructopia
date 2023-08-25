@@ -19,7 +19,10 @@ definePageMeta({
 })
 
 useHead({
-  meta: [{ property: 'og:title', content: `Constructopia - ${route.meta.title}` }]
+  meta: [
+    { property: 'og:title', content: `Constructopia - ${route.meta.title}` },
+    { property: 'og:description', content: 'The best website for sharing your Minecraft builds!!' }
+  ]
 })
 
 onMounted(async () => {

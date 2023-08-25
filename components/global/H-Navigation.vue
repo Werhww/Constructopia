@@ -1,27 +1,29 @@
 <template>
 <div class="nav-viewer">
     <div class="nav-item" v-for="nav in navigation">
-            <NuxtLink :to="nav.path">{{ nav.title }}</NuxtLink>
+        <NuxtLink :to="nav.path">{{ nav.title }}</NuxtLink>
         <p>/</p>
     </div>
 </div>
 </template>
 
 <script setup lang="ts">
+import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from '.nuxt/vue-router';
+
 const route = useRoute()
+const router = useRouter()
 
 let navigation = ref<{
     title: string
     path: string
 }[]>([])
 
-function newPath() {    
+function newPath(routePath: RouteLocationNormalized | RouteLocationNormalizedLoaded) {    
     navigation.value = []
 
-    const path = route.path
+    const path = routePath.path
     .split("/")
     .filter((path) => path !== "" && path !== "/")
-
     
     let index = 0
 
@@ -35,11 +37,13 @@ function newPath() {
     }
 }
 
-watch(route, () => {
-    newPath()
+router.afterEach((to, from) => {
+    newPath(to)
 })
 
-onMounted(newPath)
+onMounted(() => {
+    newPath(route)
+})
 </script>
 
 <style scoped>

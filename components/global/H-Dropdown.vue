@@ -1,21 +1,14 @@
 <script setup lang="ts">
-
-defineExpose({
-  open
-})
-
-const emit = defineEmits(['open'])
-
+const router = useRouter()
 const isOpen = ref(false)
-
-/* Endre til å hente direkte fra auth */
-/* userId skal ikke bruke i prod */
-const userId = '123'
 
 function open() {
   isOpen.value = !isOpen.value
-  emit('open', isOpen.value)
 }
+
+router.beforeEach(() => {
+  isOpen.value = false
+})
 </script>
 
 <template>
@@ -24,7 +17,7 @@ function open() {
   <Transition name="dropdown">
     <nav v-if="isOpen" class="dropdown">
       <HDropdownItem text="Profile" image="/icons/Header/user-icon-dropdown.svg" to="/profile"/>
-      <HDropdownItem text="Builds" image="/icons/Header/build-icon.svg" :to="`/builds/${userId}`"/>
+      <HDropdownItem text="Builds" image="/icons/Header/build-icon.svg" :to="`/builds/${TestUserId}`"/>
       <HDropdownItem text="Favorites" image="/icons/Header/star-icon.svg" to="/profile/favorites"/>
       <HDropdownItem text="New Build" image="/icons/Header/new-document-icon.svg" to="/profile/new-build"/>
       <HDropdownItem text="Logout" image="/icons/Header/logout-icon.svg" to="404" :isLink="true"/>
