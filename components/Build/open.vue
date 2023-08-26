@@ -53,12 +53,13 @@
 
 <script setup lang="ts">
 import { UserBuild } from '@/models/builds'
+import { FullBuildDataSet } from '@/utils/useTypes'
 
 const router = useRouter()
 const emit = defineEmits(['3d-editor', 'share'])
 
 const prop = defineProps<{
-    buildId: string | string[]
+    buildId: string | string[],
 }>()
 
 /* auth.currentuser.id */

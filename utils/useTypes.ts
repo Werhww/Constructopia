@@ -35,6 +35,13 @@ interface BuildDocument extends BuildDocumentWithoutCreatedDate {
     }
 }
 
+interface FullBuildDataSet {
+    build: BuildDocument
+    inventory: InventoryDocument[]
+    favorite: boolean
+    owner: boolean
+}
+
 interface CategoryIdDocument {
     ids: string[]
 }
@@ -71,6 +78,7 @@ type Prettify<T> = {
 
 export {
     BuildDocument,
+    FullBuildDataSet,
     InventoryDocument,
     InventoryItemFixedForRows,
 

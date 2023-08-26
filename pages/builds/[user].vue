@@ -10,7 +10,6 @@
     <BuildCard
       v-for="build in buildList"
       class="Builds_item"
-
       :build="build"
     />
   </div>
@@ -22,12 +21,14 @@ definePageMeta({
 })
 
 import { User } from '~/models/builds'
-import { DifficultyKeys, OrderKeys } from "~/utils/useTypes"
+import { DifficultyKeys, OrderKeys, FullBuildDataSet } from "~/utils/useTypes"
 const { user } = useRoute().params
+const router = useRouter()
 
 const CurrentUser = new User(user as string)
 const buildList = ref(await CurrentUser.getBuilds())
 const metadata = await CurrentUser.getMetaData()
+const ShowingBuild = ref<FullBuildDataSet>()
 
 useSeoMeta({
   title: `User - ${metadata.MinecraftName}`,
@@ -41,6 +42,7 @@ useSeoMeta({
   twitterImage: metadata.MostViewedBuild.links[metadata.MostViewedBuild.thumbnailIndex],
   twitterCard: 'summary'
 })
+
 
 const currentDirection = ref("asc")
 

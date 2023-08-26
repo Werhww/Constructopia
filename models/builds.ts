@@ -7,6 +7,7 @@ import {
 
     BuildDocument,
     InventoryDocument,
+    FullBuildDataSet,
 } from "~/utils/useTypes"
 
 export class User {
@@ -65,6 +66,7 @@ export class User {
         return this.CurrentBuilds
     }
 
+
 }
 
 export class UserBuild {
@@ -74,7 +76,7 @@ export class UserBuild {
 
     constructor(private buildId: string, private userId: string) {}
 
-    async getBuild() {
+    async getBuild(): Promise<FullBuildDataSet> {
         this.BuildDoc = await getBuildDoc(this.buildId)
         this.BuildOwnerId = this.BuildDoc.userId
         this.InventoryDocs = await getBuildInventory(this.buildId)
