@@ -13,7 +13,7 @@
 
     <div class="buttons">
         <ComponentButton label="cancel" bg_color="var(--red)" color="var(--white)" @click="$emit('close')" />
-        <ComponentButton label="create" bg_color="var(--green)" color="var(--white)" @click="createNewCategory(newName, newDescription)"/>
+        <ComponentButton label="create" bg_color="var(--green)" color="var(--white)" @click="$emit('create', [newName, newDescription])"/>
     </div>
 </div>
 </template>
@@ -21,14 +21,13 @@
 <script setup lang="ts">
 const prop = defineProps<{
     seach: string
-    createNewCategory: (name: string, description: string) => void
 }>()
+
+defineEmits(['create', 'close'])
 
 const newName = ref(prop.seach)
 const newDescription = ref()
 
-
-defineEmits(['close'])
 </script>
 
 <style scoped>

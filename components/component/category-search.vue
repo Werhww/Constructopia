@@ -5,9 +5,13 @@
     </div>
     <div class="recommendations" v-if="openRecommendations" v-dragscroll.x  >
         <ComponentCategoryItem 
-        v-if="!loading && !noCategorys"
-        v-for="category in categorys"
-        :category="category"/>
+            v-if="!loading && !noCategorys"
+            v-for="category in categorys"
+            :category="category"
+            v-on:add-category="$emit('addCategory', category.id)"
+        />
+
+        
         <AnimationsDots class="loading" v-if="loading"/>
         <div class="empty-category" v-if="!loading && noCategorys">
             <p>Whow!! That was emtpy.</p>
@@ -17,12 +21,14 @@
 
 </div>
 <ComponentBlur v-if="newCategory" @click="newCategory = false"/>
-<ComponentCreateNewCategory :seach="search" :create-new-category="CategoryFinder.create" v-if="newCategory" v-on:close="newCategory = false"/>
+<ComponentCreateNewCategory :seach="search" v-if="newCategory" v-on:close="newCategory = false" v-on:create="createCategory"/>
 </template>
 
 <script setup lang="ts">
 import { CatergoryDocument } from '~/utils/useTypes';
 import { Category } from '~/models/category';
+
+const emit = defineEmits(['addCategory'])
 
 const CategoryFinder = new Category()
 
@@ -35,7 +41,6 @@ const noCategorys = ref(false)
 const newCategory = ref(false)
 
 let seachWatch: NodeJS.Timeout | null = null
-
 
 watch(search, (value) => {
     categorys.value = []
@@ -54,10 +59,19 @@ watch(search, (value) => {
             noCategorys.value = false
 
             categorys.value = SimilareCategorys
+        }).catch(() => {
+            loading.value = false
+            noCategorys.value = true
         })
         seachWatch = null
     }, 500)
 })
+
+function createCategory([name, description]: [string, string]) {
+    CategoryFinder.create(name, description)
+    /* openRecommendations.value = false
+    newCategory.value = false */
+}
 </script>
 
 <style scoped>
@@ -98,7 +112,7 @@ watch(search, (value) => {
     background-color: var(--dark);
     border-radius: calc(var(--border-radius) / 2);
     border: var(--lower-tone) 0.1rem solid;
-}
+} 
 
 .loading {
     position: absolute;

@@ -1,12 +1,12 @@
 <template>
 <div class="category-item"
     @mousedown="mouseDownX = $event.clientX"
-    @mouseup="open_category_check"
+    @mouseup="add_category_check"
 
 >
     <div class="top">
         <p class="title">{{ category.name }}</p>
-        <p class="count">{{ category.count }} uses</p>
+        <!-- <p class="count">{{ category.count }} uses</p> -->
     </div>
 
     <p class="description">{{ category.description }}</p>
@@ -15,7 +15,8 @@
 
 <script setup lang="ts">
 import { CatergoryDocument } from '@/utils/useTypes'
-const router = useRouter()
+
+const emit = defineEmits(['addCategory'])
 
 const prop = defineProps<{
     category: CatergoryDocument
@@ -24,11 +25,11 @@ const prop = defineProps<{
 let mouseDownX = 0
 let mouseUpX = 0
 
-function open_category_check(e: MouseEvent) {
+function add_category_check(e: MouseEvent) {
     mouseUpX = e.clientX
     if (dragOpenCheck(e, mouseDownX, mouseUpX)) {
-        /* router.push(`/builds/${prop.category.id}`) */
-        console.log('open category')
+        console.log('add category')
+        emit('addCategory')
     }
 }
 </script>
@@ -42,8 +43,9 @@ function open_category_check(e: MouseEvent) {
     gap: 1rem;
     color: var(--white);
 
-    width: 8rem;
-    height: stretch;
+    min-width: 8rem;
+    max-width: 8rem;
+    height: auto;
 
     border: var(--lower-tone) 0.1rem solid;
     border-radius: calc(var(--border-radius) / 2);
@@ -60,6 +62,8 @@ function open_category_check(e: MouseEvent) {
     font-weight: 700;
     text-overflow: ellipsis;
     overflow: hidden;
+
+    width: auto;
 }
 
 .count {

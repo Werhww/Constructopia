@@ -36,7 +36,10 @@
             <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
     </div>
-    <BuildInventory v-if="inventory.length > 20"  :inventory="inventory"/>
+    <div class="side-content">
+        <BuildOpenCategoryShower :categorys="build.categorys"/>
+        <BuildInventory v-if="inventory.length > 20"  :inventory="inventory"/>
+    </div>
 </section>
 
 <ComponentAlert 
@@ -168,6 +171,14 @@ function cancelAlert() {
 </script>
 
 <style scoped>
+.side-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    width: 15rem;
+}
+
 
 .edit-input {
     outline: none;

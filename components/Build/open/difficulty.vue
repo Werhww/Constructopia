@@ -29,6 +29,7 @@ function changeDifficulty(click_difficulty: string) {
     difficulty.value = click_difficulty /* change current showed difficulty */
     emit('update:modelValue', click_difficulty) /* emit event to parent */
     dropdown_content.value = new_dropdown_content /* change dropdown content */
+    isOpen.value = false /* close dropdown */
 }
 
 changeDifficulty(prop.modelValue) /* set initial difficulty */

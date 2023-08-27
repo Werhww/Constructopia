@@ -11,8 +11,13 @@
                     <img src="/icons/build/3d-icon-inverted.svg">
                     <p>open 3d editor</p>
                 </div>
+                <p class="open_categorys" @click="openCategorySearch = !openCategorySearch">categorys</p>
             </div>
-            <ComponentCategorySearch />
+
+            <div class="choosen-categorys">
+                <BuildOpenCategory v-for="cat in categorys" :key="cat" :name="cat" @click="addCategory(cat)" />
+            </div>
+            <ComponentCategorySearch v-on:add-category="addCategory" v-if="openCategorySearch"/>
             <textarea v-model="description" :disabled="isButtonsDisabled" rows="18" maxlength="350" placeholder="description...." class="edit-input edit-description"></textarea>
         </div>
     </div>
@@ -42,6 +47,7 @@ const isButtonsDisabled = ref(false) // disables all buttons when true
 const title = ref('') // max 35 characters
 const description = ref('') // max 350 characters
 const difficulty = ref('easy') // easy, medium, hard, expert, insane
+const categorys = ref<string[]>([]) // categorys of build
 
 const litematic = ref() // litematic file
 const isLitematicImported = ref(false) // true when litematic file is imported
@@ -55,6 +61,8 @@ const alertConfirm = ref(false) // confirms alert popup
 const alertMessage = ref('') // message of alert popup
 const alertTo = ref() // route to go to when alert is confirmed
 const alertInteraction = ref(true) // type of action to take when alert is confirmed
+
+const openCategorySearch = ref(false) // opens category search
 
 /* Asings all imported images to images ref */
 /* Called by image import componenet */
@@ -99,7 +107,7 @@ async function createBuild(){
         images: images.value,
         thumbnailIndex: thumbnailIndex.value as number,
         litematicFile: litematic.value,
-        categorys: [],
+        categorys: categorys.value,
         username: 'test',
     })
 }
@@ -128,6 +136,11 @@ function checkIfSomethingIsMissing() {
     return true
 }
 
+function addCategory(category: string) {
+    categorys.value.find((cat) => cat == category) ? categorys.value.splice(categorys.value.indexOf(category), 1) : categorys.value.push(category)
+    console.log(categorys.value)
+}
+
 </script>
 
 <style scoped>
@@ -137,7 +150,6 @@ section {
     flex-direction: column;
     gap: 2.938rem;
 }
-
 
 .new-build {
     display: flex;
@@ -171,6 +183,20 @@ section {
     text-underline-offset: 0.3rem;
 }
 
+.open_categorys {
+    font: var(--undertitle);
+    color: var(--white);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.3rem;
+}
+
+.choosen-categorys {
+    width: 42.5rem;
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+}
 
 .edit-input {
     outline: none;
