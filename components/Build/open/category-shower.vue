@@ -12,7 +12,7 @@ defineProps<{
 
 <style scoped>
 .choosen-categorys {
-    width: 42.5rem;
+    width: auto;
     display: flex;
     gap: 0.625rem;
     flex-wrap: wrap;

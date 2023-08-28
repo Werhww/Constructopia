@@ -69,8 +69,9 @@ watch(search, (value) => {
 
 function createCategory([name, description]: [string, string]) {
     CategoryFinder.create(name, description)
-    /* openRecommendations.value = false
-    newCategory.value = false */
+    emit('addCategory', name)
+    openRecommendations.value = false
+    newCategory.value = false
 }
 </script>
 

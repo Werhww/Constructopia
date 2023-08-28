@@ -18,6 +18,7 @@
             <BuildOpenDifficulty v-else v-model="editData.difficulty"/>
         </div>
 
+        <BuildOpenCategoryShower :categorys="build.categorys"/>
         <BuildInventory v-if="inventory.length < 20" :inventory="inventory"/>
 
         <p v-if="!isEditing" class="description build-text">{{ build.description }}</p>
@@ -36,10 +37,8 @@
             <BuildOpenIconButton text="cancel" icon="/icons/build/edit-icon.svg" @click="changeEditState"/>
         </div>
     </div>
-    <div class="side-content">
-        <BuildOpenCategoryShower :categorys="build.categorys"/>
-        <BuildInventory v-if="inventory.length > 20"  :inventory="inventory"/>
-    </div>
+
+    <BuildInventory v-if="inventory.length > 20"  :inventory="inventory"/>
 </section>
 
 <ComponentAlert 
@@ -56,7 +55,6 @@
 
 <script setup lang="ts">
 import { UserBuild } from '@/models/builds'
-import { FullBuildDataSet } from '@/utils/useTypes'
 
 const router = useRouter()
 const emit = defineEmits(['3d-editor', 'share'])
@@ -171,15 +169,6 @@ function cancelAlert() {
 </script>
 
 <style scoped>
-.side-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    width: 15rem;
-}
-
-
 .edit-input {
     outline: none;
     border: none;
@@ -215,7 +204,7 @@ function cancelAlert() {
     flex-direction: column;
     gap: 0.625rem;
 
-    
+    width: 35%;
 }
 
 .build-title {
@@ -248,7 +237,6 @@ function cancelAlert() {
 .description {
     flex: 1;
     white-space: break-spaces;
-    width: 31.75rem;
 }
 
 .build-buttons, .edit-buttons {

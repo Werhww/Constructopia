@@ -35,6 +35,14 @@ function hoverCategory() {
     category.getCategory().then((data) => {
         popupData.value = data
         loading.value = false
+    }).catch(() => {
+        loading.value = false
+        popupData.value = {
+            id: '',
+            name: 'Not found',
+            description: 'This might be a new category, it will be added soon!!',
+            count: NaN
+        }
     })
 }
 
@@ -43,9 +51,12 @@ function hoverCategory() {
 <style scoped>
 .category-card {
     position: relative;
+    transition: all 0.2s ease-in-out;
 
-    color: var(--white);
+    color: var(--lower-tone);
+    font-weight:900;
     font: var(--text);
+
 
     width: fit-content;
     padding: 0.5rem 1rem;
@@ -55,6 +66,7 @@ function hoverCategory() {
 }
 
 .category-card:hover {
+    color: var(--white);
     background-color: var(--lower-tone);
     cursor: pointer;
 }

@@ -1,5 +1,5 @@
 import { categoryIdsRef, categoryRef, categoryRequestRef } from "assets/scripts/firebase"
-import { getDoc, setDoc, doc } from "firebase/firestore"
+import { getDoc, doc, addDoc } from "firebase/firestore"
 import { CatergoryDocument, CategoryIdDocument } from "~/utils/useTypes"
 
 export class Category {
@@ -11,7 +11,6 @@ export class Category {
 
     async getIds() {
         this.ids = ((await getDoc(categoryIdsRef)).data() as CategoryIdDocument).ids
-        console.log('Category ids: ', this.ids)
     }
 
 
@@ -36,27 +35,12 @@ export class Category {
     }
 
     async create(seach: string, description: string) {
-        /* addDoc(doc(categoryRequestRef), {
+        addDoc(categoryRequestRef, {
             name: seach,
-            description: description,
-            count: 0
-        }) */
-
-        setDoc(doc(categoryRef, seach), {
-            name: seach,
-            description: description,
-            count: 0
-        })
-
-        await this.getIds()
-        const categoryIds = [...this.ids, seach] 
-
-        setDoc(categoryIdsRef, {
-            ids: categoryIds
+            description: description
         })
     
         console.log('Request created')
-
     }
 
     async getCategory(id:string):Promise<CatergoryDocument> {
@@ -78,16 +62,17 @@ export class CategoryCard {
 
     async getCategory():Promise<CatergoryDocument> {
         if(this.category.id) return this.category
+        const FetchCategory = await getDoc(doc(categoryRef, this.id))
 
-        const category = await getDoc(doc(categoryRef, this.id)).catch(
-            () => {throw new Error('Category not found')}
-        )
+        if(!FetchCategory.exists()) throw new Error('Category not found')
 
-        return {
-            id: category.id,
-            name: category.data()?.name,
-            description: category.data()?.description,
-            count: category.data()?.count
+        this.category = {
+            id: FetchCategory.id,
+            name: FetchCategory.data()?.name,
+            description: FetchCategory.data()?.description,
+            count: FetchCategory.data()?.count
         }
+
+        return this.category
     }
 }
