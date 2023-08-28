@@ -66,12 +66,13 @@ const openCategorySearch = ref(false) // opens category search
 
 /* Asings all imported images to images ref */
 /* Called by image import componenet */
-async function asignImages(image: string[], imagesLength: number){
+async function asignImages(image: string[]){
     images.value = image
 }
 
 /* Asings thumbnail index to thumbnailIndex ref*/
 /* Called by image import componenet */
+
 function asignThumbnail(index: number){
     thumbnailIndex.value = index
 }

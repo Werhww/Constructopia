@@ -40,7 +40,7 @@ export class newBuild {
         await this.uploadImages(images)
         await this.uploadLitematic(litematicFile)
         await this.uploadBuild()
-        this.uploadInventory(litematicFile)
+        await this.uploadInventory(litematicFile)
         console.log('done uploading build')
     }
 
@@ -77,11 +77,11 @@ export class newBuild {
 
 
     async uploadImages(images:string[]) {
-        const storageRef = fbRef(storage, `users/${this.userId}/images/`)
+        const storageRef = fbRef(storage, `images/`)
 
         for (let i = 0; i < images.length; i++) {
             const image = images[i]
-            const imageId = crypto.randomUUID()
+            const imageId = 'tet'
 
             const imagesRef = fbRef(storageRef, `${imageId}.png`)
     
@@ -96,8 +96,8 @@ export class newBuild {
     }
 
     async uploadLitematic(file:any) {
-        this.litematicId = crypto.randomUUID()
-        const storageRef = fbRef(storage, `users/${this.userId}/litematic`)
+        this.litematicId = 'test'
+        const storageRef = fbRef(storage, `litematic/`)
         const litematicRef = fbRef(storageRef, `${this.litematicId}.litematic`)
 
         this.blocks = await countBlocks(file)

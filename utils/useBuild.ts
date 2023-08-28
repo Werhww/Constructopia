@@ -65,12 +65,12 @@ export function deleteBuild(BuildDoc: BuildDocument, InventoryDocuments: Invento
 
     
     removeThisDoc(buildId, buildRef) /* Removes build Doc */
-    removeThisFile(`user/${userId}/litematic/${litematicId}.litematic`) /* Removes litematic file */
+    removeThisFile(`litematic/${litematicId}.litematic`) /* Removes litematic file */
     
     const AmountOfImages = BuildDoc.links.length
     for(let i = 0; i < AmountOfImages; i++) {
         console.log('deleteing image ', i)
-        removeThisFile(`users/${userId}/images/${imageIds[i]}.png`)
+        removeThisFile(`images/${imageIds[i]}.png`)
     }
 
     for(let i = 0; i < InventoryDocuments.length; i++) {
