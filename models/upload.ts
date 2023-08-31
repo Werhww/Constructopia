@@ -81,7 +81,8 @@ export class newBuild {
 
         for (let i = 0; i < images.length; i++) {
             const image = images[i]
-            const imageId = 'tet'
+            const imageBlob = dataURLToBlob(image)
+            const imageId =  await calculateFileSHA1(imageBlob)
 
             const imagesRef = fbRef(storageRef, `${imageId}.png`)
     
@@ -96,7 +97,7 @@ export class newBuild {
     }
 
     async uploadLitematic(file:any) {
-        this.litematicId = 'test'
+        this.litematicId = await calculateFileSHA1(file)
         const storageRef = fbRef(storage, `litematic/`)
         const litematicRef = fbRef(storageRef, `${this.litematicId}.litematic`)
 
