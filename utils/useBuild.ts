@@ -60,6 +60,7 @@ export async function updateFavorite(userId:string, buildId: string) {
 }
 
 
+/* Deletes Build and all its loose data */
 export function deleteBuild(BuildDoc: BuildDocument, InventoryDocuments: InventoryDocument[]) {
     const { buildId, userId, imageIds, litematicId } = BuildDoc
 
@@ -82,6 +83,7 @@ export function deleteBuild(BuildDoc: BuildDocument, InventoryDocuments: Invento
 
 }
 
+/* Funtions used to delete build data */
 function removeThisDoc(docRef: string, col: any) {
     console.log(col)
     deleteDoc(doc(col, docRef))
@@ -92,7 +94,15 @@ function removeThisFile(fileRef: string) {
     deleteObject(fbRef(storage, fileRef))
 }
 
+
+/* Saved Build Data after Edit */
 export async function saveNewBuildData(buildId: string, buildData: Prettify<FinalUpdateBuildData>) {
+    /* 
+    *   This function takes in all the values with could be changed and
+    *   merges them with the exsisting data. The new data overrides the
+    *   old.
+    */
+
     await setDoc(doc(buildRef, buildId), buildData, { merge: true }).catch(() => {
         throw new Error('Error saving build data')
     })

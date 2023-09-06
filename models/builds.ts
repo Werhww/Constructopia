@@ -1,4 +1,5 @@
-import { Timestamp } from "firebase/firestore"
+import { buildRef } from "assets/scripts/firebase"
+import { Timestamp, collection } from "firebase/firestore"
 import {
     InitalUpdateBuildData,
     DifficultyKeys,
@@ -109,5 +110,11 @@ export class UserBuild {
         if(this.userId !== this.BuildOwnerId) throw new Error('User is not owner of this build')
         deleteBuild(this.BuildDoc, this.InventoryDocs)
         return this.BuildOwnerId
+    }
+
+    async checkIfViewed() {
+        const uid = checkUIDCookie()
+        const viewRef = collection(buildRef, this.BuildDoc.buildId, "views")
+        
     }
 }

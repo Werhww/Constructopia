@@ -7,6 +7,7 @@
 </template>
 
 <script setup lang="ts">
+onMounted(checkUIDCookie)
 </script>
 
 <style scoped>
