@@ -1,5 +1,6 @@
 import { categoryIdsRef, categoryRef, categoryRequestRef } from "assets/scripts/firebase"
-import { getDoc, doc, addDoc } from "firebase/firestore"
+import { count } from "console"
+import { getDoc, doc, addDoc, increment, setDoc } from "firebase/firestore"
 import { CatergoryDocument, CategoryIdDocument } from "~/utils/useTypes"
 
 export class Category {
@@ -35,12 +36,11 @@ export class Category {
     }
 
     async create(seach: string, description: string) {
-        addDoc(categoryRequestRef, {
+        setDoc(doc(categoryRequestRef, seach), {
             name: seach,
-            description: description
+            description: description,
+            count: increment(1)
         })
-    
-        console.log('Request created')
     }
 
     async getCategory(id:string):Promise<CatergoryDocument> {
