@@ -1,5 +1,5 @@
 import { buildRef } from "assets/scripts/firebase"
-import { Timestamp, collection } from "firebase/firestore"
+import { Timestamp, collection, doc, getDoc, increment, setDoc } from "firebase/firestore"
 import {
     InitalUpdateBuildData,
     DifficultyKeys,
@@ -75,22 +75,27 @@ export class UserBuild {
     private BuildDoc: BuildDocument = {} as BuildDocument
     private InventoryDocs: InventoryDocument[] = []
 
-    constructor(private buildId: string, private userId: string) {}
+    constructor(private buildId: string, private userId: string | undefined) {}
 
     async getBuild(): Promise<FullBuildDataSet> {
         this.BuildDoc = await getBuildDoc(this.buildId)
         this.BuildOwnerId = this.BuildDoc.userId
         this.InventoryDocs = await getBuildInventory(this.buildId)
+        let favorite = false
+        if(this.userId) {
+            favorite = (await checkFavoriteState(this.userId, this.buildId)).state
+        }
 
         return {
             build: this.BuildDoc,
             inventory: this.InventoryDocs,
-            favorite: (await checkFavoriteState(this.userId, this.buildId)).state,
+            favorite: favorite,
             owner: this.userId === this.BuildDoc.userId
         }
     }
 
     updateFavoriteState() {
+        if(this.userId == undefined) return
         return updateFavorite(this.userId, this.buildId)
     }
 
@@ -115,6 +120,14 @@ export class UserBuild {
     async checkIfViewed() {
         const uid = checkUIDCookie()
         const viewRef = collection(buildRef, this.BuildDoc.buildId, "views")
-        
+        const favoriteData = await getDoc(doc(viewRef, uid))
+        if(favoriteData.exists()) return
+        this.addViewCount(uid)
+    }
+
+    private addViewCount(uid:string) {
+        const viewRef = collection(buildRef, this.BuildDoc.buildId, "views")
+        setDoc(doc(viewRef, uid), {user:uid})
+        setDoc(doc(buildRef, this.BuildDoc.buildId), {views: increment(1)}, {merge:true})
     }
 }

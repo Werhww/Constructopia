@@ -1,5 +1,5 @@
-import { buildRef, storage } from 'assets/scripts/firebase'
-import { Timestamp, addDoc, collection } from 'firebase/firestore'
+import { buildRef, categoryRef, storage } from 'assets/scripts/firebase'
+import { Timestamp, addDoc, collection, doc, increment, setDoc } from 'firebase/firestore'
 import { getDownloadURL, uploadString, ref as fbRef } from 'firebase/storage'
 import {
     BuildDocument,
@@ -40,6 +40,7 @@ export class newBuild {
         await this.uploadImages(images)
         await this.uploadLitematic(litematicFile)
         await this.uploadBuild()
+        this.incrementCategorys()
         await this.uploadInventory(litematicFile)
         console.log('done uploading build')
     }
@@ -117,7 +118,6 @@ export class newBuild {
         })
     }
 
-
     async uploadInventory(file:any) {
         const inventory = await countBuild(file)
         console.log(inventory)
@@ -131,5 +131,13 @@ export class newBuild {
             })
         }
         console.log('done uploading inventory')
+    }
+
+    private incrementCategorys() {
+        for(let i = 0; i < this.categorys.length; i++) {
+            setDoc(doc(categoryRef, this.categorys[i]), {
+                count: increment(1)
+            }, { merge:true })
+        }
     }
 }
