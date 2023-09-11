@@ -21,6 +21,10 @@ export function getCookie(cname:string) {
     return "";
 }
 
+export function getUId() {
+  return getCookie('uid')
+}
+
 export function checkUIDCookie() {
   let uid = getCookie("uid");
   if(uid != '') return uid

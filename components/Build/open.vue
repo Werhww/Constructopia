@@ -65,7 +65,7 @@ const prop = defineProps<{
 
 /* auth.currentuser.id */
 /* swich userid with id form auth */
-const builder = new UserBuild(prop.buildId as string, TestUserId)
+const builder = new UserBuild(prop.buildId as string, getUId())
 const { build, inventory, favorite, owner } = await builder.getBuild()
 
 useSeoMeta({

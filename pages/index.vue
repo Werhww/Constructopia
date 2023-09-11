@@ -13,6 +13,9 @@
     </template>
     
 <script setup lang="ts">
+import { db } from 'assets/scripts/firebase';
+import { setDoc, doc } from 'firebase/firestore';
+
 
 definePageMeta({
     title: 'Constructopia',
@@ -31,9 +34,11 @@ function addBlock() {
     blockId.value = ''
     blockImageLink.value = ''
 }
+
 /* har gjort Button neste er Jack O’Lantern */
 /* https://wiingy.com/blog/minecraft-blocks/ */
 /* https://minecraft.fandom.com/wiki/Wood */
+
 </script>
     
 <style scoped>
