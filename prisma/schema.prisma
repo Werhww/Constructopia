@@ -7,5 +7,63 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
+}
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  minecraftId String   @unique
+  createdAt DateTime @default(now())
+}
+
+enum Difficulty {
+  EASY
+  NORMAL
+  HARD
+}
+
+enum Size {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+model Build {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  description String
+  difficulty Difficulty
+  size Size
+  litematic Bytes
+  Images    Bytes[]
+  Likes     Like[]
+  Inventory Item[]
+}
+
+model Item {
+  id        Int      @id @default(autoincrement())
+  build     Build    @relation(fields: [buildId], references: [id])
+  buildId   Int
+  name      String
+  count     Int
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  build     Build    @relation(fields: [buildId], references: [id])
+  buildId   Int
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  
+  description String
+  createdAt DateTime @default(now())
+  createdBy Int
 }
