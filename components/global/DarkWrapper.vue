@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface PropsInterface {
-    shadow: boolean
+    shadow?: boolean
 }
 
 const props = withDefaults(defineProps<PropsInterface>(), {

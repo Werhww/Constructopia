@@ -1,8 +1,21 @@
 <script setup lang="ts">
+import { useMouse } from '@vueuse/core';
+
+const { x, y } = useMouse()
 const props = defineProps<{
     text: string
     shown: boolean
 }>()
+
+const positionX = ref("10px")
+const positionY = ref("10px")
+
+watch(() => props.shown, (shown) => {
+    if (shown) {
+        positionX.value = `${x.value + 10}px`
+        positionY.value = `${y.value + 15}px`
+    }
+})
 </script>
 
 <template>
@@ -15,9 +28,10 @@ const props = defineProps<{
 
 <style scoped lang="scss">
 .buttonHover {
+    z-index: 100;
     position: absolute;
-    top: -1.8rem;
-    right: -2.5rem;
+    top: v-bind(positionY);
+    left: v-bind(positionX);
 }
 
 .hoverFadeIn-enter-active,

@@ -1,10 +1,13 @@
 <script setup lang="ts">
+function test() {
+    console.log('test')
 
+}
 </script>
 
 <template>
 <div class="wrapper">
-    <IconButton icon="/icons/like.svg" hoverText="eple" />
+    <IconButton :click="test" icon="/icons/like.svg" changeIcon="/icons/likeFilled.svg" hoverText="eple" :reverseChange="false" :disabled="true"/>
 </div>
 </template>
 

@@ -60,6 +60,7 @@ function clicked() {
 
 <DarkWrapper class="iconButton" :data-disabled="disabled" @mouseenter="showButtonTips" @mouseleave="hideButtonTips" @click="clicked"  >
     <img :src="currentIcon" :alt="hoverText">
+    <p></p>
 </DarkWrapper>
 </template>
 
