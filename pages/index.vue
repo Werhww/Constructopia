@@ -1,34 +1,13 @@
 <script setup lang="ts">
-function test() {
-    console.log("test")
-}
 
-const selectedValue = ref("test323")
-
-const options = [
-    {
-        label: "test",
-        value: "test323"
-    },
-    {
-        label: "test2",
-        value: "test2"
-    },
-    {
-        label: "test3",
-        value: "test3"
-    },
-    {
-        label: "test32",
-        value: "test32"
-    }
-]
 </script>
 
 <template>
-<SystemButton :reverse-change="true" icon="/icons/like.svg" change-icon="/icons/likeFilled.svg" text="test"/>
+    <BuildUserAtSmall userName="werhw" userId="1242134512" />
+    <BuildUserAtBig userName="werhw" userId="1242134512" />
 
-<SystemSelect :options="options" v-model="selectedValue"/>
+    <BuildCategoryBig category="test2" categoryId="124" />
+    <BuildCategorySmall category="test" categoryId="124" />
 </template>
 
 <style scoped lang="scss">

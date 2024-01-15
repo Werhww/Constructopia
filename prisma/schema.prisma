@@ -81,6 +81,7 @@ model Build {
   size Size
   litematic Bytes
   images    Bytes[]
+  imageCount Int
   inventory Item[]
   category  Category[]
 
