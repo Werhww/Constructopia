@@ -1,12 +1,15 @@
 <template>
-  <NuxtPage />
+    <NuxtPage />
 </template>
 
 <style lang="scss">
 body {
+    background-color: var(--background);
+}
+
+* {
     margin: 0;
     padding: 0;
-    background-color: var(--background);
     color: white;
     font-family: 'Inter', sans-serif;
 }
