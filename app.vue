@@ -34,6 +34,8 @@ body {
     --grey: #6A6565;
 
     --shadow:  0px 0px 4px 0px var(--grey);
+
+    --filter-grey: brightness(0) saturate(100%) invert(40%) sepia(3%) saturate(551%) hue-rotate(314deg) brightness(94%) contrast(84%);
 }
 
 h1 {
