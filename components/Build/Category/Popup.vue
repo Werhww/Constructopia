@@ -12,6 +12,11 @@ const popupShown = ref(false)
 let buttonTipsTimeout: null | NodeJS.Timeout = null
 
 function showButtonTips() {
+    if(buttonTipsTimeout) {
+        clearTimeout(buttonTipsTimeout)
+        return
+    }
+
     buttonTipsTimeout = setTimeout(() => {
 
         positionX.value = `${x.value + 5}px`
@@ -26,7 +31,10 @@ function hideButtonTips() {
         clearTimeout(buttonTipsTimeout)
     }
 
-    popupShown.value = false
+    buttonTipsTimeout = setTimeout(() => {
+        popupShown.value = false
+        buttonTipsTimeout = null
+    }, 100)
 }
 
 
