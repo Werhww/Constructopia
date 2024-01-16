@@ -42,7 +42,7 @@ function selectOption(option: Options) {
 >
     <SystemFlex 
         justify-content="space-between"
-        align-item="center"
+        align-items="center"
         @click="optionsOpen = !optionsOpen"
     >
         <p>{{ selectedValue.label }}</p>

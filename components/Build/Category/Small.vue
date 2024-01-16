@@ -7,7 +7,7 @@ const props = defineProps<{
 
 <template>
 <BuildCategoryPopup :category="category" :category-id="categoryId" description="test123">
-    <SystemFlex class="category" align-item="center" justify-content="center">
+    <SystemFlex class="category" align-items="center" justify-content="center">
         <span>{{ category }}</span>
     </SystemFlex>
 </BuildCategoryPopup>

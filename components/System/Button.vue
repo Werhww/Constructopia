@@ -58,14 +58,14 @@ function clicked() {
             padding="small" 
             background="dark" 
             radius="small" 
-            align-item="center" 
+            align-items="center" 
             justify-content="center"
             width="fit-content" 
             height="fit-content"
         
             gap="small"
         >
-            <img :src="currentIcon" v-if="icon">
+            <SystemIcon :src="currentIcon" size="medium" v-if="icon" />
             <p v-if="text">{{ currentText }}</p>
         </SystemFlex>
     </SystemToolTip>
@@ -74,10 +74,6 @@ function clicked() {
 <style scoped lang="scss">
 .iconButton {
     cursor: pointer;
-    
-    & > img {
-        height: 1.25rem;
-    }
 
     &[data-disabled="true"] {
         cursor: not-allowed;

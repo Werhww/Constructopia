@@ -25,6 +25,7 @@ body {
     --rad-inner: 0.5rem;
     --rad-small: 0.375rem;
 
+    --gap-tiny: 0.25rem;
     --gap-big: 2.5rem;
     --gap-normal: 1rem;
     --gap-small: 0.375rem;

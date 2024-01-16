@@ -1,12 +1,12 @@
 <script setup lang="ts">
 const props = defineProps<{
-    userName: string
+    username: string
     userId: string
 }>()
 </script>
 
 <template>
-<span class="userAt">@{{ userName }}</span>
+<span class="userAt">@{{ username }}</span>
 </template>
 
 <style scoped lang="scss">
@@ -17,6 +17,7 @@ const props = defineProps<{
     transition: color 0.2s ease-in-out;
 
     &:hover {
+
         color: #fff;
     }
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface FlexTypes {
     tag?: string
-    gap?: "none" | "small" | "normal" | "big"
+    gap?: "none" | "small" | "normal" | "big" | "tiny"
     radius?: "none" | "outer" | "inner" | "small"
     padding?:   "none" |  "normal" | "small"
     background?: "none" | "background" | "dark" | "grey" 
@@ -10,7 +10,7 @@ interface FlexTypes {
 
     direction?: "row" | "row-reverse" | "column" | "column-reverse" | "initial" | "inherit"
     justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around" | "space-evenly" | "initial" | "inherit" 
-    alignItem?: "normal" | "stretch" | "center" | "flex-start" | "flex-end" | "baseline" | "initial" | "inherit" 
+    alignItems?: "normal" | "stretch" | "center" | "flex-start" | "flex-end" | "baseline" | "initial" | "inherit" 
     justifySelf?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around" | "space-evenly" | "initial" | "inherit" | "auto"
     alignSelf?: "normal" | "stretch" | "center" | "flex-start" | "flex-end" | "baseline" | "initial" | "inherit" | "auto"
     
@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<FlexTypes>(), {
     shadow: "off",
 
     direction: "row",
-    alignItem: "stretch",
+    alignItems: "stretch",
     justifyContent: "flex-start",
     alignSelf: "auto",
     justifySelf: "auto",
@@ -50,7 +50,7 @@ const style = computed(() => {
         
         "--gap": `var(--gap-${props.gap})`,
         "--flex-direction": props.direction,
-        "--align-items": props.alignItem,
+        "--align-items": props.alignItems,
         "--justify-content": props.justifyContent,
         "--flex": props.wrap,
         "--grow": props.grow,

@@ -4,9 +4,11 @@ import { useMouse } from '@vueuse/core';
 const { x, y } = useMouse()
 const props  = withDefaults(defineProps<{
     text: string
+    timeout?: number
     click?: () => void
 }>(), {
-    click: () => {}
+    click: () => {},
+    timeout: 600
 })
 
 const toolTipShown = ref(false)
@@ -21,7 +23,7 @@ function showButtonTips() {
         positionY.value = `${y.value + 15}px`
         toolTipShown.value = true
         buttonTipsTimeout = null
-    }, 600)
+    }, props.timeout)
 }
 
 function hideButtonTips() {
