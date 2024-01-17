@@ -13,9 +13,11 @@ interface FlexTypes {
     alignItems?: "normal" | "stretch" | "center" | "flex-start" | "flex-end" | "baseline" | "initial" | "inherit" 
     justifySelf?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around" | "space-evenly" | "initial" | "inherit" | "auto"
     alignSelf?: "normal" | "stretch" | "center" | "flex-start" | "flex-end" | "baseline" | "initial" | "inherit" | "auto"
-    
+    overflow?: "visible" | "hidden" | "scroll" | "auto" 
+
+
     wrap?: "nowrap" | "wrap" | "wrap-reverse" | "initial" | "inherit"
-    grow?: string
+    flex?: string
 
     width?: string
     height?: string
@@ -36,8 +38,9 @@ const props = withDefaults(defineProps<FlexTypes>(), {
     alignSelf: "auto",
     justifySelf: "auto",
     wrap: "nowrap",
+    overflow: "visible",
 
-    grow: "0 1 auto",
+    flex: "0 1 auto",
     height: "auto",
     width: "auto"
 })
@@ -52,10 +55,11 @@ const style = computed(() => {
         "--flex-direction": props.direction,
         "--align-items": props.alignItems,
         "--justify-content": props.justifyContent,
-        "--flex": props.wrap,
-        "--grow": props.grow,
+        "--wrap": props.wrap,
+        "--flex": props.flex,
         "--align-self": props.alignSelf,
         "--justify-self": props.justifySelf,
+        "--overflow": props.overflow,
 
         "--height": props.height,
         "--width": props.width,
@@ -85,8 +89,9 @@ const style = computed(() => {
     
     align-self: var(--align-self);
     justify-self: var(--justify-self);
-    flex-wrap: var(--flex);
-    flex: var(--grow);
+    flex-wrap: var(--wrap);
+    flex: var(--flex);
+    overflow: var(--overflow);
     
     height: var(--height);
     width: var(--width);

@@ -63,7 +63,7 @@ const positionY = ref("10px")
             <SystemFlex
                 direction="column"
                 gap="small"
-                grow="1"
+                flex="1"
             >
                 <p>{{ category }}</p>
                 <span class="description">{{ description }}</span>

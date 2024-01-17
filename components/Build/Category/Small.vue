@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const props = defineProps<{
-    category: string
-    categoryId: string
+    name: string
+    id: string
 }>()
 </script>
 
 <template>
-<BuildCategoryPopup :category="category" :category-id="categoryId" description="test123">
+<BuildCategoryPopup :category="name" :category-id="id" description="test123">
     <SystemFlex class="category" align-items="center" justify-content="center">
-        <span>{{ category }}</span>
+        <span>{{ name }}</span>
     </SystemFlex>
 </BuildCategoryPopup>
 </template>

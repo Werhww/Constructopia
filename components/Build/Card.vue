@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { usePreferredReducedMotion } from '@vueuse/core';
+const motion = usePreferredReducedMotion()
+
 const props = defineProps<{
     src: string
     name: string
@@ -13,12 +16,15 @@ const props = defineProps<{
     size: string
     difficulty: string
 
-    categorys: string[]
+    categorys: {
+        name: string
+        id: string
+    }[]
 }>()
 </script>
 
 <template>
-<SystemFlex 
+<SystemFlex class="buildCard"
     direction="column"
     gap="small"
     padding="normal" 
@@ -27,7 +33,9 @@ const props = defineProps<{
 
     width="16.375rem"
 >
-    <img :src="src" :alt="name">
+    <SystemFlex radius="inner" overflow="hidden">
+        <img :src="src" :alt="name">
+    </SystemFlex>
     <SystemFlex
         justify-content="space-between"
         align-items="center"
@@ -57,20 +65,55 @@ const props = defineProps<{
         </SystemFlex>
         <span>/{{ difficulty }}</span>
     </SystemFlex>
-    <SystemFlex></SystemFlex>
+    <SystemFlex class="description"
+        overflow="hidden"
+        :data-motion="motion"
+    >
+        <span>{{ description }}</span>
+    </SystemFlex>
+
+    <BuildCategoryScroller 
+        :categorys="categorys" 
+        :animation-on="false"    
+    />
 </SystemFlex>
 </template>
 
 <style scoped lang="scss">
-.buildTitle {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
+.buildCard {
+    h2 {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 
-.tinyStuff {
-    span {
-        color: var(--grey);
+    .description {
+        &[data-motion="reduce"] {
+            display: none;
+        }
+
+        transition: max-height 600ms ease-out;
+        max-height: 0;
+
+        span {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            color: var(--grey);
+        }
+    }
+    
+    .tinyStuff {
+        span {
+            color: var(--grey);
+        }
+    }
+
+    &:hover {
+        .description {
+            max-height: 5rem;
+        }
     }
 }
 </style>
