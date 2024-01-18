@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { usePreferredReducedMotion } from '@vueuse/core';
-const motion = usePreferredReducedMotion()
-
-const props = defineProps<{
+defineProps<{
     src: string
     name: string
     description: string
@@ -21,6 +18,8 @@ const props = defineProps<{
         id: string
     }[]
 }>()
+
+const categoryScroller = ref(false)
 </script>
 
 <template>
@@ -30,6 +29,9 @@ const props = defineProps<{
     padding="normal" 
     background="dark" 
     radius="outer"
+
+    @mouseenter="categoryScroller = true"
+    @mouseleave="categoryScroller = false"
 
     width="16.375rem"
 >
@@ -52,7 +54,7 @@ const props = defineProps<{
             </SystemFlex>
         </SystemFlex>
     </SystemFlex>
-    <SystemFlex class="tinyStuff"
+    <SystemFlex
         gap="small"
     >
         <BuildUserAtSmall :username="username" :user-id="userId" />
@@ -61,26 +63,27 @@ const props = defineProps<{
             gap="tiny"    
         >
             <SystemIcon src="/icons/size.svg" size="tiny" ratio="height" color="grey" />
-            <span>{{ size }}</span>
+            <span class="grey">{{ size }}</span>
         </SystemFlex>
-        <span>/{{ difficulty }}</span>
+        <span class="grey">/{{ difficulty }}</span>
     </SystemFlex>
     <SystemFlex class="description"
         overflow="hidden"
-        :data-motion="motion"
     >
         <span>{{ description }}</span>
     </SystemFlex>
 
     <BuildCategoryScroller 
         :categorys="categorys" 
-        :animation-on="false"    
+        :animation-on="categoryScroller"    
     />
 </SystemFlex>
 </template>
 
 <style scoped lang="scss">
 .buildCard {
+    cursor: pointer;
+
     h2 {
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -88,10 +91,6 @@ const props = defineProps<{
     }
 
     .description {
-        &[data-motion="reduce"] {
-            display: none;
-        }
-
         transition: max-height 600ms ease-out;
         max-height: 0;
 
@@ -104,10 +103,8 @@ const props = defineProps<{
         }
     }
     
-    .tinyStuff {
-        span {
-            color: var(--grey);
-        }
+    .grey {
+        color: var(--grey);
     }
 
     &:hover {

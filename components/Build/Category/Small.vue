@@ -6,15 +6,15 @@ const props = defineProps<{
 </script>
 
 <template>
-<BuildCategoryPopup :category="name" :category-id="id" description="test123">
-    <SystemFlex class="category" align-items="center" justify-content="center">
-        <span>{{ name }}</span>
-    </SystemFlex>
-</BuildCategoryPopup>
+<SystemFlex class="category" align-items="center" justify-content="center">
+    <span>{{ name }}</span>
+</SystemFlex>
 </template>
 
 <style scoped lang="scss">
 .category {
+    cursor: pointer;
+
     padding: 0.1232151235rem var(--pad-small);
     border-radius: var(--rad-small);
     border: 2px solid var(--grey);

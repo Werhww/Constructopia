@@ -40,7 +40,7 @@ const props = withDefaults(defineProps<FlexTypes>(), {
     wrap: "nowrap",
     overflow: "visible",
 
-    flex: "0 1 auto",
+    flex: "unset",
     height: "auto",
     width: "auto"
 })

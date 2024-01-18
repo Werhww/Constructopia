@@ -2,11 +2,19 @@
 import { useMouse } from '@vueuse/core';
 const { x, y } = useMouse()
 
-const props = defineProps<{
-    categoryId: string
-    category: string
-    description: string
-}>()
+const props = withDefaults(defineProps<{
+    id: string
+    timeout?: number
+    hideTimeout?: number
+}>(), {
+    timeout: 500,
+    hideTimeout: 100
+})
+
+defineExpose({
+    showButtonTips,
+    hideButtonTips
+})
 
 const popupShown = ref(false)
 let buttonTipsTimeout: null | NodeJS.Timeout = null
@@ -16,14 +24,13 @@ function showButtonTips() {
         clearTimeout(buttonTipsTimeout)
         return
     }
-
     buttonTipsTimeout = setTimeout(() => {
 
-        positionX.value = `${x.value + 5}px`
-        positionY.value = `${y.value + 8}px`
+        positionX.value = `${x.value + 10}px`
+        positionY.value = `${y.value + 15}px`
         popupShown.value = true
         buttonTipsTimeout = null
-    }, 600)
+    }, props.timeout)
 }
 
 function hideButtonTips() {
@@ -34,44 +41,38 @@ function hideButtonTips() {
     buttonTipsTimeout = setTimeout(() => {
         popupShown.value = false
         buttonTipsTimeout = null
-    }, 100)
+    }, props.hideTimeout)
 }
 
 
 const positionX = ref("10px")
 const positionY = ref("10px")
-
 </script>
 
 <template>
-
-<div @mouseenter="showButtonTips" @mouseleave="hideButtonTips">
-    <slot></slot>
-
-    <Transition name="hoverFadeIn">
-        <SystemFlex class="popup" v-if="popupShown"
-            direction="column" 
-            background="dark" 
-            padding="small"
-            radius="small"
-            shadow="on"
-        
-            width="15rem"
-            height="10rem"
-        
+<Transition name="hoverFadeIn">
+    <SystemFlex class="popup" v-if="popupShown"
+        direction="column" 
+        background="dark" 
+        padding="small"
+        radius="small"
+        shadow="on"
+    
+        width="15rem"
+        height="10rem"
+    
+    >
+        <SystemFlex
+            direction="column"
+            gap="small"
+            flex="1"
         >
-            <SystemFlex
-                direction="column"
-                gap="small"
-                flex="1"
-            >
-                <p>{{ category }}</p>
-                <span class="description">{{ description }}</span>
-            </SystemFlex>
-            <span class="showMore">show more</span>
+            <p>{{ id }}</p>
+            <span class="description">{{ id }}</span>
         </SystemFlex>
-    </Transition>
-</div>
+        <span class="showMore">show more</span>
+    </SystemFlex>
+</Transition>
 </template>
 
 <style scoped lang="scss">
@@ -80,7 +81,6 @@ const positionY = ref("10px")
     position: absolute;
     left: v-bind(positionX);
     top: v-bind(positionY);
-    user-select: none;
     
 
     p {

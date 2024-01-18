@@ -8,81 +8,105 @@ const props = defineProps<{
     animationOn: boolean
 }>()
 
-import { usePreferredReducedMotion } from '@vueuse/core';
-const motion = usePreferredReducedMotion()
+import type { BuildCategoryPopup } from '#build/components';
+let popupTimeout: null | NodeJS.Timeout = null
+let hideTimeout: null | NodeJS.Timeout = null
 
-const translate = ref(0)
-const increment = (50 - (0.377 / 2)) / 1500
+function showPopup(id: string, name: string) {
+    let timeoutTime = 500
 
-let movementInterval: NodeJS.Timeout | null = null 
+    if(hideTimeout) {
+        clearTimeout(hideTimeout)
+        timeoutTime = 100
+    }
 
-function animate() {
-    console.log('animate')
-    movementInterval = setInterval(() => {
-        if (translate.value < -50) {
-            translate.value = 0
-        }
-
-        translate.value -= increment
-    }, 10)  
+    popupTimeout = setTimeout(() => {
+        categoryPopupName.value = name
+        categoryPopupId.value = id
+        popupElement.value?.showButtonTips()
+        popupTimeout = null
+    }, timeoutTime)
 }
-watch(() => [props.animationOn, motion], ([animationOn, motion]) => {
-    if(motion !== 'reduce') {
-        return
+
+function hidePopup() {
+    if(popupTimeout) {
+        clearTimeout(popupTimeout)
     }
 
-    if (newVal) {
-        animate()
-    } else {
-        clearInterval(movementInterval!)
-        translate.value = 0
-    }
-})
+    hideTimeout = setTimeout(() => {
+        popupElement.value?.hideButtonTips()
+        popupTimeout = null
+    }, 100)
+}
 
-onMounted(() => {
-    if (motion.value !== 'reduce') {
-        animate()
-        
-    } else {
-        if (movementInterval) {
-            clearInterval(movementInterval)
-        }
-    }
-})
+function popupHover() {
+    if(hideTimeout) {
+        clearTimeout(hideTimeout)
+    }   
+
+    pauseAnimation.value = true
+}
+
+
+const categoryPopupName = ref("")
+const categoryPopupId = ref("")
+const popupElement = ref<InstanceType<typeof BuildCategoryPopup> | null>(null)
+const pauseAnimation = ref(false)
 </script>
 
 <template>
-<SystemFlex class="categorys"
-    gap="small"
-    :data-motion="motion"
-> 
-    <div class="categorysInner" ref="categoryContainer" :style="`transform: translate(${translate}%)`">
-        <BuildCategorySmall v-for="item in categorys" :name="item.name" :id="item.id" />
-        <BuildCategorySmall v-for="item in categorys" :name="item.name" :id="item.id" aria-hidden="true" />
+<div class="categorys">
+    <BuildCategoryPopup @mouseenter="popupHover" @mouseleave="pauseAnimation = false; hidePopup()" :id="categoryPopupId" ref="popupElement" :timeout="1" :hide-timeout="1" />
+    <div class="scrollerWrapper">
+        <SystemFlex class="categorysInner"
+            gap="small"
+            flex="nowrap"
+            width="max-content"
+    
+            :data-animate="animationOn"
+            :data-pause="pauseAnimation"
+        >
+            <BuildCategorySmall v-for="item in categorys" @mouseenter="showPopup(item.id, item.name)" @mouseleave="hidePopup" :name="item.name" :id="item.id" />
+            <BuildCategorySmall v-for="item in categorys" @mouseenter="showPopup(item.id, item.name)" @mouseleave="hidePopup" :name="item.name" :id="item.id" aria-hidden="true" />
+        </SystemFlex>
     </div>
-</SystemFlex>
+</div>
 </template>
 
 <style scoped lang="scss">
-.categorys {    
+.categorys { 
+
     .categorysInner {
-        display: flex;
-        gap: var(--gap-small);
-        flex-wrap: nowrap;
-        width: max-content;
-    }
+        position: unset;
+        animation: scroll 15s linear infinite;
 
-    mask: linear-gradient(to right, transparent, var(--background) 5%, var(--background) 95%, transparent);
+        &:hover {
+            animation-play-state: paused;
+        }
 
-    &[data-motion="reduce"] {
-        mask: none;
+        &[data-animate="false"] {
+            animation-play-state: paused;
+        }
 
-        .categorysInner {
-            transform: none;
-            flex-wrap: wrap;
+        &[data-pause="true"] {
+            animation-play-state: paused;
+        }
+
+        div {
+            cursor: pointer;
         }
     }
 
+    .scrollerWrapper {
+        width: 100%;
 
+        mask: linear-gradient(to right, transparent, var(--background) 5%, var(--background) 95%, transparent); 
+    }
+
+    @keyframes scroll {
+        to {
+            transform: translate(calc(-50% - calc(var(--gap-small) / 2)));
+        }        
+    }
 }
 </style>
