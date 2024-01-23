@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SystemFlex } from '#build/components';
+import { onClickOutside } from '@vueuse/core'
 
 defineProps<{
     src: string
@@ -21,8 +21,13 @@ defineProps<{
     }[]
 }>()
 
+const dropdownElement = ref(null)
+onClickOutside(dropdownElement, () => {dropdown.value = false; forceOff.value = false})
 
 const categoryScroller = ref(false)
+const forceOff = ref(false)
+
+const dropdown = ref(false)
 </script>
 
 <template>
@@ -36,32 +41,31 @@ const categoryScroller = ref(false)
 
     gap="small"
 >
-    <SystemFlex radius="inner" overflow="hidden" width="11.25rem" >
-        <img :src="src" :alt="name">
-    </SystemFlex>
+    <img :src="src" :alt="name" class="image">
 
     <SystemFlex
         direction="column"
         gap="small"
-        width="72.5%"
+        width="14.5rem"
     >
         <span>{{ name }}</span>
         <SystemFlex
             gap="small"
         >
             <BuildUserAtSmall :username="username" :user-id="userId" />
-                <SystemFlex 
-                    align-items="center"
-                    gap="tiny"    
-                >
-                    <SystemIcon src="/icons/size.svg" size="tiny" ratio="height" color="grey" />
-                    <span class="grey">{{ size }}</span>
-                </SystemFlex>
-                <span class="grey">/{{ difficulty }}</span>
+
+            <SystemFlex 
+                align-items="center"
+                gap="tiny"    
+            >
+                <SystemIcon src="/icons/size.svg" size="tiny" ratio="height" color="grey" />
+                <span class="grey">{{ size }}</span>
+            </SystemFlex>
+            <span class="grey">/{{ difficulty }}</span>
         </SystemFlex>
 
 
-        <BuildCategoryScroller :categorys="categorys" :animation-on="categoryScroller" />
+        <BuildCategoryScroller :categorys="categorys" :animation-on="categoryScroller && !forceOff" />
 
         <SystemFlex class="greyStuff"
             gap="normal"
@@ -76,11 +80,48 @@ const categoryScroller = ref(false)
             </SystemFlex>
         </SystemFlex>
     </SystemFlex>
+    <SystemIcon @click="dropdown = !dropdown; forceOff = true" src="/icons/verticalDots.svg" alt="option icons" size="medium" ratio="height" class="dots" />
+
+    <SystemFlex class="dropdown" ref="dropdownElement"  v-if="dropdown"
+        direction="column"
+        background="dark" 
+        padding="small"
+        gap="small"
+        radius="small"
+        shadow="on"
+
+        height="fit-content"
+    >
+        <SystemFlex
+            gap="small"
+            align-items="center"
+        >
+            <SystemIcon src="/icons/like.svg" alt="Like icon" size="medium" />
+            <span>Favorite</span>
+        </SystemFlex>
+        <SystemFlex
+            gap="small"
+            align-items="center"
+        >
+            <SystemIcon src="/icons/report.svg" alt="Like icon" size="medium" />
+            <span>Report</span>
+        </SystemFlex>
+    </SystemFlex>
 </SystemFlex>
 </template>
 
 <style scoped lang="scss">
 .buildList {
+    position: relative;
+    cursor: pointer;
+    
+    .image {
+        max-width: 11.25rem;
+        min-width: 11.25rem;
+        object-fit: cover;
+        border-radius: var(--rad-inner);
+    }
+
     .greyStuff {
         span {
             color: var(--grey);
@@ -89,6 +130,24 @@ const categoryScroller = ref(false)
 
     .grey {
         color: var(--grey);
+    }
+
+    .dots {
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.2s ease;
+    }
+
+    &:hover {
+        .dots {
+            opacity: 1;
+        }
+    }
+
+    .dropdown {
+        position: absolute;
+        right: 0;
+        top: 1.5rem;
     }
 }
 </style>

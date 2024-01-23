@@ -82,6 +82,7 @@ model Build {
   litematic Bytes
   images    Bytes[]
   imageCount Int
+  blockCount Int
   inventory Item[]
   category  Category[]
 

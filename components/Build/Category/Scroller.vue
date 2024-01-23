@@ -57,7 +57,7 @@ const pauseAnimation = ref(false)
 <template>
 <div class="categorys">
     <BuildCategoryPopup @mouseenter="popupHover" @mouseleave="pauseAnimation = false; hidePopup()" :id="categoryPopupId" ref="popupElement" :timeout="1" :hide-timeout="1" />
-    <div class="scrollerWrapper">
+    <div class="categorysOuter">
         <SystemFlex class="categorysInner"
             gap="small"
             flex="nowrap"
@@ -75,7 +75,7 @@ const pauseAnimation = ref(false)
 
 <style scoped lang="scss">
 .categorys { 
-
+    width: fill-available;
     .categorysInner {
         position: unset;
         animation: scroll 15s linear infinite;
@@ -97,10 +97,8 @@ const pauseAnimation = ref(false)
         }
     }
 
-    .scrollerWrapper {
-        width: 100%;
-
-        mask: linear-gradient(to right, transparent, var(--background) 5%, var(--background) 95%, transparent); 
+    .categorysOuter {
+        mask: linear-gradient(to right, transparent, var(--background) 5%, var(--background) 95%, transparent);
     }
 
     @keyframes scroll {
