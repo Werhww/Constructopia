@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-<SystemFlex >
+<SystemFlex class="item">
     <SystemFlex 
         width="1.75rem"
     >
@@ -19,4 +19,7 @@ defineProps<{
 </template>
 
 <style scoped lang="scss">
+.item {
+    cursor: pointer;
+}
 </style>

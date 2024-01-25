@@ -81,6 +81,7 @@ model Build {
   size Size
   litematic Bytes
   images    Bytes[]
+  views     Int      @default(0)
   imageCount Int
   blockCount Int
   inventory Item[]
