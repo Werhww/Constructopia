@@ -10,14 +10,16 @@ interface FilterDropdownItemProps {
 
 const menuOpen = ref(false)
 
+/* Filter dropdown */
 const filterOpen = ref(false)
-const orderOpen = ref(false)
 
+
+/* Order dropdwon */
+const orderOpen = ref(false)
 const currentOrderLabel = ref("Blocks")
 const currentOrderItem = computed(() => {
     return OrderItemsFullList.find(item => item.label === currentOrderLabel.value)
 })
-
 
 const orderList = computed(() => {
     return OrderItemsFullList.filter(item => item.label !== currentOrderLabel.value)
@@ -50,6 +52,8 @@ const OrderItemsFullList = [
     }
 ] as FilterDropdownItemProps[]
 
+
+/* Create new filter */
 const filterOptionsList = [
     {
         value: "blockCount",
@@ -71,17 +75,25 @@ const filterOptionsList = [
         value: "Blocks",
         label: "blocks"
     },
-    ]
+]
+
+const currentFilterValue = ref(filterOptionsList[0].value)
+
+const filterObjectElement = ref(null)
+const fitlerOptionElement = ref(null)
+onClickOutside(filterSelectElement, )
 </script>
 
 <template>
-<div class="filter">
-    <SystemFlex >
+    <div class="filter">
+        <SystemFlex >
         <SystemButton icon="/icons/filter.svg" :click="() => menuOpen = !menuOpen" />
     </SystemFlex>
 
     <Transition name="apper" >
         <SystemFlex class="filterDropdown" v-show="menuOpen"
+            ref="filterDropdown"
+
             direction="column"
             gap="normal"
             width="14rem"
@@ -165,11 +177,12 @@ const filterOptionsList = [
     </Transition>
 
     <SystemFlex class="createFilter"
-        background="background"
+        background="dark"
         radius="small"
         shadow="on"
     >
-        <SystemSelect />
+        <SystemSelect ref="filterSelectElement" :options="filterOptionsList" v-model="currentFilterValue" shadow="off"/>
+        <SystemSelect :options="filterOptionsList" v-model="currentFilterValue" shadow="off" />
     </SystemFlex>
 </div>
 </template>
