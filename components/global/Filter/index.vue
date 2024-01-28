@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SystemSelect } from '#build/components';
 import { onClickOutside } from '@vueuse/core'
 
 interface FilterDropdownItemProps {
@@ -79,9 +80,16 @@ const filterOptionsList = [
 
 const currentFilterValue = ref(filterOptionsList[0].value)
 
-const filterObjectElement = ref(null)
-const fitlerOptionElement = ref(null)
-onClickOutside(filterSelectElement, )
+const filterObjectElement = ref<InstanceType<typeof SystemSelect> | null>(null)
+const fitlerOptionElement = ref<InstanceType<typeof SystemSelect> | null>(null)
+onClickOutside(filterObjectElement, () => {
+    filterObjectElement.value?.closeSelect()
+})
+
+onClickOutside(fitlerOptionElement, () => {
+    fitlerOptionElement.value?.closeSelect()
+})
+
 </script>
 
 <template>
@@ -181,8 +189,8 @@ onClickOutside(filterSelectElement, )
         radius="small"
         shadow="on"
     >
-        <SystemSelect ref="filterSelectElement" :options="filterOptionsList" v-model="currentFilterValue" shadow="off"/>
-        <SystemSelect :options="filterOptionsList" v-model="currentFilterValue" shadow="off" />
+        <SystemSelect ref="filterObjectElement" :options="filterOptionsList" v-model="currentFilterValue" shadow="off"/>
+        <SystemSelect ref="fitlerOptionElement"  :options="filterOptionsList" v-model="currentFilterValue" shadow="off" />
     </SystemFlex>
 </div>
 </template>

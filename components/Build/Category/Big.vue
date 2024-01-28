@@ -1,17 +1,14 @@
 <script setup lang="ts">
 const props = defineProps<{
-    category: string
-    categoryId: string
+    name: string
+    id: string
 }>()
 </script>
 
 <template>
-
-<BuildCategoryPopup :category="category" :category-id="categoryId" description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam voluptates eaque iste omnis architecto, animi ea maxime. Quo eum accusamus id reiciendis atque? Soluta, quasi. Quia nesciunt non recusandae dicta.Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam voluptates eaque iste omnis architecto, animi ea maxime. Quo eum accusamus id reiciendis atque? Soluta, quasi. Quia nesciunt non recusandae di">
-    <SystemFlex class="category" align-item="center" justify-content="center">
-        <span>{{ category }}</span>
-    </SystemFlex>
-</BuildCategoryPopup>
+<SystemFlex class="category" align-item="center" justify-content="center">
+    <span>{{ name }}</span>
+</SystemFlex>
 </template>
 
 <style scoped lang="scss">
