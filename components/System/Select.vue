@@ -6,11 +6,15 @@ interface Options {
 
 const prop = withDefaults(defineProps<{
     options: Options[]
-    modelValue: string
+    modelValue?: string
 
     shadow?: "on" | "off"
+    longDropdown?: boolean
+    width?: string
 }>(), {
-    shadow: "on"
+    shadow: "on",
+    longDropdown: false,
+    width: "10rem"
 })
 
 const emit = defineEmits(["update:modelValue"])
@@ -18,13 +22,18 @@ defineExpose({ closeSelect })
 
 
 const selectedValue = computed(() => {
-    return prop.options.find((option) => option.value == prop.modelValue)!
+    if(!prop.modelValue) return prop.options[0]
+
+    const selected = prop.options.find((option) => option.value == prop.modelValue)
+    if(!selected) return prop.options[0]
+    return selected
 })
 
 const optionsOpen = ref(false)
 
 const optionsHeight = computed(() => {
     const fullHeight = (prop.options.length * 1.875) - 0.625
+    if(prop.longDropdown) return fullHeight > 10 ? "10rem" : `${fullHeight}rem`
     return fullHeight > 5 ? "5rem" : `${fullHeight}rem`
 })
 
@@ -43,7 +52,7 @@ function closeSelect() {
     <SystemFlex class="selectButton"
         justify-content="space-between"
         align-items="center"
-        width="10rem"
+        :width="width"
         height="fit-content"
         radius="small"
         padding="small"
@@ -57,7 +66,7 @@ function closeSelect() {
     </SystemFlex>
     <Transition name="slideIn">
         <SystemFlex v-if="optionsOpen" class="selectOptions"
-            width="10rem"
+            :width="width"
             padding="small"
             shadow="on"
             :height="optionsHeight"
@@ -69,7 +78,7 @@ function closeSelect() {
                 gap="none"
                 width="100%"
             >
-                <SystemFlex v-for="item in options" @click="selectOption(item)">
+                <SystemFlex v-for="item in options" class="selectOptionItem" @click="selectOption(item)">
                     <p>{{ item.label }}</p>
                 </SystemFlex>
             
@@ -128,6 +137,13 @@ function closeSelect() {
 
         div {
             cursor: pointer;
+        }
+    }
+
+    .selectOptionItem {
+        transition: all 300ms ease;
+        &:hover {
+            background-color: var(--background);
         }
     }
 }

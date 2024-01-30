@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
     chosenFilterItem: string
 }>()
 
@@ -10,31 +10,100 @@ import { OnClickOutside } from '@vueuse/components';
 const filterOptionsList = [
     {
         value: "blockCount",
+        type: "number",
         label: "Blocks"
     },
     {
-        value: "updatedAt",
-        label: "Last edit"
-    },
-    {
-        value: "Blocks",
+        value: "views",
+        type: "number",
         label: "Views"
     },
     {
-        value: "Blocks",
-        label: "Views"
+        value: "size",
+        type: "choice",
+        label: "Size"
     },
     {
-        value: "Blocks",
-        label: "blocks"
+        value: "createdAt",
+        type: "date",
+        label: "Created"
     },
 ]
-const currentFilterValue = ref(filterOptionsList[0].value)
 
+const filterOperators = {
+    number: [
+        {
+            value: "lt",
+            label: "Less than"
+        },
+        {
+            value: "lte",
+            label: "Less than or equal to"
+        },
+        {
+            value: "gt",
+            label: "Greater than"
+        },
+        {
+            value: "gte",
+            label: "Greater than or equal to"
+        }
+    ],
+    choice: [
+        {
+            value: "ex",
+            label: "Exclude"
+        },
+        {
+            value: "bt",
+            label: "Bigger than"
+        },
+        {
+            value: "lt",
+            label: "Less than"
+        },
+        {
+            value: "eq",
+            label: "Equal to"
+        }
+    ],
+    date: [
+        {
+            value: "lte",
+            label: "Older than"
+        },
+        {
+            value: "gte",
+            label: "Newer than"
+        },
+        {
+            value: "eq",
+            label: "Equal to"
+        },
+        {
+            value: "bt",
+            label: "Between"
+        }
+    ]
+}
+
+const currentFilterValue = ref(props.chosenFilterItem)
+
+const currentFilterOperator = ref()
+const foundFilterOperators = computed(() => {
+    const foundType = filterOptionsList.find(item => item.value === currentFilterValue.value)?.type as keyof typeof filterOperators | undefined
+
+    if(foundType) {
+        return filterOperators[foundType]
+    }
+    return []
+})
 
 const filterObjectElement = ref<InstanceType<typeof SystemSelect> | null>(null)
 const fitlerOptionElement = ref<InstanceType<typeof SystemSelect> | null>(null)
 
+
+const test = ref(false)
 </script>
 
 <template>
@@ -47,11 +116,26 @@ const fitlerOptionElement = ref<InstanceType<typeof SystemSelect> | null>(null)
         <SystemSelect ref="filterObjectElement" :options="filterOptionsList" v-model="currentFilterValue" shadow="off"/>
     </OnClickOutside>
     <OnClickOutside @trigger="fitlerOptionElement?.closeSelect()">
-        <SystemSelect ref="fitlerOptionElement"  :options="filterOptionsList" v-model="currentFilterValue" shadow="off" />
+        <SystemSelect ref="fitlerOptionElement"  :options="foundFilterOperators" v-model="currentFilterOperator" shadow="off" :long-dropdown="true" width="14rem" />
     </OnClickOutside>
+    <SystemInput v-if="currentFilterValue == 'blockCount' || currentFilterValue == 'views'" class="inputField" type="number" height="1.875rem" placeholder="value"/>
+    <SystemInput v-if="currentFilterValue == 'createdAt'" class="inputField" type="date" height="1.875rem" placeholder="value"/>
+    <SystemIcon src="/icons/arrowRight.svg" ratio="width" size="medium" color="white" @click="test = !test" />
+    <SystemInput v-if="currentFilterValue == 'createdAt' && currentFilterOperator == 'bt'" class="inputField" type="date" height="1.875rem" placeholder="value"/>
 </SystemFlex>
+
+<VCalendar
+    v-if="test"
+
+    :is-dark="true"
+    title-position="left"
+    :max-date="new Date()"
+    transition="fade"
+/>
 </template>
 
 <style scoped lang="scss">
-
+.inputField {
+    margin: 3px;
+}
 </style>

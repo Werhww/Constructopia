@@ -9,13 +9,32 @@ interface FilterDropdownItemProps {
 
 const props = defineProps<{
     options: FilterDropdownItemProps[]
-    defaultValue: string 
+    modelValue?: string 
     title: string
     excludeChoose?: boolean
     showChoosen?: boolean
 }>()
 
+defineEmits(["update:modelValue"])
+
 import { OnClickOutside } from '@vueuse/components';
+
+const filteredList = computed(() => {
+    if(!props.excludeChoose) return props.options
+    return props.options.filter(option => option.value !== props.modelValue)
+})
+
+const currentOption = computed(() => {
+    if(!props.modelValue || !props.showChoosen) return { src: "", label: "", size: "medium", ratio: "equal", value: ""} as FilterDropdownItemProps
+    return props.options.find(option => option.value === props.modelValue) as FilterDropdownItemProps
+})
+
+
+const optionsHeight = computed(() => {
+    let fullHeight = (props.options.length * 1.625) + 0.625
+    if(props.excludeChoose) fullHeight -= 1.625
+    return `${fullHeight}rem`
+})
 
 const open = ref(false)
 </script>
@@ -29,7 +48,7 @@ const open = ref(false)
         @click="open = !open"
     >
         <p>{{ title }}</p>
-        <FilterDropdownItem v-if="showChoosen" src="/icons/blocks.svg" label="Blocks" size="medium" ratio="height"  />
+        <FilterDropdownItem v-if="showChoosen" :src="currentOption?.src" :label="currentOption?.label" :size="currentOption?.size" :ratio="currentOption?.ratio"  />
         <SystemIcon class="expand" :data-open="open" src="/icons/expand.svg" size="tiny" ratio="width" />
     </SystemFlex>
     <Transition
@@ -40,15 +59,11 @@ const open = ref(false)
             gap="small"
             padding="small"
             direction="column"
-            height="8.75rem"
+            :height="optionsHeight"
             overflow="hidden"
             v-show="open"
         >
-            <FilterDropdownItem src="/icons/blocks.svg" label="Blocks" size="medium" ratio="height"  />
-            <FilterDropdownItem src="/icons/editPen.svg" label="Last edit" size="medium" ratio="equal"  />
-            <FilterDropdownItem src="/icons/views.svg" label="Views" size="medium" ratio="width"  />
-            <FilterDropdownItem src="/icons/size.svg" label="Size" size="medium" ratio="height" />
-            <FilterDropdownItem src="/icons/editCalendar.svg" label="Created" size="medium" ratio="equal" />
+            <FilterDropdownItem v-for="item in filteredList" @click="$emit('update:modelValue', item.value)" :src="item.src" :label="item.label" :size="item.size" :ratio="item.ratio" />
         </SystemFlex>
     </Transition>
 </OnClickOutside>

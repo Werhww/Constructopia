@@ -40,6 +40,7 @@ const OrderItemsFullList = [
     }
 ] as FilterDropdownItemProps[]
 
+const orderSelectValue = ref("blockCount")
 </script>
 
 <template>
@@ -61,14 +62,12 @@ const OrderItemsFullList = [
             background="dark"
             shadow="on"
         >
-            <FilterDropdown title="Filter:" default-value="test" :options="OrderItemsFullList" />
-            <FilterDropdown title="Order:"  default-value="test" :show-choosen="true" :exclude-choose="true" :options="OrderItemsFullList" />
-        
-
+            <FilterDropdown title="Filter:" :options="OrderItemsFullList" />
+            <FilterDropdown title="Order:" v-model="orderSelectValue" :show-choosen="true" :exclude-choose="true" :options="OrderItemsFullList" />
         </SystemFlex>
     </Transition>
 
-    <FilterCreateFilter v-if="false" chosen-filter-item="test" class="dropdownPosition"/>
+    <FilterCreateFilter v-if="true" chosen-filter-item="blockCount" class="dropdownPosition"/>
 </div>
 </template>
 
