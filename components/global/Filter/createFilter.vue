@@ -104,6 +104,10 @@ const fitlerOptionElement = ref<InstanceType<typeof SystemSelect> | null>(null)
 
 
 const test = ref(false)
+const range = ref({
+    start: new Date(),
+    end: new Date(2024,0,10)
+})
 </script>
 
 <template>
@@ -123,15 +127,6 @@ const test = ref(false)
     <SystemIcon src="/icons/arrowRight.svg" ratio="width" size="medium" color="white" @click="test = !test" />
     <SystemInput v-if="currentFilterValue == 'createdAt' && currentFilterOperator == 'bt'" class="inputField" type="date" height="1.875rem" placeholder="value"/>
 </SystemFlex>
-
-<VCalendar
-    v-if="test"
-
-    :is-dark="true"
-    title-position="left"
-    :max-date="new Date()"
-    transition="fade"
-/>
 </template>
 
 <style scoped lang="scss">

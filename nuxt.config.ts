@@ -3,6 +3,5 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@vueuse/nuxt',
-    "@samk-dev/nuxt-vcalendar"
-  ],
+  ]
 })

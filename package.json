@@ -10,7 +10,6 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@samk-dev/nuxt-vcalendar": "^1.0.2",
     "nuxt": "^3.9.0",
     "sass": "^1.69.7",
     "vue": "^3.4.6",
