@@ -5,7 +5,7 @@
     <div class="test">
       <!--   <Filter />
  -->
-    <DatePicker/>
+    <DatePicker :is-range="true" />
     </div>
 </template>
 

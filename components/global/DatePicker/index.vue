@@ -1,17 +1,22 @@
 <script setup lang="ts">
 interface Props {
     isRange?: boolean
+    maxDate?: Date
+    minDate?: Date
 }
 
 const prop = withDefaults(defineProps<Props>(), {
     isRange: false
 })
 
-const currentYear = ref(new Date().getFullYear())
+const currentYear = ref(new Date().getFullYear()) 
 const currentMonth = ref(new Date().getMonth() + 1)
 
 const selectedDate = ref(new Date())
-const selectedDateRange = ref([new Date(), new Date()])
+
+const movingRange = ref({ start: false, end: false })
+const oldRangeDate = ref()
+const selectedDateRange = ref([new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()])
 
 const monthDayList = computed(() => {
     const year = currentYear.value
@@ -26,28 +31,25 @@ const monthDayList = computed(() => {
 
     const days = []
 
-    console.table({ year, month, daysInMonth, lastDay, firstDay, daysInLastMonth })
-
     for (let i = 1; i <= daysInMonth; i++) {
         const date = new Date(year, month - 1, i)
-        console.log(date, selectedDate.value)
-        if(date === selectedDate.value) {
-            days.push({ day: i, date: date, isThisMonth: true, start: true, middle: false, end: false })
-            console.log("start")
-            continue
-        }
+        const marking = checkMarking(date)
 
-        days.push({ day: i, date: date, isThisMonth: true })
+        days.push({...marking, day: i, date, isThisMonth: true})
     }
 
     if(firstDay !== 1) { // 1 = monday so no need to add
         if(firstDay == 0) {
             for(let i = 0; i < 6; i++) {
-                days.unshift({ day: daysInLastMonth - i, date: new Date(year, month - 1, daysInLastMonth - i), isThisMonth: false, start: false, middle: false, end: false})
+                const date = new Date(year, month - 2, daysInLastMonth - i)
+                const marking = checkMarking(date)
+                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false})
             } 
         } else {
-            for(let i = 1; i < firstDay; i++) {
-                days.unshift({ day: daysInLastMonth - i, date: new Date(year, month - 1, daysInLastMonth - i), isThisMonth: false, start: false, middle: false, end: false })
+            for(let i = 0; i < firstDay - 1; i++) {
+                const date = new Date(year, month - 2, daysInLastMonth - i)
+                const marking = checkMarking(date)
+                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false})
             }  
         }
         
@@ -55,7 +57,9 @@ const monthDayList = computed(() => {
 
     if (lastDay !== 0) { // 0 = sunday so no need to add
       for (let i = 1; i <= 7 - lastDay; i++) {
-        days.push({ day: i, date: new Date(year, month + 1, i), isThisMonth: false, start: false, middle: false, end: false  });
+        const date = new Date(year, month, i)
+        const marking = checkMarking(date)
+        days.push({ ...marking, day: i, date, isThisMonth: false})
       }
     }
 
@@ -74,14 +78,146 @@ function changeMonth(direction: "next" | "previous") {
     }
 }
 
+function compareDates(currentDate: Date, nextDate: Date) {
+    currentDate.setHours(0,0,0,0)
+    nextDate.setHours(0,0,0,0)
 
-function clickDay(date: Date) {
-    console.log(date)
+    const currentDateTimestamp = currentDate.getTime()
+    const nextDateTimestamp = nextDate.getTime()
+
+    if(currentDateTimestamp == nextDateTimestamp) return "same"
+    else if(currentDateTimestamp > nextDateTimestamp) return "after"
+    else if(currentDateTimestamp < nextDateTimestamp) return "before"
 }
+
+function checkMarking(date: Date) {
+    if(prop.isRange) {
+        if(compareDates(selectedDateRange.value[0], selectedDateRange.value[1]) == "same"){
+            if(compareDates(date, selectedDateRange.value[0]) == "same") return { start: true, middle: false, end: false }
+            return { start: false, middle: false, end: false}
+        }
+
+        if(compareDates(date, selectedDateRange.value[0]) == "same") {
+            return { start: true, middle: false, end: false }
+        }
+        else if(compareDates(date, selectedDateRange.value[1]) == "same") {
+            return { start: false, middle: false, end: true }
+        }
+        else if(compareDates(date, selectedDateRange.value[0]) == "after" && compareDates(date, selectedDateRange.value[1]) == "before") {
+            return { start: false, middle: true, end: false }
+        }
+
+        return { start: false, middle: false, end: false }
+    }
+
+    if(compareDates(date, selectedDate.value) == "same") {
+        return { start: true, middle: false, end: false }
+    }
+
+    return { start: false, middle: false, end: false }
+}
+
+function clickDay(date: Date, inThisMonth: boolean) {
+    if(!inThisMonth) {
+        const thisMonth = new Date(currentYear.value, currentMonth.value - 1)
+
+        if(compareDates(date, thisMonth) == "before") {
+            changeMonth("previous")
+        }
+        else if(compareDates(date, thisMonth) == "after") {
+            changeMonth("next")
+        }
+
+        return
+    }
+
+    if(!prop.isRange) return selectedDate.value = date
+    oldRangeDate.value = date
+
+    if(movingRange.value.start) {
+        selectedDateRange.value[0] = date
+        movingRange.value.start = false
+        return
+    }
+    if(movingRange.value.end) {
+        selectedDateRange.value[1] = date
+        movingRange.value.end = false
+        return
+    }
+
+    chooseSideToMove(date)
+    moveRangeDate(date)
+}
+
+function chooseSideToMove(date: Date) {
+    if(compareDates(selectedDateRange.value[0], date) == "same") {
+        movingRange.value.start = true
+        movingRange.value.end = false
+    }
+    else if(compareDates(selectedDateRange.value[1], date) == "same") {
+        movingRange.value.start = false
+        movingRange.value.end = true
+    }
+    else if(compareDates(selectedDateRange.value[0], date) == "after" && compareDates(selectedDateRange.value[1], date) == "before") {
+        movingRange.value.start = false
+        movingRange.value.end = false
+    }
+    else if(compareDates(selectedDateRange.value[0], date) == "before") {
+        movingRange.value.start = false
+        movingRange.value.end = true
+    }
+    else if(compareDates(selectedDateRange.value[1], date) == "after") {
+        movingRange.value.start = true
+        movingRange.value.end = false
+    }
+}
+
+function moveRangeDate(date: Date) {
+    if(movingRange.value.start) {
+        if(compareDates(date, selectedDateRange.value[1]) == "after") {
+            selectedDateRange.value[0] = selectedDateRange.value[1]
+            selectedDateRange.value[1] = date
+            movingRange.value.start = false
+            movingRange.value.end = true
+            return
+        }
+
+        selectedDateRange.value[0] = date
+        return
+    }
+    if(movingRange.value.end) {
+        if(compareDates(date, selectedDateRange.value[0]) == "before") {
+            selectedDateRange.value[1] = selectedDateRange.value[0]
+            selectedDateRange.value[0] = date
+            movingRange.value.start = true
+            movingRange.value.end = false
+            return
+        }
+
+        selectedDateRange.value[1] = date
+        return
+    }
+}
+
+const calendarElement = ref(null)
+const { isOutside } = useMouseInElement(calendarElement)
+
+watch(isOutside, (value) => {
+    if(value) {
+        if(movingRange.value.start) selectedDateRange.value[0] = oldRangeDate.value
+        if(movingRange.value.end) selectedDateRange.value[1] = oldRangeDate.value
+        movingRange.value = {
+            start: false,
+            end: false
+        }
+    }
+})
+
+
 </script>
 
 <template>
-<SystemFlex
+<SystemFlex class="datePicker" ref="calendarElement"
     background="dark"
     width="17rem"
     padding="normal"
@@ -98,95 +234,42 @@ function clickDay(date: Date) {
         width="100%"
     >
         
-        <SystemFlex
+        <SystemFlex class="monthChanger"
             gap="normal"
         >
             <SystemIcon @click="changeMonth('previous')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(90deg)" />
             <SystemIcon @click="changeMonth('next')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(-90deg)" />
         </SystemFlex>
-        <p>{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY").value }}</p>
+        <p class="monthYearDisplay">{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY").value }}</p>
     </SystemFlex>
-    <div class="calendarColumns" :data-is-range="isRange">
-        <p class="dayLabel">{{ useDateFormat(getDaysDate("monday"),"dd" ).value }}</p>
-        <p class="dayLabel">{{ useDateFormat(getDaysDate("tuesday"),"dd" ).value }}</p>
-        <p class="dayLabel">{{ useDateFormat(getDaysDate("wednesday"),"dd" ).value }}</p>
-        <p class="dayLabel">{{ useDateFormat(getDaysDate("thursday"),"dd" ).value }}</p>
-        <p class="dayLabel">{{ useDateFormat(getDaysDate("friday"),"dd" ).value }}</p>
-        <p class="dayLabel">{{ useDateFormat(getDaysDate("saturday"),"dd" ).value }}</p>
-        <p class="dayLabel">{{ useDateFormat(getDaysDate("sunday"),"dd" ).value }}</p>
-        <div v-for="item in monthDayList" :class="{ day: item.isThisMonth }" @click="clickDay(item.date)" :data-start="item.start">
-            <p :class="{ dayLabel: !item.isThisMonth }" >{{ item.day }}</p>
-        </div>    
-    </div>
+    <DatePickerCalendarColumns :is-range="isRange" :day-list="monthDayList" @calendar-click="clickDay" @mouse-over-day="moveRangeDate" />
+
+    <DatePickerYearChanger v-if="true" :current-year="currentYear" :max-date="maxDate" :min-date="minDate"/>
 </SystemFlex>
 </template>
 
 <style scoped lang="scss">
-.calendarColumns {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(7, 1fr);
-    row-gap: 0.2rem;
-    width: 100%;
-    height: 100%;
+.datePicker {
+    --_connector-color: rgb(106, 101, 101, 0.4);
+    --_dayLabel_connector-color: rgb(106, 101, 101, 0.2);
     
-    p {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 2.125rem;
-        font-weight: 700;
-    }
+    position: relative;
 
-    .dayLabel {
-        color: var(--grey);
-        font-weight: 700;
-    }
+    .monthChanger {
+        user-select: none;
 
-    .day {
-        --_connector-color: rgb(106, 101, 101, 0.4);
-
-        & > p {
-            border-radius: 1rem;
+        img {
             cursor: pointer;
         }
-
-        transition: all 05ms ease-in-out;
-
-        & > p {
-            &:hover {
-                background: var(--_connector-color);
-            }
-        }
-
-        &[data-start="true"] {
-            & > p {
-                background: var(--grey);
-            }
-        }
     }
 
-    &[data-is-range="true"] {
-        .day {
-            &[data-start="true"] {
-                background: linear-gradient(to right, transparent, var(--grey));
+    .monthYearDisplay {
+        transition: all 50ms ease-in;
+        cursor: pointer;
+        border-radius: 2rem;
 
-                & > p {
-                    background: var(--grey);
-                }
-            }
-
-            &[data-middle="true"] {
-                background: var(--grey);
-            }
-
-            &[data-end="true"] {
-                background: linear-gradient(to left, transparent, var(--grey));
-
-                & > p {
-                    background: var(--grey);
-                }
-            }
+        &:hover {
+            filter: drop-shadow(0px 0px 0.5rem var(--grey));
         }
     }
 }
