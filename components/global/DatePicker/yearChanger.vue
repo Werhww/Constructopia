@@ -17,67 +17,106 @@ const range = (start: number, stop: number, step: number) => Array.from({ length
 const lowestYear = ref(props.currentYear - props.rangeDown)
 const highestYear = ref(props.currentYear + props.rangeUp)
 
-const yearList = computed(() => {
-
-    const years = [...range(lowestYear.value, highestYear.value, 1)]
-
-    return years
-})
+const yearList = ref(range(lowestYear.value, highestYear.value, 1))
 
 
 useInfiniteScroll(
     yearWrapper,
     () => {
-        if(props.maxDate) {
-            const highestYearDate = new Date(highestYear.value, 0, 0)
-            if(highestYearDate.getTime() >= props.maxDate.getTime()) return
-        }
+        const yearToBeAdded = maxDateFix()
 
-        highestYear.value++
+        for(let i = 0; i < yearToBeAdded; i++) {
+            highestYear.value++
+            yearList.value.push(highestYear.value)
+        }
     },
     { 
         distance: 20,
     }
 )
 
+// Infinite scroll upwars
 useInfiniteScroll(
     yearWrapper,
     () => {
-        if(props.minDate) {
-            const lowestYearDate = new Date(lowestYear.value, 0, 0)
-            if(lowestYearDate.getTime() <= props.minDate.getTime()) return
+        const yearToBeAdded = minDateFix()
+
+        for(let i = 0; i < yearToBeAdded; i++) {
+            lowestYear.value--
+            yearList.value.unshift(lowestYear.value)
         }
 
-        lowestYear.value--
+        if(yearToBeAdded != 0) {
+            yearWrapper.value?.scrollTo({
+                top: 60,
+                behavior: "smooth"
+            })
+        }
     },
     { 
-        distance: 20,
+        distance: 5,
         direction: "top"
     }
 )
 
 onMounted(() => {
-    if(props.maxDate) {
-        const highestYearDate = new Date(highestYear.value, 0, 0)
-        if(highestYearDate.getTime() >= props.maxDate.getTime()) {
-            highestYear.value = props.maxDate.getFullYear()
-        }
-    }
+    console.log(props.minDate)
 
+    minDateFix()
+    maxDateFix()
+})
+
+function minDateFix() {
     if(props.minDate) {
         const lowestYearDate = new Date(lowestYear.value, 0, 0)
-        if(lowestYearDate.getTime() <= props.minDate.getTime()) {
+        if(lowestYearDate.getFullYear() == props.minDate.getFullYear()) return 0
+
+        if(lowestYearDate.getFullYear() < props.minDate.getFullYear()) {
             lowestYear.value = props.minDate.getFullYear()
+            yearList.value = range(lowestYear.value, highestYear.value, 1)
+            return 0
+        }
+
+        if(lowestYearDate.getFullYear() > props.minDate.getFullYear()) {
+            const difference = lowestYearDate.getFullYear() - props.minDate.getFullYear()
+            console.log(lowestYearDate.getFullYear(), props.minDate.getFullYear())
+            console.log(difference)
+            if(difference < 10) return difference + 1
         }
     }
 
-    const markedElement = yearWrapper.value?.querySelector("[data-current-year='true']") as HTMLElement
+    return props.rangeDown
+}
 
+function maxDateFix() {
+    if(props.maxDate) {
+        const highestYearDate = new Date(lowestYear.value, 0, 0)
+        if(highestYearDate.getFullYear() == props.maxDate.getFullYear()) return 0
+
+        if(highestYearDate.getFullYear() > props.maxDate.getFullYear()) {
+            highestYear.value = props.maxDate.getFullYear()
+            yearList.value = range(lowestYear.value, highestYear.value, 1)
+            return 0
+        }
+
+        if(highestYearDate.getFullYear() < props.maxDate.getFullYear()) {
+            const difference = highestYearDate.getFullYear() - props.maxDate.getFullYear()
+            console.log(highestYearDate.getFullYear(), props.maxDate.getFullYear())
+            console.log(difference)
+            if(difference < 10) return difference + 1
+        }
+    }
+
+    return props.rangeUp
+}
+
+
+function moveToCenter(offsetTop: number) {
     yearWrapper.value?.scrollTo({
-        top: markedElement.offsetTop,
+        top: 80,
         behavior: "smooth"
     })
-})
+}
 </script>
 
 <template>
@@ -91,14 +130,11 @@ onMounted(() => {
         shadow="on"
     >
         <div ref="yearWrapper" class="scrollElement">
-            <SystemFlex v-for="year in yearList"
-                direction="column"
-                width="100%"
-                :data-current-year="year == props.currentYear"
-            >
-                {{ year }}
-    
-            </SystemFlex>
+            <DatePickerYearItem
+                v-for="year in yearList"
+                :year="year"
+                :currentYear="currentYear"
+            />
         </div>
     </SystemFlex>
 </template>
@@ -125,23 +161,6 @@ onMounted(() => {
             background: var(--grey);
             border-radius: var(--rad-small);
         }
-
-        div {
-            padding: var(--pad-small) 0;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-
-            &[data-current-year="true"] {
-                color: var(--primary);
-                font-weight: 600;
-            }
-
-            &:hover {
-                color: var(--primary);
-                font-weight: 600;
-            }
-        }
-
     }
 }
 </style>
