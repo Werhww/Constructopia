@@ -19,13 +19,13 @@ defineEmits<{
 
 <template>
 <div class="calendarColumns" :data-is-range="isRange">
-    <p class="dayLabel">{{ useDateFormat(getDaysDate("monday"),"dd" ).value }}</p>
-    <p class="dayLabel">{{ useDateFormat(getDaysDate("tuesday"),"dd" ).value }}</p>
-    <p class="dayLabel">{{ useDateFormat(getDaysDate("wednesday"),"dd" ).value }}</p>
-    <p class="dayLabel">{{ useDateFormat(getDaysDate("thursday"),"dd" ).value }}</p>
-    <p class="dayLabel">{{ useDateFormat(getDaysDate("friday"),"dd" ).value }}</p>
-    <p class="dayLabel">{{ useDateFormat(getDaysDate("saturday"),"dd" ).value }}</p>
-    <p class="dayLabel">{{ useDateFormat(getDaysDate("sunday"),"dd" ).value }}</p>
+    <p class="dayLabel">{{ useDateFormat(getDaysDate("monday"),"dd", { locales: 'en-US' }).value }}</p>
+    <p class="dayLabel">{{ useDateFormat(getDaysDate("tuesday"),"dd", { locales: 'en-US' } ).value }}</p>
+    <p class="dayLabel">{{ useDateFormat(getDaysDate("wednesday"),"dd", { locales: 'en-US' } ).value }}</p>
+    <p class="dayLabel">{{ useDateFormat(getDaysDate("thursday"),"dd", { locales: 'en-US' } ).value }}</p>
+    <p class="dayLabel">{{ useDateFormat(getDaysDate("friday"),"dd", { locales: 'en-US' } ).value }}</p>
+    <p class="dayLabel">{{ useDateFormat(getDaysDate("saturday"),"dd", { locales: 'en-US' } ).value }}</p>
+    <p class="dayLabel">{{ useDateFormat(getDaysDate("sunday"),"dd", { locales: 'en-US' } ).value }}</p>
     <div v-for="item in dayList" :class="{ day: item.isThisMonth, dayLabel: !item.isThisMonth }" @click="$emit('calendarClick', item.date, item.isThisMonth)" @mouseenter="$emit('mouseOverDay', item.date)" :data-start="item.start" :data-middle="item.middle" :data-end="item.end">
         <p>{{ item.day }}</p>
     </div>    

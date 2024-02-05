@@ -4,7 +4,7 @@ const props = defineProps<{
     monthIndex: number    
 }>()
 
-const monthPrefix = ref(useDateFormat(new Date(props.year, props.monthIndex - 1, 1), "MMM"))
+const monthPrefix = ref(useDateFormat(new Date(props.year, props.monthIndex - 1, 1), "MMM" , { locales: 'en-US' }))
 defineEmits({
     changeMonth: (month: number) => true
 })

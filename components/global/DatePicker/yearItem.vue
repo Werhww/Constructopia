@@ -17,6 +17,7 @@ const isOpen = ref(false)
 
 function moveToYear() {
     setTimeout(() => {
+        console.log(yearItemElm.value)
         if(!yearItemElm.value) return
 
         emit('yearOpen', yearItemElm.value.offsetTop - 10)

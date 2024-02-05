@@ -238,7 +238,7 @@ const isYearChangerOpen = ref(false)
             <SystemIcon @click="changeMonth('previous')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(90deg)" />
             <SystemIcon @click="changeMonth('next')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(-90deg)" />
         </SystemFlex>
-        <p class="monthYearDisplay" @click="isYearChangerOpen = !isYearChangerOpen">{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY").value }}</p>
+        <p class="monthYearDisplay" @click="isYearChangerOpen = !isYearChangerOpen">{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY", { locales: 'en-US' }).value }}</p>
     </SystemFlex>
     <DatePickerCalendarColumns :is-range="isRange" :day-list="monthDayList" @calendar-click="clickDay" @mouse-over-day="moveRangeDate" />
 
