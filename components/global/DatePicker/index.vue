@@ -163,12 +163,10 @@ function chooseSideToMove(date: Date) {
         movingRange.value.end = false
     }
     else if(compareDates(selectedDateRange.value[0], date) == "before") {
-        movingRange.value.start = false
-        movingRange.value.end = true
+        selectedDateRange.value[1] = date
     }
     else if(compareDates(selectedDateRange.value[1], date) == "after") {
-        movingRange.value.start = true
-        movingRange.value.end = false
+        selectedDateRange.value[0] = date
     }
 }
 
@@ -213,7 +211,7 @@ watch(isOutside, (value) => {
     }
 })
 
-
+const isYearChangerOpen = ref(false)
 </script>
 
 <template>
@@ -240,11 +238,19 @@ watch(isOutside, (value) => {
             <SystemIcon @click="changeMonth('previous')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(90deg)" />
             <SystemIcon @click="changeMonth('next')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(-90deg)" />
         </SystemFlex>
-        <p class="monthYearDisplay">{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY").value }}</p>
+        <p class="monthYearDisplay" @click="isYearChangerOpen = !isYearChangerOpen">{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY").value }}</p>
     </SystemFlex>
     <DatePickerCalendarColumns :is-range="isRange" :day-list="monthDayList" @calendar-click="clickDay" @mouse-over-day="moveRangeDate" />
 
-    <DatePickerYearChanger v-if="true" :current-year="currentYear" :max-date="maxDate" :min-date="minDate"/>
+    <Transition name="fade">
+        <DatePickerYearChanger v-show="isYearChangerOpen" 
+            :current-year="currentYear" 
+            :max-date="maxDate" 
+            :min-date="minDate"
+            
+            @change-year="(year, monthIndex) => {currentYear = year, currentMonth = monthIndex, isYearChangerOpen = false}"
+        />
+    </Transition>
 </SystemFlex>
 </template>
 
@@ -268,9 +274,19 @@ watch(isOutside, (value) => {
         cursor: pointer;
         border-radius: 2rem;
 
+        user-select: none;
+
         &:hover {
             filter: drop-shadow(0px 0px 0.5rem var(--grey));
         }
     }
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 100ms;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
 }
 </style>

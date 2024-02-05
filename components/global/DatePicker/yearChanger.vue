@@ -5,11 +5,17 @@ interface Props {
     minDate?: Date
     rangeUp?: number
     rangeDown?: number
+    yearStep?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
     rangeDown: 10,
-    rangeUp: 10
+    rangeUp: 10,
+    yearStep: 1
+})
+
+defineEmits({
+    changeYear: (year: number, monthIndex: number) => true
 })
 
 const yearWrapper = ref<HTMLElement | null>(null)
@@ -17,17 +23,15 @@ const range = (start: number, stop: number, step: number) => Array.from({ length
 const lowestYear = ref(props.currentYear - props.rangeDown)
 const highestYear = ref(props.currentYear + props.rangeUp)
 
-const yearList = ref(range(lowestYear.value, highestYear.value, 1))
+const yearList = computed(() => range(lowestYear.value, highestYear.value, props.yearStep))
 
 
 useInfiniteScroll(
     yearWrapper,
     () => {
         const yearToBeAdded = maxDateFix()
-
         for(let i = 0; i < yearToBeAdded; i++) {
             highestYear.value++
-            yearList.value.push(highestYear.value)
         }
     },
     { 
@@ -43,7 +47,6 @@ useInfiniteScroll(
 
         for(let i = 0; i < yearToBeAdded; i++) {
             lowestYear.value--
-            yearList.value.unshift(lowestYear.value)
         }
 
         if(yearToBeAdded != 0) {
@@ -60,8 +63,6 @@ useInfiniteScroll(
 )
 
 onMounted(() => {
-    console.log(props.minDate)
-
     minDateFix()
     maxDateFix()
 })
@@ -73,14 +74,11 @@ function minDateFix() {
 
         if(lowestYearDate.getFullYear() < props.minDate.getFullYear()) {
             lowestYear.value = props.minDate.getFullYear()
-            yearList.value = range(lowestYear.value, highestYear.value, 1)
             return 0
         }
 
         if(lowestYearDate.getFullYear() > props.minDate.getFullYear()) {
             const difference = lowestYearDate.getFullYear() - props.minDate.getFullYear()
-            console.log(lowestYearDate.getFullYear(), props.minDate.getFullYear())
-            console.log(difference)
             if(difference < 10) return difference + 1
         }
     }
@@ -90,19 +88,18 @@ function minDateFix() {
 
 function maxDateFix() {
     if(props.maxDate) {
-        const highestYearDate = new Date(lowestYear.value, 0, 0)
-        if(highestYearDate.getFullYear() == props.maxDate.getFullYear()) return 0
+        const highestYearDate = new Date(highestYear.value, 0, 0)
 
+        if(highestYearDate.getFullYear() == props.maxDate.getFullYear()) return 0
+        
         if(highestYearDate.getFullYear() > props.maxDate.getFullYear()) {
             highestYear.value = props.maxDate.getFullYear()
-            yearList.value = range(lowestYear.value, highestYear.value, 1)
             return 0
         }
 
+
         if(highestYearDate.getFullYear() < props.maxDate.getFullYear()) {
             const difference = highestYearDate.getFullYear() - props.maxDate.getFullYear()
-            console.log(highestYearDate.getFullYear(), props.maxDate.getFullYear())
-            console.log(difference)
             if(difference < 10) return difference + 1
         }
     }
@@ -110,10 +107,9 @@ function maxDateFix() {
     return props.rangeUp
 }
 
-
-function moveToCenter(offsetTop: number) {
+function moveTo(offsetTop: number) {
     yearWrapper.value?.scrollTo({
-        top: 80,
+        top: offsetTop,
         behavior: "smooth"
     })
 }
@@ -134,6 +130,8 @@ function moveToCenter(offsetTop: number) {
                 v-for="year in yearList"
                 :year="year"
                 :currentYear="currentYear"
+                @yearOpen="moveTo"
+                @changeYear="(year, monthIndex) => $emit('changeYear', year, monthIndex)"
             />
         </div>
     </SystemFlex>
