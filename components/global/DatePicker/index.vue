@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { OnClickOutside } from '@vueuse/components';
+
 interface Props {
     isRange?: boolean
     maxDate?: Date
@@ -8,6 +10,11 @@ interface Props {
 const prop = withDefaults(defineProps<Props>(), {
     isRange: false
 })
+
+const emit = defineEmits({
+    dateChange: (date: Date) => true
+})
+
 
 const currentYear = ref(new Date().getFullYear()) 
 const currentMonth = ref(new Date().getMonth() + 1)
@@ -35,7 +42,7 @@ const monthDayList = computed(() => {
         const date = new Date(year, month - 1, i)
         const marking = checkMarking(date)
 
-        days.push({...marking, day: i, date, isThisMonth: true})
+        days.push({...marking, day: i, date, isThisMonth: true, overflowStart: false, overflowEnd: false})
     }
 
     if(firstDay !== 1) { // 1 = monday so no need to add
@@ -43,13 +50,13 @@ const monthDayList = computed(() => {
             for(let i = 0; i < 6; i++) {
                 const date = new Date(year, month - 2, daysInLastMonth - i)
                 const marking = checkMarking(date)
-                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false})
+                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false, overflowStart: true, overflowEnd: false})
             } 
         } else {
             for(let i = 0; i < firstDay - 1; i++) {
                 const date = new Date(year, month - 2, daysInLastMonth - i)
                 const marking = checkMarking(date)
-                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false})
+                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false, overflowStart: true, overflowEnd: false})
             }  
         }
         
@@ -59,7 +66,7 @@ const monthDayList = computed(() => {
       for (let i = 1; i <= 7 - lastDay; i++) {
         const date = new Date(year, month, i)
         const marking = checkMarking(date)
-        days.push({ ...marking, day: i, date, isThisMonth: false})
+        days.push({ ...marking, day: i, date, isThisMonth: false, overflowStart: false, overflowEnd: true})
       }
     }
 
@@ -68,14 +75,41 @@ const monthDayList = computed(() => {
 
 function changeMonth(direction: "next" | "previous") {
     if(direction == "next") {
-        if(currentMonth.value == 12) return currentYear.value++, currentMonth.value = 1
+        if(currentMonth.value == 12) {    
+            if(!dateValid(new Date(currentYear.value + 1, 1, 1), "next")) return
+
+            return currentYear.value++,  currentMonth.value = 1
+        }
+
+        if(!dateValid(new Date(currentYear.value, currentMonth.value + 1, 1), "next")) return
         return currentMonth.value++
     }
 
     if(direction == "previous") {
-        if(currentMonth.value == 1) return currentYear.value--, currentMonth.value = 12
+        if(currentMonth.value == 1) {
+            if(!dateValid(new Date(currentYear.value - 1, 12, 1), "previous")) return
+
+
+            return currentYear.value--, currentMonth.value = 12
+        }
+
+        if(!dateValid(new Date(currentYear.value, currentMonth.value - 1, 1), "previous")) return
         return currentMonth.value--
     }
+}
+
+function dateValid(date: Date, direction: "next" | "previous") {
+    if(!prop.maxDate || !prop.minDate) return true
+
+    if(direction == "next") {
+        if(compareDates(date, prop.maxDate) == "after") return false
+    }
+
+    if(direction == "previous") {
+        if(compareDates(date, prop.minDate) == "before") return false
+    }
+
+    return true
 }
 
 function compareDates(currentDate: Date, nextDate: Date) {
@@ -117,7 +151,7 @@ function checkMarking(date: Date) {
     return { start: false, middle: false, end: false }
 }
 
-function clickDay(date: Date, inThisMonth: boolean) {
+function dragHold(date: Date, inThisMonth: boolean) {
     if(!inThisMonth) {
         const thisMonth = new Date(currentYear.value, currentMonth.value - 1)
 
@@ -132,7 +166,21 @@ function clickDay(date: Date, inThisMonth: boolean) {
     }
 
     if(!prop.isRange) return selectedDate.value = date
+
     oldRangeDate.value = date
+
+    chooseSideToMove(date)
+    moveRangeDate(date)
+}
+
+function dragDrop(date: Date, inThisMonth: boolean) {
+    if(!inThisMonth) return
+
+    if(movingRange.value.start && movingRange.value.end) {
+        movingRange.value.start = false
+        movingRange.value.end = false
+        return
+    }
 
     if(movingRange.value.start) {
         selectedDateRange.value[0] = date
@@ -144,9 +192,6 @@ function clickDay(date: Date, inThisMonth: boolean) {
         movingRange.value.end = false
         return
     }
-
-    chooseSideToMove(date)
-    moveRangeDate(date)
 }
 
 function chooseSideToMove(date: Date) {
@@ -158,9 +203,9 @@ function chooseSideToMove(date: Date) {
         movingRange.value.start = false
         movingRange.value.end = true
     }
-    else if(compareDates(selectedDateRange.value[0], date) == "after" && compareDates(selectedDateRange.value[1], date) == "before") {
-        movingRange.value.start = false
-        movingRange.value.end = false
+    else if(compareDates(selectedDateRange.value[0], date) == "before" && compareDates(selectedDateRange.value[1], date) == "after") {
+        movingRange.value.start = true
+        movingRange.value.end = true
     }
     else if(compareDates(selectedDateRange.value[0], date) == "before") {
         selectedDateRange.value[1] = date
@@ -171,6 +216,21 @@ function chooseSideToMove(date: Date) {
 }
 
 function moveRangeDate(date: Date) {
+    if(movingRange.value.start && movingRange.value.end) {
+        const dateTimeStamp = date.getTime()
+        const startDateTimeStamp = selectedDateRange.value[0].getTime()
+        const endDateTimeStamp = selectedDateRange.value[1].getTime()
+
+        if(dateTimeStamp - startDateTimeStamp < endDateTimeStamp - dateTimeStamp) {
+            selectedDateRange.value[0] = date
+        } else {
+            selectedDateRange.value[1] = date
+        }
+
+
+        return
+    }
+    
     if(movingRange.value.start) {
         if(compareDates(date, selectedDateRange.value[1]) == "after") {
             selectedDateRange.value[0] = selectedDateRange.value[1]
@@ -182,8 +242,7 @@ function moveRangeDate(date: Date) {
 
         selectedDateRange.value[0] = date
         return
-    }
-    if(movingRange.value.end) {
+    } else if(movingRange.value.end) {
         if(compareDates(date, selectedDateRange.value[0]) == "before") {
             selectedDateRange.value[1] = selectedDateRange.value[0]
             selectedDateRange.value[0] = date
@@ -240,16 +299,25 @@ const isYearChangerOpen = ref(false)
         </SystemFlex>
         <p class="monthYearDisplay" @click="isYearChangerOpen = !isYearChangerOpen">{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY", { locales: 'en-US' }).value }}</p>
     </SystemFlex>
-    <DatePickerCalendarColumns :is-range="isRange" :day-list="monthDayList" @calendar-click="clickDay" @mouse-over-day="moveRangeDate" />
+    <DatePickerCalendarColumns 
+        :is-range="isRange" 
+        :day-list="monthDayList" 
+        @drag-hold="dragHold"
+        @drag-drop="dragDrop"
+        @mouse-over-day="moveRangeDate" 
+         
+    />
 
     <Transition name="fade">
-        <DatePickerYearChanger v-show="isYearChangerOpen" 
-            :current-year="currentYear" 
-            :max-date="maxDate" 
-            :min-date="minDate"
-            
-            @change-year="(year, monthIndex) => {currentYear = year, currentMonth = monthIndex, isYearChangerOpen = false}"
-        />
+        <OnClickOutside @trigger="isYearChangerOpen = false">
+            <DatePickerYearChanger v-if="isYearChangerOpen" 
+                :current-year="currentYear" 
+                :max-date="maxDate" 
+                :min-date="minDate"
+                
+                @change-year="(year, monthIndex) => {currentYear = year, currentMonth = monthIndex, isYearChangerOpen = false}"
+            />
+        </OnClickOutside>
     </Transition>
 </SystemFlex>
 </template>

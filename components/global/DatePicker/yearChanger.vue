@@ -24,7 +24,7 @@ const lowestYear = ref(props.currentYear - props.rangeDown)
 const highestYear = ref(props.currentYear + props.rangeUp)
 
 const yearList = computed(() => range(lowestYear.value, highestYear.value, props.yearStep))
-
+const firstOpen = ref(false)
 
 useInfiniteScroll(
     yearWrapper,
@@ -39,10 +39,18 @@ useInfiniteScroll(
     }
 )
 
-// Infinite scroll upwars
 useInfiniteScroll(
     yearWrapper,
     () => {
+        if(!firstOpen.value) {
+            firstOpen.value = true
+            yearWrapper.value?.scrollTo({
+                top: 60,
+                behavior: "smooth"
+            })
+            return
+        }
+
         const yearToBeAdded = minDateFix()
 
         for(let i = 0; i < yearToBeAdded; i++) {
@@ -113,6 +121,13 @@ function moveTo(offsetTop: number) {
         behavior: "smooth"
     })
 }
+
+function onLoadSnap(offsetTop: number) {
+    yearWrapper.value?.scrollTo({
+        top: offsetTop,
+        behavior: "instant"
+    })
+}
 </script>
 
 <template>
@@ -131,6 +146,7 @@ function moveTo(offsetTop: number) {
                 :year="year"
                 :currentYear="currentYear"
                 @yearOpen="moveTo"
+                @onLoadSnap="onLoadSnap"
                 @changeYear="(year, monthIndex) => $emit('changeYear', year, monthIndex)"
             />
         </div>

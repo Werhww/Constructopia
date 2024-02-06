@@ -5,6 +5,9 @@ const props = defineProps<{
         day: number;
         date: Date;
         isThisMonth: boolean;
+        overflowEnd: boolean;
+        overflowStart: boolean;
+
         start: boolean;
         middle: boolean;
         end: boolean;
@@ -12,7 +15,8 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-    calendarClick: [date: Date, isThisMonth: boolean]
+    dragHold: [date: Date, isThisMonth: boolean]
+    dragDrop: [date: Date, isThisMonth: boolean]
     mouseOverDay: [date: Date]
 }>()
 </script>
@@ -26,9 +30,24 @@ defineEmits<{
     <p class="dayLabel">{{ useDateFormat(getDaysDate("friday"),"dd", { locales: 'en-US' } ).value }}</p>
     <p class="dayLabel">{{ useDateFormat(getDaysDate("saturday"),"dd", { locales: 'en-US' } ).value }}</p>
     <p class="dayLabel">{{ useDateFormat(getDaysDate("sunday"),"dd", { locales: 'en-US' } ).value }}</p>
-    <div v-for="item in dayList" :class="{ day: item.isThisMonth, dayLabel: !item.isThisMonth }" @click="$emit('calendarClick', item.date, item.isThisMonth)" @mouseenter="$emit('mouseOverDay', item.date)" :data-start="item.start" :data-middle="item.middle" :data-end="item.end">
+    <div 
+        v-for="item in dayList" 
+        :class="{ 
+            day: item.isThisMonth, 
+            dayLabel: !item.isThisMonth,
+            endHover: item.overflowEnd, 
+            startHover: item.overflowStart 
+        }"
+
+        @mousedown="$emit('dragHold', item.date, item.isThisMonth)"
+        @mouseup="$emit('dragDrop', item.date, item.isThisMonth)" 
+        @mouseenter="$emit('mouseOverDay', item.date)" 
+
+        :data-start="item.start" 
+        :data-middle="item.middle" 
+        :data-end="item.end">
         <p>{{ item.day }}</p>
-    </div>    
+    </div>
 </div>
 </template>
 
@@ -88,6 +107,14 @@ defineEmits<{
                 background: var(--grey);
             }
         }
+    }
+
+    .endHover {
+        cursor: url('/icons/next.svg') 15 0, auto;
+    }
+
+    .startHover {
+        cursor: url('/icons/previous.svg') -15 0, auto;
     }
 
     &[data-is-range="true"] {

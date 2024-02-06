@@ -10,14 +10,14 @@ const yearItemElm = ref<HTMLElement | null>(null)
 
 const emit = defineEmits({
     changeYear: (year: number, monthIndex: number) => true,
-    yearOpen: (offsetTop: number) => true
+    yearOpen: (offsetTop: number) => true,
+    onLoadSnap: (offsetTop: number) => true
 })
 
 const isOpen = ref(false)
 
 function moveToYear() {
     setTimeout(() => {
-        console.log(yearItemElm.value)
         if(!yearItemElm.value) return
 
         emit('yearOpen', yearItemElm.value.offsetTop - 10)
@@ -25,9 +25,10 @@ function moveToYear() {
 }
 
 onMounted(() => {
-    if(props.year == props.currentYear) {
+    if(props.year === props.currentYear) {
         isOpen.value = true
-        moveToYear()
+        if(!yearItemElm.value) return
+        emit('onLoadSnap', yearItemElm.value.offsetTop - 10)
     }
 })
 </script>

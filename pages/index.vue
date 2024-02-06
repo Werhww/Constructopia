@@ -5,7 +5,7 @@
     <div class="test">
 <!--         <Filter />
  -->
-        <DatePicker :is-range="true" :min-date="new Date(2010, 0, 1)" :max-date="new Date(2030, 0, 1)" />
+        <DatePicker :is-range="false" :min-date="new Date(2010, 0, 1)" :max-date="new Date(2030, 0, 1)" />
     </div>
 </template>
 
