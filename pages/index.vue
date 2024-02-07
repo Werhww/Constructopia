@@ -1,11 +1,15 @@
 <script setup lang="ts" >
+const datePickerValue = ref()
+
+watch(datePickerValue, (newVal, oldVal) => {
+    console.log('newVal', newVal)
+})
 </script>
 
 <template>
     <div class="test">
-<!--         <Filter />
- -->
-        <DatePicker :is-range="false" :min-date="new Date(2010, 0, 1)" :max-date="new Date(2030, 0, 1)" />
+        <Filter />
+
     </div>
 </template>
 

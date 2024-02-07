@@ -123,9 +123,10 @@ const range = ref({
         <SystemSelect ref="fitlerOptionElement"  :options="foundFilterOperators" v-model="currentFilterOperator" shadow="off" :long-dropdown="true" width="14rem" />
     </OnClickOutside>
     <SystemInput v-if="currentFilterValue == 'blockCount' || currentFilterValue == 'views'" class="inputField" type="number" height="1.875rem" placeholder="value"/>
+    
+    
     <SystemInput v-if="currentFilterValue == 'createdAt'" class="inputField" type="date" height="1.875rem" placeholder="value"/>
-    <SystemIcon src="/icons/arrowRight.svg" ratio="width" size="medium" color="white" @click="test = !test" />
-    <SystemInput v-if="currentFilterValue == 'createdAt' && currentFilterOperator == 'bt'" class="inputField" type="date" height="1.875rem" placeholder="value"/>
+
 </SystemFlex>
 </template>
 

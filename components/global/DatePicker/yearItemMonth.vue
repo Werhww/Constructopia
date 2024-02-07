@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = defineProps<{
     year: number
-    monthIndex: number    
+    monthIndex: number
+    show: boolean    
 }>()
-
-const monthPrefix = ref(useDateFormat(new Date(props.year, props.monthIndex - 1, 1), "MMM" , { locales: 'en-US' }))
+const monthPrefix = ref(useDateFormat(new Date(props.year, props.monthIndex, 1), "MMM" , { locales: 'en-US' }))
 defineEmits({
     changeMonth: (month: number) => true
 })
@@ -16,6 +16,9 @@ defineEmits({
     justify-content="center"
     align-items="center"
     @click="$emit('changeMonth', props.monthIndex)"
+    :class="{
+        outOfRange: !props.show
+    }"
 >
     {{ monthPrefix }}
 </SystemFlex>
@@ -25,12 +28,8 @@ defineEmits({
 .yearItemMonth {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-
-    border: solid 2px var(--_connector-color);
-    color: var(--_connector-color);
+    background-color: var(--_dayLabel_connector-color);
     border-radius: var(--rad-small);
-    font-weight: 700;
-
 
     --_box-size: 1.8rem;
 
@@ -40,5 +39,10 @@ defineEmits({
     &:hover {
         background-color: var(--_connector-color);
     }
+}
+
+.outOfRange {
+    pointer-events: none;
+    color: var(--_dayLabel_connector-color);
 }
 </style>

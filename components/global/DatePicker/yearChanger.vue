@@ -20,19 +20,20 @@ defineEmits({
 
 const yearWrapper = ref<HTMLElement | null>(null)
 const range = (start: number, stop: number, step: number) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
-const lowestYear = ref(props.currentYear - props.rangeDown)
-const highestYear = ref(props.currentYear + props.rangeUp)
+const lowestYear = ref(props.minDate ? props.minDate.getFullYear() : props.currentYear - props.rangeDown)
+const highestYear = ref(props.maxDate ? props.maxDate.getFullYear() : props.currentYear + props.rangeUp)
 
 const yearList = computed(() => range(lowestYear.value, highestYear.value, props.yearStep))
 const firstOpen = ref(false)
+const alreadyOpen = ref(false)
+
 
 useInfiniteScroll(
     yearWrapper,
     () => {
-        const yearToBeAdded = maxDateFix()
-        for(let i = 0; i < yearToBeAdded; i++) {
-            highestYear.value++
-        }
+        if(props.maxDate) return
+
+        highestYear.value += props.rangeUp
     },
     { 
         distance: 20,
@@ -42,6 +43,8 @@ useInfiniteScroll(
 useInfiniteScroll(
     yearWrapper,
     () => {
+        if(props.minDate) return
+
         if(!firstOpen.value) {
             firstOpen.value = true
             yearWrapper.value?.scrollTo({
@@ -51,69 +54,20 @@ useInfiniteScroll(
             return
         }
 
-        const yearToBeAdded = minDateFix()
-
-        for(let i = 0; i < yearToBeAdded; i++) {
+        for(let i = 0; i < props.rangeUp; i++) {
             lowestYear.value--
         }
 
-        if(yearToBeAdded != 0) {
-            yearWrapper.value?.scrollTo({
-                top: 60,
-                behavior: "smooth"
-            })
-        }
+        yearWrapper.value?.scrollTo({
+            top: 30,
+            behavior: "smooth"
+        })
     },
     { 
         distance: 5,
         direction: "top"
     }
 )
-
-onMounted(() => {
-    minDateFix()
-    maxDateFix()
-})
-
-function minDateFix() {
-    if(props.minDate) {
-        const lowestYearDate = new Date(lowestYear.value, 0, 0)
-        if(lowestYearDate.getFullYear() == props.minDate.getFullYear()) return 0
-
-        if(lowestYearDate.getFullYear() < props.minDate.getFullYear()) {
-            lowestYear.value = props.minDate.getFullYear()
-            return 0
-        }
-
-        if(lowestYearDate.getFullYear() > props.minDate.getFullYear()) {
-            const difference = lowestYearDate.getFullYear() - props.minDate.getFullYear()
-            if(difference < 10) return difference + 1
-        }
-    }
-
-    return props.rangeDown
-}
-
-function maxDateFix() {
-    if(props.maxDate) {
-        const highestYearDate = new Date(highestYear.value, 0, 0)
-
-        if(highestYearDate.getFullYear() == props.maxDate.getFullYear()) return 0
-        
-        if(highestYearDate.getFullYear() > props.maxDate.getFullYear()) {
-            highestYear.value = props.maxDate.getFullYear()
-            return 0
-        }
-
-
-        if(highestYearDate.getFullYear() < props.maxDate.getFullYear()) {
-            const difference = highestYearDate.getFullYear() - props.maxDate.getFullYear()
-            if(difference < 10) return difference + 1
-        }
-    }
-
-    return props.rangeUp
-}
 
 function moveTo(offsetTop: number) {
     yearWrapper.value?.scrollTo({
@@ -127,6 +81,7 @@ function onLoadSnap(offsetTop: number) {
         top: offsetTop,
         behavior: "instant"
     })
+    alreadyOpen.value = true
 }
 </script>
 
@@ -145,6 +100,11 @@ function onLoadSnap(offsetTop: number) {
                 v-for="year in yearList"
                 :year="year"
                 :currentYear="currentYear"
+                :alreadyOpen="alreadyOpen"
+
+                :maxDate="maxDate"
+                :minDate="minDate"
+
                 @yearOpen="moveTo"
                 @onLoadSnap="onLoadSnap"
                 @changeYear="(year, monthIndex) => $emit('changeYear', year, monthIndex)"
@@ -155,10 +115,6 @@ function onLoadSnap(offsetTop: number) {
 
 <style scoped lang="scss">
 .yearChanger {
-    position: absolute;
-    top: 3rem;
-    right: 1rem;
-
     .scrollElement {    
         overflow-y: scroll;
         z-index: 25;

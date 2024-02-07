@@ -5,80 +5,141 @@ interface Props {
     isRange?: boolean
     maxDate?: Date
     minDate?: Date
+    modelValue?: Date | [Date, Date]
 }
 
 const prop = withDefaults(defineProps<Props>(), {
     isRange: false
 })
 
-const emit = defineEmits({
-    dateChange: (date: Date) => true
-})
-
+const emit = defineEmits(["update:modelValue"])
 
 const currentYear = ref(new Date().getFullYear()) 
-const currentMonth = ref(new Date().getMonth() + 1)
+const currentMonth = ref(new Date().getMonth())
 
-const selectedDate = ref(new Date())
+/* For day selection */
+const selectedDate = computed(() => {
+    if(prop.isRange) return new Date()
+    if(prop.modelValue  && !Array.isArray(prop.modelValue)) return prop.modelValue
+    emit("update:modelValue", new Date())
+    return new Date()
+})
 
-const movingRange = ref({ start: false, end: false })
+const selectedDateRange = computed(() => {
+    if(!prop.isRange) return [new Date(), new Date()]
+    if(prop.modelValue && Array.isArray(prop.modelValue)) return prop.modelValue
+    emit("update:modelValue", [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()])
+    return [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()]
+})
+
+/* For range selection */
 const oldRangeDate = ref()
-const selectedDateRange = ref([new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()])
+const movingRange = ref({ start: false, end: false })
 
+/* Calculate calender days */
 const monthDayList = computed(() => {
     const year = currentYear.value
     const month = currentMonth.value 
 
-    const dateMonth = new Date(year, month, 0)
+    const dateMonth = new Date(year, month + 1, 0) // + 1 to get the last day of the month current month when date is 0
     const daysInMonth = dateMonth.getDate()
     const lastDay = dateMonth.getDay();
 
-    const firstDay = new Date(year, month - 1, 1).getDay()
-    const daysInLastMonth = new Date(year, month - 1, 0).getDate()
+    const firstDay = new Date(year, month, 1).getDay()
+    const daysInLastMonth = new Date(year, month, 0).getDate()
 
     const days = []
 
     for (let i = 1; i <= daysInMonth; i++) {
-        const date = new Date(year, month - 1, i)
+        const date = new Date(year, month, i)
         const marking = checkMarking(date)
 
-        days.push({...marking, day: i, date, isThisMonth: true, overflowStart: false, overflowEnd: false})
+        const inThisMonth = {
+            isThisMonth: true,
+            overflowStart: false, 
+            overflowEnd: false
+        }
+
+        let inDateRange = isInDateRange(date, "current")
+        days.push({day: i, date, ...marking, ...inThisMonth, inDateRange})
     }
 
     if(firstDay !== 1) { // 1 = monday so no need to add
+        const inThisMonth = {
+            isThisMonth: false,
+            overflowStart: true, 
+            overflowEnd: false
+        }
+
         if(firstDay == 0) {
             for(let i = 0; i < 6; i++) {
-                const date = new Date(year, month - 2, daysInLastMonth - i)
+                const date = new Date(year, month - 1, daysInLastMonth - i)
                 const marking = checkMarking(date)
-                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false, overflowStart: true, overflowEnd: false})
+
+                let inDateRange = isInDateRange(date, "previous")
+                days.unshift({day: daysInLastMonth - i, date, ...marking, ...inThisMonth, inDateRange})
             } 
         } else {
             for(let i = 0; i < firstDay - 1; i++) {
-                const date = new Date(year, month - 2, daysInLastMonth - i)
+                const date = new Date(year, month - 1, daysInLastMonth - i)
                 const marking = checkMarking(date)
-                days.unshift({ ...marking, day: daysInLastMonth - i, date, isThisMonth: false, overflowStart: true, overflowEnd: false})
+
+                let inDateRange = isInDateRange(date, "previous") 
+                days.unshift({day: daysInLastMonth - i, date, ...marking, ...inThisMonth, inDateRange})
             }  
         }
         
     }
 
     if (lastDay !== 0) { // 0 = sunday so no need to add
-      for (let i = 1; i <= 7 - lastDay; i++) {
-        const date = new Date(year, month, i)
-        const marking = checkMarking(date)
-        days.push({ ...marking, day: i, date, isThisMonth: false, overflowStart: false, overflowEnd: true})
-      }
+        const inThisMonth = {
+            isThisMonth: false,
+            overflowStart: false, 
+            overflowEnd: true
+        }
+
+        for (let i = 1; i <= 7 - lastDay; i++) {
+            const date = new Date(year, month + 1, i)
+            const marking = checkMarking(date)
+
+            let inDateRange = isInDateRange(date, "next")
+             
+            days.push({ day: i, date, ...marking, ...inThisMonth, inDateRange})
+        }
     }
 
     return days
 })
 
+/* Utils */
+function isInDateRange(date: Date, month: "next" | "previous" | "current") {
+    if(month == "current") {
+        let inMaxRange = true
+        let inMinRange = true
+
+        if(prop.maxDate) {
+            inMaxRange = compareDates(date, prop.maxDate) == "before" || compareDates(date, prop.maxDate) == "same"
+        }
+
+        if(prop.minDate) {
+            inMinRange = compareDates(date, prop.minDate) == "after" || compareDates(date, prop.minDate) == "same"
+        }
+
+        return inMaxRange && inMinRange
+    }
+
+    if(month == "next" && prop.maxDate) return compareDates(date, prop.maxDate) == "before" || compareDates(date, prop.maxDate) == "same"
+    if(month == "previous" && prop.minDate) return compareDates(date, prop.minDate) == "after" || compareDates(date, prop.minDate) == "same"
+
+    return true
+}
+
 function changeMonth(direction: "next" | "previous") {
     if(direction == "next") {
-        if(currentMonth.value == 12) {    
-            if(!dateValid(new Date(currentYear.value + 1, 1, 1), "next")) return
+        if(currentMonth.value == 11) {    
+            if(!dateValid(new Date(currentYear.value + 1, 0, 1), "next")) return
 
-            return currentYear.value++,  currentMonth.value = 1
+            return currentYear.value++,  currentMonth.value = 0
         }
 
         if(!dateValid(new Date(currentYear.value, currentMonth.value + 1, 1), "next")) return
@@ -86,14 +147,13 @@ function changeMonth(direction: "next" | "previous") {
     }
 
     if(direction == "previous") {
-        if(currentMonth.value == 1) {
-            if(!dateValid(new Date(currentYear.value - 1, 12, 1), "previous")) return
+        if(currentMonth.value == 0) {
+            if(!dateValid(new Date(currentYear.value, 11, 1), "previous")) return
 
 
-            return currentYear.value--, currentMonth.value = 12
+            return currentYear.value--, currentMonth.value = 11
         }
-
-        if(!dateValid(new Date(currentYear.value, currentMonth.value - 1, 1), "previous")) return
+        if(!dateValid(new Date(currentYear.value, currentMonth.value , 1), "previous")) return
         return currentMonth.value--
     }
 }
@@ -102,10 +162,12 @@ function dateValid(date: Date, direction: "next" | "previous") {
     if(!prop.maxDate || !prop.minDate) return true
 
     if(direction == "next") {
+        if(compareDates(date, prop.maxDate) == "same") return true
         if(compareDates(date, prop.maxDate) == "after") return false
     }
 
     if(direction == "previous") {
+        if(compareDates(date, prop.minDate) == "same") return true
         if(compareDates(date, prop.minDate) == "before") return false
     }
 
@@ -113,11 +175,14 @@ function dateValid(date: Date, direction: "next" | "previous") {
 }
 
 function compareDates(currentDate: Date, nextDate: Date) {
-    currentDate.setHours(0,0,0,0)
-    nextDate.setHours(0,0,0,0)
+    const currentDateClone = new Date(currentDate.getTime())
+    const nextDateClone = new Date(nextDate.getTime())
 
-    const currentDateTimestamp = currentDate.getTime()
-    const nextDateTimestamp = nextDate.getTime()
+    currentDateClone.setHours(0,0,0,0)
+    nextDateClone.setHours(0,0,0,0)
+
+    const currentDateTimestamp = currentDateClone.getTime()
+    const nextDateTimestamp = nextDateClone.getTime()
 
     if(currentDateTimestamp == nextDateTimestamp) return "same"
     else if(currentDateTimestamp > nextDateTimestamp) return "after"
@@ -153,7 +218,7 @@ function checkMarking(date: Date) {
 
 function dragHold(date: Date, inThisMonth: boolean) {
     if(!inThisMonth) {
-        const thisMonth = new Date(currentYear.value, currentMonth.value - 1)
+        const thisMonth = new Date(currentYear.value, currentMonth.value)
 
         if(compareDates(date, thisMonth) == "before") {
             changeMonth("previous")
@@ -165,7 +230,7 @@ function dragHold(date: Date, inThisMonth: boolean) {
         return
     }
 
-    if(!prop.isRange) return selectedDate.value = date
+    if(!prop.isRange) return emit("update:modelValue", date)
 
     oldRangeDate.value = date
 
@@ -183,12 +248,12 @@ function dragDrop(date: Date, inThisMonth: boolean) {
     }
 
     if(movingRange.value.start) {
-        selectedDateRange.value[0] = date
+        emit("update:modelValue", [date, selectedDateRange.value[1]])
         movingRange.value.start = false
         return
     }
     if(movingRange.value.end) {
-        selectedDateRange.value[1] = date
+        emit("update:modelValue", [selectedDateRange.value[0], date])
         movingRange.value.end = false
         return
     }
@@ -208,10 +273,10 @@ function chooseSideToMove(date: Date) {
         movingRange.value.end = true
     }
     else if(compareDates(selectedDateRange.value[0], date) == "before") {
-        selectedDateRange.value[1] = date
+        emit("update:modelValue", [selectedDateRange.value[0], date])
     }
     else if(compareDates(selectedDateRange.value[1], date) == "after") {
-        selectedDateRange.value[0] = date
+        emit("update:modelValue", [date, selectedDateRange.value[1]])
     }
 }
 
@@ -222,36 +287,35 @@ function moveRangeDate(date: Date) {
         const endDateTimeStamp = selectedDateRange.value[1].getTime()
 
         if(dateTimeStamp - startDateTimeStamp < endDateTimeStamp - dateTimeStamp) {
-            selectedDateRange.value[0] = date
+            emit("update:modelValue", [date, selectedDateRange.value[1]])
         } else {
-            selectedDateRange.value[1] = date
+            emit("update:modelValue", [selectedDateRange.value[0], date])
         }
-
 
         return
     }
     
     if(movingRange.value.start) {
         if(compareDates(date, selectedDateRange.value[1]) == "after") {
-            selectedDateRange.value[0] = selectedDateRange.value[1]
-            selectedDateRange.value[1] = date
+            emit("update:modelValue", [selectedDateRange.value[1], date])
+
             movingRange.value.start = false
             movingRange.value.end = true
             return
         }
 
-        selectedDateRange.value[0] = date
+        emit("update:modelValue", [date, selectedDateRange.value[1]])
         return
     } else if(movingRange.value.end) {
         if(compareDates(date, selectedDateRange.value[0]) == "before") {
-            selectedDateRange.value[1] = selectedDateRange.value[0]
-            selectedDateRange.value[0] = date
+            emit("update:modelValue", [date, selectedDateRange.value[0]])
+
             movingRange.value.start = true
             movingRange.value.end = false
             return
         }
 
-        selectedDateRange.value[1] = date
+        emit("update:modelValue", [selectedDateRange.value[0], date])
         return
     }
 }
@@ -261,14 +325,29 @@ const { isOutside } = useMouseInElement(calendarElement)
 
 watch(isOutside, (value) => {
     if(value) {
-        if(movingRange.value.start) selectedDateRange.value[0] = oldRangeDate.value
-        if(movingRange.value.end) selectedDateRange.value[1] = oldRangeDate.value
+        if(movingRange.value.start) emit("update:modelValue", [oldRangeDate.value, selectedDateRange.value[1]])
+        if(movingRange.value.end) emit("update:modelValue", [selectedDateRange.value[0], oldRangeDate.value])
         movingRange.value = {
             start: false,
             end: false
         }
     }
 })
+
+let justClosed = false
+
+function outsideClickEvent() {
+    isYearChangerOpen.value = false
+    justClosed = true
+    setTimeout(() => {
+        justClosed = false
+    }, 100)
+}
+
+function yearMonthClickEvent() {
+    if(justClosed) return
+    isYearChangerOpen.value = !isYearChangerOpen.value
+}
 
 const isYearChangerOpen = ref(false)
 </script>
@@ -297,7 +376,7 @@ const isYearChangerOpen = ref(false)
             <SystemIcon @click="changeMonth('previous')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(90deg)" />
             <SystemIcon @click="changeMonth('next')" src="/icons/expand.svg" ratio="height" size="tiny" style="transform: rotate(-90deg)" />
         </SystemFlex>
-        <p class="monthYearDisplay" @click="isYearChangerOpen = !isYearChangerOpen">{{ useDateFormat(new Date(currentYear, currentMonth - 1), "MMMM YYYY", { locales: 'en-US' }).value }}</p>
+        <p class="monthYearDisplay" @click="yearMonthClickEvent">{{ useDateFormat(new Date(currentYear, currentMonth), "MMMM YYYY", { locales: 'en-US' }).value }}</p>
     </SystemFlex>
     <DatePickerCalendarColumns 
         :is-range="isRange" 
@@ -309,8 +388,8 @@ const isYearChangerOpen = ref(false)
     />
 
     <Transition name="fade">
-        <OnClickOutside @trigger="isYearChangerOpen = false">
-            <DatePickerYearChanger v-if="isYearChangerOpen" 
+        <OnClickOutside @trigger="outsideClickEvent" v-if="isYearChangerOpen" class="DateYearChanger">
+            <DatePickerYearChanger
                 :current-year="currentYear" 
                 :max-date="maxDate" 
                 :min-date="minDate"
@@ -328,6 +407,12 @@ const isYearChangerOpen = ref(false)
     --_dayLabel_connector-color: rgb(106, 101, 101, 0.2);
     
     position: relative;
+
+    .DateYearChanger {
+        position: absolute;
+        top: 3rem;
+        right: 1rem;
+    }
 
     .monthChanger {
         user-select: none;

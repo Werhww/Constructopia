@@ -11,9 +11,10 @@ const props = defineProps<{
         start: boolean;
         middle: boolean;
         end: boolean;
+
+        inDateRange: boolean;
     }[]
 }>()
-
 defineEmits<{
     dragHold: [date: Date, isThisMonth: boolean]
     dragDrop: [date: Date, isThisMonth: boolean]
@@ -36,7 +37,8 @@ defineEmits<{
             day: item.isThisMonth, 
             dayLabel: !item.isThisMonth,
             endHover: item.overflowEnd, 
-            startHover: item.overflowStart 
+            startHover: item.overflowStart,
+            inDateRange: !item.inDateRange
         }"
 
         @mousedown="$emit('dragHold', item.date, item.isThisMonth)"
@@ -163,6 +165,14 @@ defineEmits<{
                 }
             }
 
+        }
+    }
+
+    .inDateRange {
+        pointer-events: none;
+        
+        & > p {
+            color: var(--grey);
         }
     }
 }

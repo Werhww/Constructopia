@@ -4,9 +4,48 @@ import { OnClickOutside } from '@vueuse/components';
 const props = defineProps<{
     currentYear: number
     year: number
+    maxDate?: Date
+    minDate?: Date
+    alreadyOpen?: boolean
 }>()
 
 const yearItemElm = ref<HTMLElement | null>(null)
+
+const monthList = computed(() => {
+    if(props.minDate) {
+        if(props.year === props.minDate.getFullYear()) {
+            let monthList = []
+
+            for(let i = 0; i < 12; i++) {
+                if(i >= props.minDate.getMonth()) {
+                    monthList.push({ month: i, show: true })
+                } else {
+                    monthList.push({ month: i, show: false })
+                }
+            }
+
+            return monthList
+        }
+    }
+
+    if(props.maxDate) {
+        if(props.year === props.maxDate.getFullYear()) {
+            let monthList = []
+
+            for(let i = 0; i < 12; i++) {
+                if(i <= props.maxDate.getMonth()) {
+                    monthList.push({ month: i, show: true })
+                } else {
+                    monthList.push({ month: i, show: false })
+                }
+            }
+
+            return monthList
+        }
+    }
+
+    return Array.from({ length: 12 }, (_, i) => ({ month: i, show: true }))
+})
 
 const emit = defineEmits({
     changeYear: (year: number, monthIndex: number) => true,
@@ -26,9 +65,15 @@ function moveToYear() {
 
 onMounted(() => {
     if(props.year === props.currentYear) {
+        if(props.alreadyOpen) return
+
         isOpen.value = true
-        if(!yearItemElm.value) return
-        emit('onLoadSnap', yearItemElm.value.offsetTop - 10)
+
+        setTimeout(() => {
+            if(!yearItemElm.value) return
+
+            emit('onLoadSnap', yearItemElm.value.offsetTop - 10)
+        }, 100)
     }
 })
 </script>
@@ -55,10 +100,11 @@ onMounted(() => {
     
         >
             <DatePickerYearItemMonth 
-                v-for="monthIndex in 12"
+                v-for="item in monthList"
                 :year="year"
-                :monthIndex="monthIndex"
-                @changeMonth="(monthIndex) => $emit('changeYear', year, monthIndex)"
+                :monthIndex="item.month"
+                :show="item.show"
+                @changeMonth="(monthIndex) => {$emit('changeYear', year, monthIndex), console.log('monthIndex', monthIndex)}"
             />
         </SystemFlex>
     </SystemFlex>
@@ -67,12 +113,12 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .yearItem {
-    cursor: pointer;
     transition: all 0.2s ease-in-out;
 
     user-select: none;
 
     .label {
+        cursor: pointer;
         &:hover {
             background-color: var(--_connector-color);
         }
