@@ -8,8 +8,8 @@ watch(datePickerValue, (newVal, oldVal) => {
 
 <template>
     <div class="test">
-        <Filter />
-
+        <!-- <Filter /> -->
+        <DatePickerInput :isRange="false" :maxDate="new Date()" :minDate="new Date(2020, 2, 27)" />
     </div>
 </template>
 
