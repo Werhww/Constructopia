@@ -41,6 +41,9 @@ const OrderItemsFullList = [
 ] as FilterDropdownItemProps[]
 
 const orderSelectValue = ref("blockCount")
+
+const openFilterCreator = ref(true)
+
 </script>
 
 <template>
@@ -67,7 +70,7 @@ const orderSelectValue = ref("blockCount")
         </SystemFlex>
     </Transition>
 
-    <FilterCreateFilter v-if="true" chosen-filter-item="blockCount" class="dropdownPosition"/>
+    <FilterCreateFilter v-if="openFilterCreator" @create-filter="console.log" chosen-filter-item="blockCount" class="dropdownPosition"/>
 </div>
 </template>
 

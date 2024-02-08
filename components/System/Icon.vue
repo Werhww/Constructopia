@@ -43,6 +43,9 @@ const style = computed(() => {
 
 <style scoped lang="scss">
 .icon {
+
+    transition: all 300ms ease-in-out;
+
     width: var(--icon-width);
     height: var(--icon-height);
     filter: var(--icon-filter);

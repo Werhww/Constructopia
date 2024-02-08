@@ -5,7 +5,7 @@ interface Props {
     isRange?: boolean
     maxDate?: Date
     minDate?: Date
-    modelValue?: Date | [Date, Date]
+    modelValue?: Date | Date[]
 }
 
 const prop = withDefaults(defineProps<Props>(), {
@@ -13,9 +13,6 @@ const prop = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits(["update:modelValue"])
-
-const currentYear = ref(new Date().getFullYear()) 
-const currentMonth = ref(new Date().getMonth())
 
 /* For day selection */
 const selectedDate = computed(() => {
@@ -28,13 +25,43 @@ const selectedDate = computed(() => {
 const selectedDateRange = computed(() => {
     if(!prop.isRange) return [new Date(), new Date()]
     if(prop.modelValue && Array.isArray(prop.modelValue)) return prop.modelValue
-    emit("update:modelValue", [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()])
-    return [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date()]
+    
+    let endDate = new Date()
+    if(prop.maxDate && compareDates(prop.maxDate, endDate) == "before") endDate = prop.maxDate
+
+    let startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+    if(prop.minDate && compareDates(prop.minDate, startDate) == "after") startDate = prop.minDate
+    emit("update:modelValue", [startDate, endDate])
+    return [startDate, endDate]
 })
+
+watch(() => prop.modelValue, (newVal, oldVal) => {
+    if(!newVal) return
+    if(!oldVal) return
+    if(Array.isArray(oldVal) && !Array.isArray(newVal)) {
+        currentMonth.value = selectedDate.value.getMonth()
+        currentYear.value = selectedDate.value.getFullYear()
+    } else {
+        if(!Array.isArray(oldVal) && !Array.isArray(newVal)) {
+            if( compareDates(new Date(oldVal.getFullYear(), oldVal.getMonth(), 1), newVal) == "before") {
+                currentMonth.value = selectedDate.value.getMonth()
+                currentYear.value = selectedDate.value.getFullYear()
+            } if(compareDates(new Date(oldVal.getFullYear(), oldVal.getMonth() + 1, 0), newVal) == "after") {
+                currentMonth.value = selectedDate.value.getMonth()
+                currentYear.value = selectedDate.value.getFullYear()
+            }
+        }
+    }
+})
+
 
 /* For range selection */
 const oldRangeDate = ref()
 const movingRange = ref({ start: false, end: false })
+
+const currentYear = ref(prop.isRange ? selectedDateRange.value[0].getFullYear() : selectedDate.value.getFullYear())
+const currentMonth = ref(prop.isRange ? selectedDateRange.value[0].getMonth() : selectedDate.value.getMonth())
+
 
 /* Calculate calender days */
 const monthDayList = computed(() => {

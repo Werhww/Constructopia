@@ -45,6 +45,10 @@ function selectOption(option: Options) {
 function closeSelect() {
     optionsOpen.value = false
 }
+
+onMounted(() => {
+    emit("update:modelValue", prop.options[0].value)
+})
 </script>
 
 <template>

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 interface Props {
-    modelValue?: string
+    modelValue?: string | number
     placeholder?: string
     width?: string
     height?: string
     type?: string
 }
+
+defineEmits(["update:modelValue"])
 
 const props = withDefaults(defineProps<Props>(), {
     placeholder: "",
@@ -13,6 +15,8 @@ const props = withDefaults(defineProps<Props>(), {
     height: "2.25rem",
     type: "text"
 })
+
+const inputValue = ref(props.modelValue)
 
 function numberCheck(e: KeyboardEvent) {
     if(props.type != "number") return
@@ -36,7 +40,7 @@ function numberCheck(e: KeyboardEvent) {
     :height="height"
     radius="small"
 >
-    <input :type="type" :placeholder="placeholder" @keydown="numberCheck">
+    <input :type="type" v-model="inputValue" :placeholder="placeholder" @keydown="numberCheck" @input="$emit('update:modelValue', inputValue)">
 </SystemFlex>
 </template>
 
