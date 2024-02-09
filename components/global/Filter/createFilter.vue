@@ -110,7 +110,7 @@ const choiceOptions = [
 const currentFilterValue = ref(props.chosenFilterItem)
 const currentFilterOperator = ref()
 
-const dates = ref<Date | Date[]>()
+const dates = ref<Date[]>([])
 const choice = ref()
 const numberValue = ref()
 
@@ -140,8 +140,10 @@ function createFilter() {
     const item = currentFilterValue.value
     const operator = currentFilterOperator.value
     const value = currentFilterValue.value == 'blockCount' || currentFilterValue.value == 'views' ? numberValue.value : currentFilterValue.value == 'size' ? choice.value : dates.value
-    
+    console.log(dates.value)
     emit('createFilter', item, operator, value)
+
+    currentFilterValue.value = props.chosenFilterItem
 }
 </script>
 

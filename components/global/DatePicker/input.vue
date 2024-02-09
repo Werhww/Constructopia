@@ -2,6 +2,8 @@
 import { OnClickOutside } from '@vueuse/components';
 
 interface Props {
+    modelValue: Date[]
+
     isRange?: boolean
     width?: string
     height?: string
@@ -18,73 +20,68 @@ const props = withDefaults(defineProps<Props>(), {
 
     background: "var(--background)"
 })
-const datePickerDate = ref<Date[]>([])
 
 const editingDate = ref({
     start: false,
     end: false,
     isRange: props.isRange
 })
-const currentDatePickerValue = ref<Date | Date[]>()
+
+const displayDate = ref<Date[]>([])
+const datePickerDate = ref<Date[]>([])
 
 const datePickerTopPlacement = computed(() => {
     const heightAsNumber = Number(props.height.replace('rem', ''))
     return `${heightAsNumber + .75}rem`
 })
 
-watch(currentDatePickerValue, (newVal) => {
-    if(!newVal) return
-    if(props.isRange != editingDate.value.isRange && !Array.isArray(newVal)) {
-        if(editingDate.value.start) {
-            if(compareDates(newVal, datePickerDate.value[1]) == "after") {
-                datePickerDate.value = [datePickerDate.value[1], newVal]
-                editingDate.value.start = false
-                editingDate.value.end = true
-                
-                return
-            }
+watch(() => props.isRange, (newVal) => {
+    if(datePickerDate.value.length == 0) return
+    console.log("isRange", newVal)
+    const startDate = new Date(datePickerDate.value[0].getTime() - 7 * 24 * 60 * 60 * 1000)
+    const endDate = datePickerDate.value[0]
 
-            datePickerDate.value = [newVal, datePickerDate.value[1]]
-        } else if(editingDate.value.end) {
-            if(compareDates(newVal, datePickerDate.value[0]) == "before") {
-                datePickerDate.value = [newVal, datePickerDate.value[0]]
-                editingDate.value.start = true
-                editingDate.value.end = false
-                
-                return
-            }
+    datePickerDate.value = [
+        startDate,
+        endDate
+    ]
 
+    /* editingDate.value.isRange = newVal */
+})
 
-            datePickerDate.value = [datePickerDate.value[0], newVal]
-        }
-    } else {
-        datePickerDate.value = Array.isArray(newVal) ? newVal : [newVal]
+watch([() => editingDate.value.isRange, () => editingDate.value.start, () => editingDate.value.end], ([isRange, start, end]) => {
+    if(!props.isRange) return
+    if(isRange) return datePickerDate.value = displayDate.value
+
+    console.log("editingDate", isRange, start, end)
+    console.log(datePickerDate.value)
+    console.log(displayDate.value)
+
+    if(start) {
+        datePickerDate.value = [displayDate.value[0]]
+        console.log(displayDate.value[0])
+    } else if(end) {
+        datePickerDate.value = [displayDate.value[1]]
+        console.log(displayDate.value[1])
     }
 })
 
-watch(() => editingDate.value.isRange, (newVal) => {
-    if(newVal && props.isRange) {
-        currentDatePickerValue.value = datePickerDate.value
+watch(datePickerDate, (newVal) => {
+    if(newVal.length == 0) return
+
+    if(editingDate.value.start) {
+        displayDate.value = [newVal[0], displayDate.value[1]]
+        return
+    } else if(editingDate.value.end) {
+        displayDate.value = [displayDate.value[0], newVal[0]]
+        return
     }
+
+    displayDate.value = newVal
 })
+
 
 const datePickerOpen = ref(false)
-
-onMounted(() => {
-    if(props.isRange) {
-        let endDate = new Date()
-        if(props.maxDate && compareDates(props.maxDate, endDate) == "before") endDate = props.maxDate
-
-        let startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-        if(props.minDate && compareDates(props.minDate, startDate) == "after") startDate = props.minDate
-        datePickerDate.value = [startDate, endDate]
-        console.log('datePickerDate.value', datePickerDate.value)
-    } else {
-        if(props.maxDate && compareDates(props.maxDate, new Date()) == "before") datePickerDate.value = [props.maxDate]
-        else if (props.minDate && compareDates(props.minDate, new Date()) == "after") datePickerDate.value = [props.minDate]
-        else  datePickerDate.value = [new Date()]
-    }
-})
 
 function compareDates(currentDate: Date, nextDate: Date) {
     const currentDateClone = new Date(currentDate.getTime())
@@ -113,11 +110,9 @@ function startSingelDateChange(whichDate: "start" | "end" | "reset") {
     if(whichDate == "start") {
         editingDate.value.start = true
         editingDate.value.end = false
-        currentDatePickerValue.value = datePickerDate.value[0]
     } else {
         editingDate.value.start = false
         editingDate.value.end = true
-        currentDatePickerValue.value = datePickerDate.value[1]
     }
 
     datePickerOpen.value = true
@@ -134,7 +129,7 @@ function startSingelDateChange(whichDate: "start" | "end" | "reset") {
                 }"
 
                 @click="startSingelDateChange('start')"    
-            >{{ useDateFormat(datePickerDate[0], "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
+            >{{ useDateFormat(displayDate[0], "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
             <img src="/icons/arrowRight.svg" alt="arrow right" v-if="isRange" @click="datePickerOpen = true, startSingelDateChange('reset')">
             <p 
                 v-if="isRange" 
@@ -142,7 +137,7 @@ function startSingelDateChange(whichDate: "start" | "end" | "reset") {
                     active: (datePickerOpen && editingDate.end) || (isRange && !editingDate.start && datePickerOpen)
                 }"
                 @click="startSingelDateChange('end')"
-            >{{ useDateFormat(datePickerDate[1], "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
+            >{{ useDateFormat(displayDate[1], "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
             <SystemIcon 
                 src="/icons/calendar.svg" 
                 ratio="height" 
@@ -154,7 +149,7 @@ function startSingelDateChange(whichDate: "start" | "end" | "reset") {
 
 
         <DatePicker class="datePicker" 
-            v-model="currentDatePickerValue" 
+            v-model="datePickerDate" 
             v-if="datePickerOpen"
     
             :isRange="editingDate.isRange"

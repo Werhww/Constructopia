@@ -104,7 +104,7 @@ onMounted(() => {
                 :year="year"
                 :monthIndex="item.month"
                 :show="item.show"
-                @changeMonth="(monthIndex) => {$emit('changeYear', year, monthIndex), console.log('monthIndex', monthIndex)}"
+                @changeMonth="(monthIndex) => {$emit('changeYear', year, monthIndex)}"
             />
         </SystemFlex>
     </SystemFlex>

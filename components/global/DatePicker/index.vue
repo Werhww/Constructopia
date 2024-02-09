@@ -5,7 +5,7 @@ interface Props {
     isRange?: boolean
     maxDate?: Date
     minDate?: Date
-    modelValue?: Date | Date[]
+    modelValue?: Date[]
 }
 
 const prop = withDefaults(defineProps<Props>(), {
@@ -16,51 +16,44 @@ const emit = defineEmits(["update:modelValue"])
 
 /* For day selection */
 const selectedDate = computed(() => {
-    if(prop.isRange) return new Date()
-    if(prop.modelValue  && !Array.isArray(prop.modelValue)) return prop.modelValue
-    emit("update:modelValue", new Date())
-    return new Date()
-})
+    console.log('date change')
 
-const selectedDateRange = computed(() => {
-    if(!prop.isRange) return [new Date(), new Date()]
-    if(prop.modelValue && Array.isArray(prop.modelValue)) return prop.modelValue
-    
-    let endDate = new Date()
-    if(prop.maxDate && compareDates(prop.maxDate, endDate) == "before") endDate = prop.maxDate
+    if(prop.isRange && prop.modelValue?.length == 2) return prop.modelValue
+    if(prop.isRange) {
+        let endDate = new Date()
+        if(prop.maxDate && compareDates(prop.maxDate, endDate) == "before") endDate = prop.maxDate
 
-    let startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
-    if(prop.minDate && compareDates(prop.minDate, startDate) == "after") startDate = prop.minDate
-    emit("update:modelValue", [startDate, endDate])
-    return [startDate, endDate]
-})
+        if(prop.modelValue?.length == 1) endDate = prop.modelValue[0]
 
-watch(() => prop.modelValue, (newVal, oldVal) => {
-    if(!newVal) return
-    if(!oldVal) return
-    if(Array.isArray(oldVal) && !Array.isArray(newVal)) {
-        currentMonth.value = selectedDate.value.getMonth()
-        currentYear.value = selectedDate.value.getFullYear()
-    } else {
-        if(!Array.isArray(oldVal) && !Array.isArray(newVal)) {
-            if( compareDates(new Date(oldVal.getFullYear(), oldVal.getMonth(), 1), newVal) == "before") {
-                currentMonth.value = selectedDate.value.getMonth()
-                currentYear.value = selectedDate.value.getFullYear()
-            } if(compareDates(new Date(oldVal.getFullYear(), oldVal.getMonth() + 1, 0), newVal) == "after") {
-                currentMonth.value = selectedDate.value.getMonth()
-                currentYear.value = selectedDate.value.getFullYear()
-            }
-        }
+
+        let startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+        if(prop.minDate && compareDates(prop.minDate, startDate) == "after") startDate = prop.minDate
+        return [startDate, endDate]
     }
+
+    if(prop.modelValue?.length == 1) return prop.modelValue
+    return [new Date()]
 })
 
+// Jumps to Current Date when the modelValue is changed
+watch(() => prop.modelValue, (newVal, oldVal) => {
+    if(!newVal || !oldVal) return
+    if(prop.isRange) return
+
+    currentMonth.value = selectedDate.value[0].getMonth()
+    currentYear.value = selectedDate.value[0].getFullYear()
+})
+
+watch([selectedDate, () => prop.isRange], (newVal) => {
+    console.log(newVal[0])
+})
 
 /* For range selection */
 const oldRangeDate = ref()
 const movingRange = ref({ start: false, end: false })
 
-const currentYear = ref(prop.isRange ? selectedDateRange.value[0].getFullYear() : selectedDate.value.getFullYear())
-const currentMonth = ref(prop.isRange ? selectedDateRange.value[0].getMonth() : selectedDate.value.getMonth())
+const currentYear = ref(selectedDate.value[0].getFullYear())
+const currentMonth = ref(selectedDate.value[0].getMonth())
 
 
 /* Calculate calender days */
@@ -218,25 +211,25 @@ function compareDates(currentDate: Date, nextDate: Date) {
 
 function checkMarking(date: Date) {
     if(prop.isRange) {
-        if(compareDates(selectedDateRange.value[0], selectedDateRange.value[1]) == "same"){
-            if(compareDates(date, selectedDateRange.value[0]) == "same") return { start: true, middle: false, end: false }
+        if(compareDates(selectedDate.value[0], selectedDate.value[1]) == "same"){
+            if(compareDates(date, selectedDate.value[0]) == "same") return { start: true, middle: false, end: false }
             return { start: false, middle: false, end: false}
         }
 
-        if(compareDates(date, selectedDateRange.value[0]) == "same") {
+        if(compareDates(date, selectedDate.value[0]) == "same") {
             return { start: true, middle: false, end: false }
         }
-        else if(compareDates(date, selectedDateRange.value[1]) == "same") {
+        else if(compareDates(date, selectedDate.value[1]) == "same") {
             return { start: false, middle: false, end: true }
         }
-        else if(compareDates(date, selectedDateRange.value[0]) == "after" && compareDates(date, selectedDateRange.value[1]) == "before") {
+        else if(compareDates(date, selectedDate.value[0]) == "after" && compareDates(date, selectedDate.value[1]) == "before") {
             return { start: false, middle: true, end: false }
         }
 
         return { start: false, middle: false, end: false }
     }
 
-    if(compareDates(date, selectedDate.value) == "same") {
+    if(compareDates(date, selectedDate.value[0]) == "same") {
         return { start: true, middle: false, end: false }
     }
 
@@ -257,7 +250,7 @@ function dragHold(date: Date, inThisMonth: boolean) {
         return
     }
 
-    if(!prop.isRange) return emit("update:modelValue", date)
+    if(!prop.isRange) return emit("update:modelValue", [date])
 
     oldRangeDate.value = date
 
@@ -275,74 +268,74 @@ function dragDrop(date: Date, inThisMonth: boolean) {
     }
 
     if(movingRange.value.start) {
-        emit("update:modelValue", [date, selectedDateRange.value[1]])
+        emit("update:modelValue", [date, selectedDate.value[1]])
         movingRange.value.start = false
         return
     }
     if(movingRange.value.end) {
-        emit("update:modelValue", [selectedDateRange.value[0], date])
+        emit("update:modelValue", [selectedDate.value[0], date])
         movingRange.value.end = false
         return
     }
 }
 
 function chooseSideToMove(date: Date) {
-    if(compareDates(selectedDateRange.value[0], date) == "same") {
+    if(compareDates(selectedDate.value[0], date) == "same") {
         movingRange.value.start = true
         movingRange.value.end = false
     }
-    else if(compareDates(selectedDateRange.value[1], date) == "same") {
+    else if(compareDates(selectedDate.value[1], date) == "same") {
         movingRange.value.start = false
         movingRange.value.end = true
     }
-    else if(compareDates(selectedDateRange.value[0], date) == "before" && compareDates(selectedDateRange.value[1], date) == "after") {
+    else if(compareDates(selectedDate.value[0], date) == "before" && compareDates(selectedDate.value[1], date) == "after") {
         movingRange.value.start = true
         movingRange.value.end = true
     }
-    else if(compareDates(selectedDateRange.value[0], date) == "before") {
-        emit("update:modelValue", [selectedDateRange.value[0], date])
+    else if(compareDates(selectedDate.value[0], date) == "before") {
+        emit("update:modelValue", [selectedDate.value[0], date])
     }
-    else if(compareDates(selectedDateRange.value[1], date) == "after") {
-        emit("update:modelValue", [date, selectedDateRange.value[1]])
+    else if(compareDates(selectedDate.value[1], date) == "after") {
+        emit("update:modelValue", [date, selectedDate.value[1]])
     }
 }
 
 function moveRangeDate(date: Date) {
     if(movingRange.value.start && movingRange.value.end) {
         const dateTimeStamp = date.getTime()
-        const startDateTimeStamp = selectedDateRange.value[0].getTime()
-        const endDateTimeStamp = selectedDateRange.value[1].getTime()
+        const startDateTimeStamp = selectedDate.value[0].getTime()
+        const endDateTimeStamp = selectedDate.value[1].getTime()
 
         if(dateTimeStamp - startDateTimeStamp < endDateTimeStamp - dateTimeStamp) {
-            emit("update:modelValue", [date, selectedDateRange.value[1]])
+            emit("update:modelValue", [date, selectedDate.value[1]])
         } else {
-            emit("update:modelValue", [selectedDateRange.value[0], date])
+            emit("update:modelValue", [selectedDate.value[0], date])
         }
 
         return
     }
     
     if(movingRange.value.start) {
-        if(compareDates(date, selectedDateRange.value[1]) == "after") {
-            emit("update:modelValue", [selectedDateRange.value[1], date])
+        if(compareDates(date, selectedDate.value[1]) == "after") {
+            emit("update:modelValue", [selectedDate.value[1], date])
 
             movingRange.value.start = false
             movingRange.value.end = true
             return
         }
 
-        emit("update:modelValue", [date, selectedDateRange.value[1]])
+        emit("update:modelValue", [date, selectedDate.value[1]])
         return
     } else if(movingRange.value.end) {
-        if(compareDates(date, selectedDateRange.value[0]) == "before") {
-            emit("update:modelValue", [date, selectedDateRange.value[0]])
+        if(compareDates(date, selectedDate.value[0]) == "before") {
+            emit("update:modelValue", [date, selectedDate.value[0]])
 
             movingRange.value.start = true
             movingRange.value.end = false
             return
         }
 
-        emit("update:modelValue", [selectedDateRange.value[0], date])
+        emit("update:modelValue", [selectedDate.value[0], date])
         return
     }
 }
@@ -352,8 +345,8 @@ const { isOutside } = useMouseInElement(calendarElement)
 
 watch(isOutside, (value) => {
     if(value) {
-        if(movingRange.value.start) emit("update:modelValue", [oldRangeDate.value, selectedDateRange.value[1]])
-        if(movingRange.value.end) emit("update:modelValue", [selectedDateRange.value[0], oldRangeDate.value])
+        if(movingRange.value.start) emit("update:modelValue", [oldRangeDate.value, selectedDate.value[1]])
+        if(movingRange.value.end) emit("update:modelValue", [selectedDate.value[0], oldRangeDate.value])
         movingRange.value = {
             start: false,
             end: false
