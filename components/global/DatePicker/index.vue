@@ -16,8 +16,6 @@ const emit = defineEmits(["update:modelValue"])
 
 /* For day selection */
 const selectedDate = computed(() => {
-    console.log('date change')
-
     if(prop.isRange && prop.modelValue?.length == 2) return prop.modelValue
     if(prop.isRange) {
         let endDate = new Date()
