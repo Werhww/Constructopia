@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { OnClickOutside } from '@vueuse/components';
+
 interface FilterDropdownItemProps {
     src: string
     label: string
@@ -39,38 +41,69 @@ const OrderItemsFullList = [
         ratio: "equal"
     }
 ] as FilterDropdownItemProps[]
-
 const orderSelectValue = ref("blockCount")
 
-const openFilterCreator = ref(true)
 
+const openFilterCreator = ref(false)
+const filterSelectValue = ref()
+
+watch(filterSelectValue, (newVal, oldVal) => {
+    if(newVal === oldVal) return
+    openFilterCreator.value = true
+    menuOpen.value = false
+})
+
+
+const filters = ref<{
+    item: string, 
+    operator: string, 
+    value: string | number | Date[]
+}[]>([
+    {
+        item: "test",
+        operator: "tess",
+        value: "elpe"
+    }
+])
 </script>
 
 <template>
 <div class="filter">
-    <SystemFlex >
-        <SystemButton icon="/icons/filter.svg" :click="() => menuOpen = !menuOpen" />
-    </SystemFlex>
-
-    <Transition name="apper" >
-        <SystemFlex class="dropdownPosition" v-if="menuOpen"
-            ref="filterDropdown"
-
-            direction="column"
-            gap="normal"
-            width="14rem"
-    
-            radius="small"
-            padding="normal"
-            background="dark"
-            shadow="on"
+    <OnClickOutside @trigger="menuOpen = false">
+        <SystemFlex
+            align-items="flex-end"   
         >
-            <FilterDropdown title="Filter:" :options="OrderItemsFullList" />
-            <FilterDropdown title="Order:" v-model="orderSelectValue" :show-choosen="true" :exclude-choose="true" :options="OrderItemsFullList" />
+            <SystemButton icon="/icons/filter.svg" :click="() => {menuOpen = !menuOpen, openFilterCreator = false}" />
+            <FilterCreatedFilter v-for="item in filters" :item="item.item" :value="item.value" :operator="item.operator" />
         </SystemFlex>
+        
+
+
+        <Transition name="apper" >
+            <SystemFlex class="dropdownPosition" v-if="menuOpen"
+                ref="filterDropdown"
+    
+                direction="column"
+                gap="normal"
+                width="14rem"
+        
+                radius="small"
+                padding="normal"
+                background="dark"
+                shadow="on"
+            >
+                <FilterDropdown title="Filter:" v-model="filterSelectValue" :options="OrderItemsFullList" />
+                <FilterDropdown title="Order:" v-model="orderSelectValue" :show-choosen="true" :exclude-choose="true" :options="OrderItemsFullList" />
+            </SystemFlex>
+        </Transition>
+    </OnClickOutside>
+        
+    <Transition name="apper">
+        <OnClickOutside  v-if="openFilterCreator" @trigger="openFilterCreator = false, filterSelectValue = ''">
+            <FilterCreateFilter @create-filter="(item, operator, value) => filters.unshift({item, operator, value})" :chosen-filter-item="filterSelectValue" class="dropdownPosition"/>
+        </OnClickOutside>
     </Transition>
 
-    <FilterCreateFilter v-if="openFilterCreator" @create-filter="console.log" chosen-filter-item="blockCount" class="dropdownPosition"/>
 </div>
 </template>
 
@@ -78,6 +111,8 @@ const openFilterCreator = ref(true)
 .filter {
     user-select: none;
     position: relative;
+
+    width: fit-content;
     .dropdownPosition {
         position: absolute;
         top: 3rem;

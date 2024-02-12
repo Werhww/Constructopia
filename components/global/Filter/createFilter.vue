@@ -4,7 +4,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    createFilter: [item: string, operator: string, value: string | number | Date | Date[]]
+    createFilter: [item: string, operator: string, value: string | number | Date[]]
 }>()
 
 import type { SystemSelect } from '#build/components';
@@ -110,6 +110,7 @@ const choiceOptions = [
 const currentFilterValue = ref(props.chosenFilterItem)
 const currentFilterOperator = ref()
 
+
 const dates = ref<Date[]>([])
 const choice = ref()
 const numberValue = ref()
@@ -140,9 +141,8 @@ function createFilter() {
     const item = currentFilterValue.value
     const operator = currentFilterOperator.value
     const value = currentFilterValue.value == 'blockCount' || currentFilterValue.value == 'views' ? numberValue.value : currentFilterValue.value == 'size' ? choice.value : dates.value
-    console.log(dates.value)
-    emit('createFilter', item, operator, value)
 
+    emit('createFilter', item, operator, value)
     currentFilterValue.value = props.chosenFilterItem
 }
 </script>

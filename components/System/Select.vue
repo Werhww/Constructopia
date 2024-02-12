@@ -23,7 +23,7 @@ defineExpose({ closeSelect })
 
 const selectedValue = computed(() => {
     if(!prop.modelValue) return prop.options[0]
-
+    
     const selected = prop.options.find((option) => option.value == prop.modelValue)
     if(!selected) return prop.options[0]
     return selected
@@ -47,7 +47,11 @@ function closeSelect() {
 }
 
 onMounted(() => {
-    emit("update:modelValue", prop.options[0].value)
+    if(!prop.modelValue) return emit("update:modelValue", prop.options[0].value)
+
+    const selected = prop.options.find((option) => option.value == prop.modelValue)
+    if(!selected) return emit("update:modelValue", prop.options[0])
+    return emit("update:modelValue", selected?.value)
 })
 </script>
 
