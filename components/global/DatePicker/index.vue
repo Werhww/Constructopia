@@ -1,21 +1,29 @@
 <script setup lang="ts">
 import { OnClickOutside } from '@vueuse/components';
+import { identity } from '@vueuse/core';
 
 interface Props {
     isRange?: boolean
     maxDate?: Date
     minDate?: Date
     modelValue?: Date[]
+
+    // If the coponent should depend on the modelValue when isRange is Changed
+    dependOnModelValue?: boolean
 }
 
 const prop = withDefaults(defineProps<Props>(), {
-    isRange: false
+    isRange: false,
+    dependOnModelValue: false
 })
 
 const emit = defineEmits(["update:modelValue"])
 
 /* For day selection */
 const selectedDate = computed(() => {
+    if(prop.dependOnModelValue) return prop.modelValue!
+    console.log("not dependend on model value")
+
     if(prop.isRange && prop.modelValue?.length == 2) return prop.modelValue
     if(prop.isRange) {
         let endDate = new Date()
@@ -33,17 +41,13 @@ const selectedDate = computed(() => {
     return [new Date()]
 })
 
-// Jumps to Current Date when the modelValue is changed
+// Jumps to current date page when the modelValue is changed
 watch(() => prop.modelValue, (newVal, oldVal) => {
     if(!newVal || !oldVal) return
     if(prop.isRange) return
 
     currentMonth.value = selectedDate.value[0].getMonth()
     currentYear.value = selectedDate.value[0].getFullYear()
-})
-
-watch([selectedDate, () => prop.isRange], (newVal) => {
-    console.log(newVal[0])
 })
 
 /* For range selection */

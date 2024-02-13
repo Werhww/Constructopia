@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { SystemSelect, DatePickerInput } from '#build/components';
+import { OnClickOutside } from '@vueuse/components';
+
 const props = defineProps<{
     chosenFilterItem: string
 }>()
@@ -7,10 +10,8 @@ const emit = defineEmits<{
     createFilter: [item: string, operator: string, value: string | number | Date[]]
 }>()
 
-import type { SystemSelect } from '#build/components';
-import { OnClickOutside } from '@vueuse/components';
 
-/* Create new filter */
+/* Select options */
 const filterOptionsList = [
     {
         value: "blockCount",
@@ -59,7 +60,7 @@ const filterOperators = {
             label: "Exclude"
         },
         {
-            value: "bt",
+            value: "gt",
             label: "Bigger than"
         },
         {
@@ -106,14 +107,21 @@ const choiceOptions = [
     }
 ]
 
+/* Elements */
+const filterObjectElement = ref<InstanceType<typeof SystemSelect> | null>(null)
+const fitlerOptionElement = ref<InstanceType<typeof SystemSelect> | null>(null)
+const filterChoiceElement = ref<InstanceType<typeof SystemSelect> | null>(null)
+
+const filterDateElement = ref<InstanceType<typeof DatePickerInput> | null>(null)
+
 /* Values */
 const currentFilterValue = ref(props.chosenFilterItem)
 const currentFilterOperator = ref()
 
 
-const dates = ref<Date[]>([])
-const choice = ref()
-const numberValue = ref()
+const dates = ref<Date[]>([new Date(2000, 1, 1)])
+const choice = ref<string>()
+const numberValue = ref<number>()
 
 const foundFilterOperators = computed(() => {
     const foundType = filterOptionsList.find(item => item.value === currentFilterValue.value)?.type as keyof typeof filterOperators | undefined
@@ -124,9 +132,6 @@ const foundFilterOperators = computed(() => {
     return []
 })
 
-const filterObjectElement = ref<InstanceType<typeof SystemSelect> | null>(null)
-const fitlerOptionElement = ref<InstanceType<typeof SystemSelect> | null>(null)
-const filterChoiceElement = ref<InstanceType<typeof SystemSelect> | null>(null)
 
 const validFilterDate = computed(() => {
     if(currentFilterValue.value == 'blockCount' || currentFilterValue.value == 'views') {
@@ -140,11 +145,40 @@ function createFilter() {
     if(!validFilterDate.value) return
     const item = currentFilterValue.value
     const operator = currentFilterOperator.value
-    const value = currentFilterValue.value == 'blockCount' || currentFilterValue.value == 'views' ? numberValue.value : currentFilterValue.value == 'size' ? choice.value : dates.value
+    const value = chooseValue()
+
+    console.log(item, operator, value)
 
     emit('createFilter', item, operator, value)
     currentFilterValue.value = props.chosenFilterItem
 }
+
+function chooseValue(): string | number | Date[]{
+    if(currentFilterValue.value == 'blockCount' || currentFilterValue.value == 'views') {
+        return numberValue.value!
+    } else if(currentFilterValue.value == 'size') {
+        return choice.value!
+    } else if(dates.value.length == 2) {
+        return [dates.value[0], dates.value[1]]
+    }
+    
+    return [dates.value[0]]
+
+}
+
+watch(dates, (newDate) => {
+    console.log("date update")
+    console.log(newDate)
+})
+
+watch(currentFilterOperator, (newOpeartor, oldOpeartor) => {
+    if(newOpeartor == 'bt' && currentFilterValue.value == 'createdAt') {
+        filterDateElement.value?.changeDateType("range")
+    } else if(currentFilterValue.value == 'createdAt' && oldOpeartor == 'bt') {
+        filterDateElement.value?.changeDateType("single")
+    }
+})
+
 </script>
 
 <template>
@@ -166,7 +200,13 @@ function createFilter() {
         <SystemSelect class="selectField" ref="filterChoiceElement" :options="choiceOptions" v-model="choice" shadow="off" width="10rem"/>
     </OnClickOutside>
 
-    <DatePickerInput v-if="currentFilterValue == 'createdAt'" v-model="dates" :is-range="currentFilterOperator == 'bt'" class="inputField" height="1.875rem" :width="currentFilterOperator == 'bt' ? '20rem' : '10rem'"  />
+    <DatePickerInput ref="filterDateElement"
+        v-if="currentFilterValue == 'createdAt'" v-model="dates" 
+        :is-range="false" 
+        class="inputField" height="1.875rem" 
+        :width="currentFilterOperator == 'bt' ? '20rem' : '10rem'"
+        :depend-on-model-value="true"
+    />
     
     <SystemFlex
         width="2rem"

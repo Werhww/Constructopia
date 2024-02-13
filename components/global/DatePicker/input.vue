@@ -11,6 +11,7 @@ interface Props {
     minDate?: Date
 
     background?: string
+    dependOnModelValue?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -21,50 +22,27 @@ const props = withDefaults(defineProps<Props>(), {
     background: "var(--background)"
 })
 
-const editingDate = ref({
-    start: false,
-    end: false,
-    isRange: props.isRange
-})
+const emit = defineEmits(["update:modelValue"])
 
-const displayDate = ref<Date[]>([])
-const datePickerDate = ref<Date[]>([])
+defineExpose({
+    changeDateType
+})
 
 const datePickerTopPlacement = computed(() => {
     const heightAsNumber = Number(props.height.replace('rem', ''))
     return `${heightAsNumber + .75}rem`
 })
 
-watch(() => props.isRange, (newVal) => {
-    if(datePickerDate.value.length == 0) return
-    console.log("isRange", newVal)
-    const startDate = new Date(datePickerDate.value[0].getTime() - 7 * 24 * 60 * 60 * 1000)
-    const endDate = datePickerDate.value[0]
+const isRangeState = ref(props.isRange)
 
-    datePickerDate.value = [
-        startDate,
-        endDate
-    ]
-
-    /* editingDate.value.isRange = newVal */
+const editingDate = ref({
+    start: false,
+    end: false,
 })
 
-watch([() => editingDate.value.isRange, () => editingDate.value.start, () => editingDate.value.end], ([isRange, start, end]) => {
-    if(!props.isRange) return
-    if(isRange) return datePickerDate.value = displayDate.value
-
-    console.log("editingDate", isRange, start, end)
-    console.log(datePickerDate.value)
-    console.log(displayDate.value)
-
-    if(start) {
-        datePickerDate.value = [displayDate.value[0]]
-        console.log(displayDate.value[0])
-    } else if(end) {
-        datePickerDate.value = [displayDate.value[1]]
-        console.log(displayDate.value[1])
-    }
-})
+const displayDate = ref<Date[]>(props.modelValue)
+const datePickerDate = ref<Date[]>(props.modelValue)
+const datePickerOpen = ref(false)
 
 watch(datePickerDate, (newVal) => {
     if(newVal.length == 0) return
@@ -78,10 +56,8 @@ watch(datePickerDate, (newVal) => {
     }
 
     displayDate.value = newVal
+    emit("update:modelValue", displayDate.value)
 })
-
-
-const datePickerOpen = ref(false)
 
 function compareDates(currentDate: Date, nextDate: Date) {
     const currentDateClone = new Date(currentDate.getTime())
@@ -98,52 +74,82 @@ function compareDates(currentDate: Date, nextDate: Date) {
     else if(currentDateTimestamp < nextDateTimestamp) return "before"
 }
 
-function startSingelDateChange(whichDate: "start" | "end" | "reset") {
-    if(whichDate == "reset") {
-        editingDate.value.isRange = props.isRange
-        editingDate.value.start = false
-        editingDate.value.end = false
-        return
-    }
-
-    editingDate.value.isRange = false
+// For choosing editing side
+function singleDateChange(whichDate: "start" | "end") {
+    isRangeState.value = false
+    
     if(whichDate == "start") {
         editingDate.value.start = true
         editingDate.value.end = false
+        datePickerDate.value = [displayDate.value[0]]
     } else {
         editingDate.value.start = false
         editingDate.value.end = true
+        datePickerDate.value = [displayDate.value[1]]
     }
 
     datePickerOpen.value = true
+}
+
+function resetEditingState() {
+    editingDate.value.start = false
+    editingDate.value.end = false
+    isRangeState.value = props.isRange
+}
+
+// For changing between single and range date types
+function changeDateType(type: "single" | "range") {
+    if(type == "single") {
+        if(isRangeState.value) {
+            isRangeState.value = false
+            datePickerDate.value = [displayDate.value[0]]
+            return
+        }
+        return
+    } 
+    if("range") {
+        let endDate = new Date()
+        if(props.maxDate && compareDates(props.maxDate, endDate) == "before") endDate = props.maxDate
+
+        if(props.modelValue?.length == 1) endDate = props.modelValue[0]
+
+
+        let startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+        if(props.minDate && compareDates(props.minDate, startDate) == "after") startDate = props.minDate
+
+        isRangeState.value = true
+        datePickerDate.value = [startDate, endDate]
+
+    }
+
 }
 </script>
 
 <template>
 <div class="datePickerInput">
     <OnClickOutside @trigger="datePickerOpen = false">
-        <div class="datePickerLabel" :date-range="isRange">
+        <div class="datePickerLabel" :date-range="isRangeState">
             <p
                 :class="{
-                    active: (datePickerOpen && editingDate.start) || (isRange && !editingDate.end && datePickerOpen)
+                    active: (datePickerOpen && editingDate.start) || (isRangeState && !editingDate.end && datePickerOpen)
                 }"
 
-                @click="startSingelDateChange('start')"    
-            >{{ useDateFormat(displayDate[0], "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
-            <img src="/icons/arrowRight.svg" alt="arrow right" v-if="isRange" @click="datePickerOpen = true, startSingelDateChange('reset')">
+                @click="singleDateChange('start')"    
+            >{{ useDateFormat(displayDate[0] || new Date(2040, 1, 1), "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
+            <img src="/icons/arrowRight.svg" alt="arrow right" v-if="isRangeState" @click="datePickerOpen = true, resetEditingState()">
             <p 
-                v-if="isRange" 
+                v-if="isRangeState" 
                 :class="{
-                    active: (datePickerOpen && editingDate.end) || (isRange && !editingDate.start && datePickerOpen)
+                    active: (datePickerOpen && editingDate.end) || (isRangeState && !editingDate.start && datePickerOpen)
                 }"
-                @click="startSingelDateChange('end')"
-            >{{ useDateFormat(displayDate[1], "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
+                @click="singleDateChange('end')"
+            >{{ useDateFormat(displayDate[1] || new Date(2040, 1, 1), "MMM. D, YYYY", { locales: 'en-US' }).value }}</p>
             <SystemIcon 
                 src="/icons/calendar.svg" 
                 ratio="height" 
                 size="medium"
                 color="white"
-                @click="datePickerOpen = true, startSingelDateChange('reset')"
+                @click="datePickerOpen = true, resetEditingState()"
             />
         </div>
 
@@ -152,10 +158,12 @@ function startSingelDateChange(whichDate: "start" | "end" | "reset") {
             v-model="datePickerDate" 
             v-if="datePickerOpen"
     
-            :isRange="editingDate.isRange"
+            :isRange="isRangeState"
             
             :maxDate="maxDate"
             :minDate="minDate"
+
+            :depend-on-model-value="!!dependOnModelValue"
         />
     </OnClickOutside>
 </div>
