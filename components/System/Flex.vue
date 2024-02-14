@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface FlexTypes {
     tag?: string
-    gap?: "none" | "small" | "normal" | "big" | "tiny"
+    gap?: "none" | "small" | "normal" | "big" | "tiny" | string 
     radius?: "none" | "outer" | "inner" | "small"
     padding?:   "none" |  "normal" | "small"
     background?: "none" | "background" | "dark" | "grey" 
@@ -45,13 +45,23 @@ const props = withDefaults(defineProps<FlexTypes>(), {
     width: "auto"
 })
 
+const gap = computed(() => {
+    if(props.gap == "small" || props.gap == "normal" || props.gap == "big" || props.gap == "tiny") {
+        return `var(--gap-${props.gap})`
+    } else if(props.gap == "none"){
+        return "0"
+    } else {
+        return props.gap
+    }
+})
+
 const style = computed(() => {
     return {
         "--radius": `var(--rad-${props.radius})`,
         "--padding": `var(--pad-${props.padding})`,
         "--background-color": `var(--${props.background})`,
         
-        "--gap": `var(--gap-${props.gap})`,
+        "--gap": gap.value,
         "--flex-direction": props.direction,
         "--align-items": props.alignItems,
         "--justify-content": props.justifyContent,

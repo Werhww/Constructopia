@@ -35,10 +35,13 @@ body {
     --dark: #1E1E1E;
     --background: #232323;
     --grey: #6A6565;
+    --light-grey: #A59B9B;
+    --red: #FF0000;
 
     --shadow:  0px 0px 4px 0px var(--grey);
 
     --filter-grey: brightness(0) saturate(100%) invert(40%) sepia(3%) saturate(551%) hue-rotate(314deg) brightness(94%) contrast(84%);
+    --filter-light-grey: brightness(0) saturate(100%) invert(63%) sepia(3%) saturate(656%) hue-rotate(314deg) brightness(100%) contrast(84%);
 }
 
 h1 {
@@ -57,8 +60,17 @@ p {
 }
 
 span {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 500;
+}
+
+.grey {    
+    color: var(--grey);
+    
+}
+
+.light-grey {
+    color: var(--light-grey);
 }
 
 

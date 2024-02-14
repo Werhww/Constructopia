@@ -4,7 +4,7 @@ interface Props {
     size: "tiny" | "small" | "medium" | "large"
     alt?: string
     ratio?: "equal" | "width" | "height"
-    color?: "white" | "grey"
+    color?: "white" | "grey" | "light-grey"
 }
 
 const props = withDefaults(defineProps<Props>(), {

@@ -13,12 +13,13 @@ const props = defineProps<{
 .userAt {
     color: var(--grey);
     cursor: pointer;
+    font-weight: 500;
 
     transition: color 0.2s ease-in-out;
 
     &:hover {
 
-        color: #fff;
+        color: var(--red);
     }
 }
 </style>

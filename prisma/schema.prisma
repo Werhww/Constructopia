@@ -80,10 +80,13 @@ model Build {
   description String
   difficulty Difficulty
   size Size
-  litematic Bytes
+  
+  file Bytes
+  fileExtension FileExtension
+
   images    Image[]
-  views     Int       @default(0)
-  downloads Int   @default(0)
+  views     Int      @default(0)
+  downloads Int      @default(0)
   imageCount Int
   blockCount Int
   inventory Item[]
@@ -93,6 +96,13 @@ model Build {
 
   favorites Favorite[]
   reports   Report[]
+}
+
+enum FileExtension {
+  Litematic
+  Schematic
+  NBT
+  MCSctructure
 }
 
 model Image{
