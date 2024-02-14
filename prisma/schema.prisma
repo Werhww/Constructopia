@@ -43,23 +43,24 @@ enum ReportAction {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   minecraftId String   @unique
   minecraftName String @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
 
-  role      Role     @default(USER)
+  role        Role     @default(USER)
 
-  builds    Build[]
-  favorites Favorite[]
+  builds      Build[]
+  favorites   Favorite[]
   createdCategories Category[]
 
-  reports   Report[]
+  reports     Report[]
   createdReports Report[] @relation("ReportCreator")
 
-  likes     Like[]
-  dislikes  Dislike[]
+  likes       Like[]
+  dislikes    Dislike[]
+
+  published   Boolean  @default(false)
 }
 
 enum Role {
@@ -80,8 +81,9 @@ model Build {
   difficulty Difficulty
   size Size
   litematic Bytes
-  images    Bytes[]
-  views     Int      @default(0)
+  images    Image[]
+  views     Int       @default(0)
+  downloads Int   @default(0)
   imageCount Int
   blockCount Int
   inventory Item[]
@@ -93,9 +95,16 @@ model Build {
   reports   Report[]
 }
 
+model Image{
+  id        Int      @id @default(autoincrement())
+  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  buildId   Int
+  image     Bytes
+}
+
 model likeCounter {
   id        Int      @id @default(autoincrement())
-  build     Build    @relation(fields: [buildId], references: [id])
+  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
   buildId   Int      @unique
   
   likeCount Int      @default(0)
