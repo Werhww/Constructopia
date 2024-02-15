@@ -26,56 +26,80 @@ const categoryScroller = ref(false)
 </script>
 
 <template>
-<SystemFlex class="buildCard"
-    direction="column"
-    gap="small"
-    padding="normal" 
-    background="dark" 
-    radius="outer"
-
-    @mouseenter="categoryScroller = true"
-    @mouseleave="categoryScroller = false"
-
-    width="16.375rem"
->
-    <SystemFlex radius="inner" overflow="hidden">
-        <img :src="src" :alt="name">
-    </SystemFlex>
-    <h2 class="buildTitle">{{ name }}</h2>
-
-    <SystemFlex gap="small">
-        <SystemFlex align-items="center" gap="2px">
-            <SystemIcon src="/icons/blocks.svg" size="small" ratio="height" color="light-grey" />
-            <span class="light-grey">{{ blocks }}</span>
-        </SystemFlex>
-        <SystemFlex align-items="center" gap="2px">
-            <SystemIcon src="/icons/views.svg" size="tiny" ratio="height" color="light-grey" />
-            <span class="light-grey">{{ views }}</span>
-        </SystemFlex>
-        <SystemFlex align-items="center" gap="tiny">
-            <SystemIcon src="/icons/download.svg" size="tiny" ratio="height" color="light-grey" />
-            <span class="light-grey">{{ downloads }}</span>
-        </SystemFlex>
-    </SystemFlex>
-    <SystemFlex
+<div class="buildWrapper">
+    <SystemFlex class="buildCard"
+        direction="column"
         gap="small"
+        padding="normal" 
+        background="dark" 
+        radius="outer"
+    
+        @mouseenter="categoryScroller = true"
+        @mouseleave="categoryScroller = false"
+    
+        width="16.375rem"
     >
-        <BuildUserAtSmall :username="username" :user-id="userId" />
-        <SystemFlex 
-            align-items="center"
-            gap="4px"   
-        >
-            <SystemIcon src="/icons/size.svg" size="tiny" ratio="height" color="grey" />
-            <span class="grey">{{ size }}</span>
+        <SystemFlex radius="inner" overflow="hidden">
+            <img :src="src" :alt="name">
         </SystemFlex>
-        <span class="grey">/{{ difficulty }}</span>
+        <h2 class="buildTitle">{{ name }}</h2>
+    
+        <SystemFlex gap="small">
+            <SystemFlex align-items="center" gap="2px">
+                <SystemIcon src="/icons/blocks.svg" size="small" ratio="height" color="light-grey" />
+                <span class="light-grey">{{ blocks }}</span>
+            </SystemFlex>
+            <SystemFlex align-items="center" gap="2px">
+                <SystemIcon src="/icons/views.svg" size="tiny" ratio="height" color="light-grey" />
+                <span class="light-grey">{{ views }}</span>
+            </SystemFlex>
+            <SystemFlex align-items="center" gap="tiny">
+                <SystemIcon src="/icons/download.svg" size="tiny" ratio="height" color="light-grey" />
+                <span class="light-grey">{{ downloads }}</span>
+            </SystemFlex>
+        </SystemFlex>
+        <SystemFlex
+            gap="small"
+        >
+            <BuildUserAtSmall :username="username" :user-id="userId" />
+            <SystemFlex 
+                align-items="center"
+                gap="4px"   
+            >
+                <SystemIcon src="/icons/size.svg" size="tiny" ratio="height" color="grey" />
+                <span class="grey">{{ size }}</span>
+            </SystemFlex>
+            <span class="grey">/{{ difficulty }}</span>
+        </SystemFlex>
+    
+        <span class="fileExtension">{{ fileExtension }}</span>
     </SystemFlex>
 
-    <span class="fileExtension">{{ fileExtension }}</span>
-</SystemFlex>
+    <BuildHover class="hoverCard"
+        :title="name"
+        :description="description"
+        :categorys="categorys"
+        :file-extension="fileExtension"
+        :createdAt="new Date()"
+        :updatedAt="new Date()"
+    />
+</div>
 </template>
 
 <style scoped lang="scss">
+.buildWrapper {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+
+    .hoverCard {
+        position: absolute;
+        top: 4rem;
+        left: 17.375rem;
+        z-index: 100;
+    }
+}
+
 .buildCard {
     cursor: pointer;
     position: relative;

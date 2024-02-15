@@ -66,12 +66,23 @@ span {
 
 .grey {    
     color: var(--grey);
+    font-weight: 400;
     
+}
+
+.greyThick {
+    color: var(--grey);
+    font-weight: 600;
 }
 
 .light-grey {
     color: var(--light-grey);
+    font-weight: 400;
 }
 
+.light-greyThick {
+    color: var(--light-grey);
+    font-weight: 600;
+}
 
 </style>
