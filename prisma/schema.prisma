@@ -59,8 +59,6 @@ model User {
 
   likes       Like[]
   dislikes    Dislike[]
-
-  published   Boolean  @default(false)
 }
 
 enum Role {
@@ -78,11 +76,11 @@ model Build {
   updatedAt DateTime @updatedAt
   name      String
   description String
+  
   difficulty Difficulty
   size Size
   
-  file Bytes
-  fileExtension FileExtension
+  files File[]
 
   images    Image[]
   views     Int      @default(0)
@@ -96,6 +94,14 @@ model Build {
 
   favorites Favorite[]
   reports   Report[]
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  buildId   Int
+  file      Bytes
+  extension FileExtension
 }
 
 enum FileExtension {
@@ -125,15 +131,16 @@ model likeCounter {
 }
 
 enum Difficulty {
-  EASY
-  NORMAL
-  HARD
+  Easy
+  Normal
+  Hard
 }
 
 enum Size {
-  SMALL
-  MEDIUM
-  LARGE
+  Small
+  Medium
+  Large
+  Huge
 }
 
 model Item {

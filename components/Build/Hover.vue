@@ -1,10 +1,8 @@
-<script setup lang="ts">
-
+<script setup lang="ts" >
 defineProps<{
-    fileExtension: string
+    fileExtensions: string[]
     createdAt: Date
     updatedAt: Date
-
     title: string
     description: string
     categorys: {
@@ -12,6 +10,29 @@ defineProps<{
         id: string
     }[]
 }>()
+
+const categoryX = ref("")
+const categoryY = ref("")
+const categoryId = ref<string | null>(null)
+const popup = ref(false)
+
+let closeTimeout: null | NodeJS.Timeout = null
+
+function closePopup() {
+    closeTimeout = setTimeout(() => {
+        popup.value = false
+    }, 250)
+}
+
+function clearCloseTimeout() {
+    if(closeTimeout) {
+        clearTimeout(closeTimeout)
+    }
+}
+
+watchEffect(() => {
+    console.log(categoryX.value, categoryY.value, categoryId.value)
+})
 </script>
 
 <template>
@@ -33,9 +54,24 @@ defineProps<{
     </span>
     <span class="grey">
         Categoryies: 
+        <BuildCategoryText v-for="item in categorys" 
+            :name="item.name" 
+            :id="item.id"
+            @popup="(x, y, id) => {
+                categoryX = `${x + 272}px`
+                categoryY = `${y + 64 + 20}px`
+                categoryId = id
+                popup = true
+            }"
+
+            @close="closePopup"
+        />
     </span>
     
     <span class="light-greyThick description">{{ description }}</span>
+    <span class="grey">
+        Avalible in: <span class="greyThick" v-for="item in fileExtensions">{{ item }}, </span>
+    </span>
 
 
     <SystemFlex class="buttons"
@@ -54,16 +90,27 @@ defineProps<{
 
         <SystemIcon src="/icons/arrowRight.svg" size="medium" ratio="width"/>
     </SystemFlex>
-
-    <span class="fileExtension">{{ fileExtension }}</span>
 </SystemFlex>
+
+<TransitonAppear>
+    <BuildCategoryPopup v-if="popup"
+        class="popup"
+        :id="categoryId"
+        @mouseenter="clearCloseTimeout"
+        @mouseleave="closePopup"
+    />
+</TransitonAppear>
 </template>
 
 <style scoped lang="scss">
 .hoverCard {
-    position: relative;
     min-height: 15.5rem;
     overflow: hidden;
+
+    position: absolute;
+    top: 4rem;
+    left: 17rem;
+    z-index: 100;
 
 
 
@@ -100,5 +147,13 @@ defineProps<{
         }
     }
 
+}
+
+.popup {
+    position: absolute;
+    z-index: 100;
+
+    top: v-bind(categoryY);
+    left: v-bind(categoryX);
 }
 </style>

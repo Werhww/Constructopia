@@ -79,7 +79,7 @@ const style = computed(() => {
 </script>
 
 <template>
-    <component class="flex" :is="props.tag" :data-shadow="shadow" :style="style">
+    <component class="flex" :is="tag" :data-shadow="shadow" :style="style">
         <slot></slot>
     </component>
 </template>

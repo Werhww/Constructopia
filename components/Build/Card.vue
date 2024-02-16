@@ -1,6 +1,5 @@
 <script setup lang="ts">
 defineProps<{
-    src: string
     name: string
     description: string
     
@@ -14,7 +13,7 @@ defineProps<{
     size: string
     difficulty: string
 
-    fileExtension: string
+    fileExtensions: string[]
 
     categorys: {
         name: string
@@ -47,39 +46,37 @@ const categoryScroller = ref(false)
         <SystemFlex gap="small">
             <SystemFlex align-items="center" gap="2px">
                 <SystemIcon src="/icons/blocks.svg" size="small" ratio="height" color="light-grey" />
-                <span class="light-grey">{{ blocks }}</span>
+                <span class="light-greyThick">{{ blocks }}</span>
             </SystemFlex>
             <SystemFlex align-items="center" gap="2px">
                 <SystemIcon src="/icons/views.svg" size="tiny" ratio="height" color="light-grey" />
-                <span class="light-grey">{{ views }}</span>
+                <span class="light-greyThick">{{ views }}</span>
             </SystemFlex>
             <SystemFlex align-items="center" gap="tiny">
                 <SystemIcon src="/icons/download.svg" size="tiny" ratio="height" color="light-grey" />
-                <span class="light-grey">{{ downloads }}</span>
+                <span class="light-greyThick">{{ downloads }}</span>
             </SystemFlex>
         </SystemFlex>
         <SystemFlex
             gap="small"
         >
-            <BuildUserAtSmall :username="username" :user-id="userId" />
+            <BuildUsername :username="username" :user-id="userId" />
             <SystemFlex 
                 align-items="center"
                 gap="4px"   
             >
                 <SystemIcon src="/icons/size.svg" size="tiny" ratio="height" color="grey" />
-                <span class="grey">{{ size }}</span>
+                <span class="greyThick">{{ size }}</span>
             </SystemFlex>
-            <span class="grey">/{{ difficulty }}</span>
+            <span class="greyThick">/{{ difficulty }}</span>
         </SystemFlex>
-    
-        <span class="fileExtension">{{ fileExtension }}</span>
     </SystemFlex>
 
-    <BuildHover class="hoverCard"
+    <BuildHover
         :title="name"
         :description="description"
         :categorys="categorys"
-        :file-extension="fileExtension"
+        :file-extensions="fileExtensions"
         :createdAt="new Date()"
         :updatedAt="new Date()"
     />
@@ -91,13 +88,6 @@ const categoryScroller = ref(false)
     position: relative;
     width: fit-content;
     height: fit-content;
-
-    .hoverCard {
-        position: absolute;
-        top: 4rem;
-        left: 17.375rem;
-        z-index: 100;
-    }
 }
 
 .buildCard {
@@ -109,19 +99,6 @@ const categoryScroller = ref(false)
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-    }
-
-    .fileExtension {
-        background-color: var(--red);
-        padding: 0.2rem 0.5rem;
-        border-radius: 0.188rem;
-
-        box-shadow: var(--shadow);
-
-        position: absolute;
-
-        left: 0;
-        top: 0;
     }
 }
 </style>
