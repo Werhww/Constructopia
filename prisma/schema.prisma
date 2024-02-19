@@ -82,7 +82,7 @@ model Build {
   
   files File[]
 
-  images    Image[]
+  images    String[]
   views     Int      @default(0)
   downloads Int      @default(0)
   imageCount Int
@@ -109,13 +109,6 @@ enum FileExtension {
   Schematic
   NBT
   MCSctructure
-}
-
-model Image{
-  id        Int      @id @default(autoincrement())
-  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-  image     Bytes
 }
 
 model likeCounter {

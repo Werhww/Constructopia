@@ -14,6 +14,7 @@ defineProps<{
     difficulty: string
 
     fileExtensions: string[]
+    images: string[]
 
     categorys: {
         name: string
@@ -39,7 +40,7 @@ const categoryScroller = ref(false)
         width="16.375rem"
     >
         <SystemFlex radius="inner" overflow="hidden">
-            <img :src="src" :alt="name">
+            <img :src="images[0]" :alt="name">
         </SystemFlex>
         <h2 class="buildTitle">{{ name }}</h2>
     
