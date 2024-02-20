@@ -88,7 +88,7 @@ model Build {
   imageCount Int
   blockCount Int
   inventory Item[]
-  category  Category[]
+  categorys  Category[]
 
   likeCount likeCounter?
 

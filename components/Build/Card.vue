@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{
+
+
+interface OldProps {
     name: string
     description: string
     
@@ -20,7 +22,16 @@ defineProps<{
         name: string
         id: string
     }[]
+}
+
+const props = defineProps<{
+    id: number
 }>()
+
+const data = await serverFunction("findBuild", props.id)
+
+if (isServerError(data)) throw createError("Build not found")
+
 
 const categoryScroller = ref(false)
 </script>
@@ -39,29 +50,29 @@ const categoryScroller = ref(false)
     
         width="16.375rem"
     >
-        <SystemFlex radius="inner" overflow="hidden">
-            <img :src="images[0]" :alt="name">
+        <SystemFlex radius="inner" overflow="hidden" height="12.5rem">
+            <img style="width: 100%; height: 100%; object-fit: cover;" :src="data?.images[0]" :alt="data?.name">
         </SystemFlex>
-        <h2 class="buildTitle">{{ name }}</h2>
+        <h2 class="buildTitle">{{ data?.name }}</h2>
     
         <SystemFlex gap="small">
             <SystemFlex align-items="center" gap="2px">
                 <SystemIcon src="/icons/blocks.svg" size="small" ratio="height" color="light-grey" />
-                <span class="light-greyThick">{{ blocks }}</span>
+                <span class="light-greyThick">{{ data?.blockCount }}</span>
             </SystemFlex>
             <SystemFlex align-items="center" gap="2px">
                 <SystemIcon src="/icons/views.svg" size="tiny" ratio="height" color="light-grey" />
-                <span class="light-greyThick">{{ views }}</span>
+                <span class="light-greyThick">{{ data?.views }}</span>
             </SystemFlex>
             <SystemFlex align-items="center" gap="tiny">
                 <SystemIcon src="/icons/download.svg" size="tiny" ratio="height" color="light-grey" />
-                <span class="light-greyThick">{{ downloads }}</span>
+                <span class="light-greyThick">{{ data?.downloads }}</span>
             </SystemFlex>
         </SystemFlex>
         <SystemFlex
             gap="small"
         >
-            <BuildUsername :username="username" :user-id="userId" />
+            <BuildUsername :username="data?.user.minecraftName" :user-id="data?.user.id" />
             <SystemFlex 
                 align-items="center"
                 gap="4px"   
