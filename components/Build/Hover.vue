@@ -1,19 +1,19 @@
 <script setup lang="ts" >
+import type { Category } from '@prisma/client';
+
+
 defineProps<{
     fileExtensions: string[]
     createdAt: Date
     updatedAt: Date
     title: string
     description: string
-    categorys: {
-        name: string
-        id: string
-    }[]
+    categorys: Category[]
 }>()
 
 const categoryX = ref("")
 const categoryY = ref("")
-const categoryId = ref<string | null>(null)
+const categoryId = ref<number | null>(null)
 const popup = ref(false)
 
 let closeTimeout: null | NodeJS.Timeout = null

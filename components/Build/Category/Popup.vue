@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-    id: string | null
+    id: number | null
 }>()
 
 const info = ref({
@@ -8,7 +8,7 @@ const info = ref({
     description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus ab nesciunt alias, excepturi qui officiis inventore. Molestiae dolore totam doloremque? Fuga provident eum dolorum reprehenderit praesentium veniam architecto, omnis quis!",
     createdAt: new Date(),
     createdBy: "eokemos",
-    creatorId: "123"
+    creatorId: 132
 })
 </script>
 

@@ -29,7 +29,6 @@ const props = defineProps<{
 }>()
 
 const data = await serverFunction("findBuild", props.id)
-
 if (isServerError(data)) throw createError("Build not found")
 
 
@@ -37,6 +36,7 @@ const categoryScroller = ref(false)
 </script>
 
 <template>
+
 <div class="buildWrapper">
     <SystemFlex class="buildCard"
         direction="column"
@@ -78,19 +78,19 @@ const categoryScroller = ref(false)
                 gap="4px"   
             >
                 <SystemIcon src="/icons/size.svg" size="tiny" ratio="height" color="grey" />
-                <span class="greyThick">{{ size }}</span>
+                <span class="greyThick">{{ data?.size }}</span>
             </SystemFlex>
-            <span class="greyThick">/{{ difficulty }}</span>
+            <span class="greyThick">/{{ data?.difficulty }}</span>
         </SystemFlex>
     </SystemFlex>
 
     <BuildHover
-        :title="name"
-        :description="description"
-        :categorys="categorys"
-        :file-extensions="fileExtensions"
-        :createdAt="new Date()"
-        :updatedAt="new Date()"
+        :title="data?.name!"
+        :description="data?.description!"
+        :categorys="data?.category!"
+        :file-extensions="['ntb']"
+        :createdAt="data?.createdAt!"
+        :updatedAt="data?.updatedAt!"
     />
 </div>
 </template>

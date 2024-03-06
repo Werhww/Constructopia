@@ -1,4 +1,5 @@
-import { prisma } from "../server";
+import { prisma } from "../server"
+
 
 export function createUser(user: {
     minecraftId: string;
@@ -8,4 +9,3 @@ export function createUser(user: {
     data: user,
   });
 }
-

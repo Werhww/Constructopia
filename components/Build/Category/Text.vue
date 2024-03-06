@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Props {
     name: string
-    id: string
+    id: number
     tag?: string
 }
 
@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-    popup: [x:number, y:number, id: string]
+    popup: [x:number, y:number, id: number]
     close: []
 }>()
 
