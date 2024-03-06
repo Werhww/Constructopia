@@ -4,7 +4,7 @@ export type ServerFunctionResult<T extends FunctionNames> = Awaited<ReturnType<F
 export type NoServerFunctionErrors<T> = T extends number ? never : T
 
 export async function serverFunction<T extends FunctionNames>(operation: T, data: Parameters<Functions[T]>[0]): Promise<ServerFunctionResult<T>> {
-    const returned = await fetch(`/api/function/${operation as string}`, {
+    const returned = await fetch(`http://localhost:3000/api/function/${operation as string}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

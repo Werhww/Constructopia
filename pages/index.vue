@@ -8,8 +8,6 @@ watch(datePickerValue, (newVal, oldVal) => {
 
 <template>
     <div class="test">
-        <Filter />
-
         <BuildCard
             :id="1"  
         />

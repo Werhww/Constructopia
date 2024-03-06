@@ -84,7 +84,7 @@ const categoryScroller = ref(false)
         </SystemFlex>
     </SystemFlex>
 
-    <BuildHover
+    <BuildHover v-if="categoryScroller"
         :title="data?.name!"
         :description="data?.description!"
         :categorys="data?.category!"
