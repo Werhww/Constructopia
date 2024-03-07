@@ -8,9 +8,16 @@ watch(datePickerValue, (newVal, oldVal) => {
 
 <template>
     <div class="test">
-        <BuildCard
-            :id="1"  
-        />
+        <Suspense>
+            <BuildCard
+                :id="1"  
+            />
+
+            <template #fallback>
+                <div>Loading...</div>   
+            </template>
+        </Suspense>
+
     </div>
 </template>
 

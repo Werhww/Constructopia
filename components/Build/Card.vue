@@ -31,12 +31,28 @@ const props = defineProps<{
 const data = await serverFunction("findBuild", props.id)
 if (isServerError(data)) throw createError("Build not found")
 
+let hoverTimeout: NodeJS.Timeout | null  = null
+const buildHover = ref(false)
 
-const categoryScroller = ref(false)
+function showHover() {
+    if(hoverTimeout) clearTimeout(hoverTimeout)
+    hoverTimeout = setTimeout(() => {
+        console.log("show")
+        buildHover.value = true
+    }, 250)
+}
+
+function hideHover() {
+    if(hoverTimeout) clearTimeout(hoverTimeout)
+
+    hoverTimeout = setTimeout(() => {
+        console.log("hide")
+        buildHover.value = false
+    }, 250)
+}
 </script>
 
 <template>
-
 <div class="buildWrapper">
     <SystemFlex class="buildCard"
         direction="column"
@@ -45,8 +61,8 @@ const categoryScroller = ref(false)
         background="dark" 
         radius="outer"
     
-        @mouseenter="categoryScroller = true"
-        @mouseleave="categoryScroller = false"
+        @mouseenter="showHover"
+        @mouseleave="hideHover"
     
         width="16.375rem"
     >
@@ -84,13 +100,16 @@ const categoryScroller = ref(false)
         </SystemFlex>
     </SystemFlex>
 
-    <BuildHover v-if="categoryScroller"
+    <BuildHover v-if="buildHover"
         :title="data?.name!"
         :description="data?.description!"
         :categorys="data?.category!"
         :file-extensions="['ntb']"
-        :createdAt="data?.createdAt!"
-        :updatedAt="data?.updatedAt!"
+        :createdAt="new Date(data?.createdAt!)"
+        :updatedAt="new Date(data?.updatedAt!)"
+
+        :showHover="showHover"
+        :hideHover="hideHover"
     />
 </div>
 </template>

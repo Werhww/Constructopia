@@ -1,14 +1,16 @@
 <script setup lang="ts" >
 import type { Category } from '@prisma/client';
 
-
-defineProps<{
+const props = defineProps<{
     fileExtensions: string[]
     createdAt: Date
     updatedAt: Date
     title: string
     description: string
     categorys: Category[]
+
+    showHover: () => void
+    hideHover: () => void
 }>()
 
 const categoryX = ref("")
@@ -21,10 +23,12 @@ let closeTimeout: null | NodeJS.Timeout = null
 function closePopup() {
     closeTimeout = setTimeout(() => {
         popup.value = false
+        props.hideHover()
     }, 250)
 }
 
 function clearCloseTimeout() {
+    props.showHover()
     if(closeTimeout) {
         clearTimeout(closeTimeout)
     }
@@ -44,6 +48,9 @@ watchEffect(() => {
     gap="small"
     radius="outer"
     shadow="on"
+
+    @mouseenter="showHover"
+    @mouseleave="hideHover"
 >
     <h2>{{ title }}</h2>
     <span class="grey">
@@ -98,6 +105,7 @@ watchEffect(() => {
         :id="categoryId"
         @mouseenter="clearCloseTimeout"
         @mouseleave="closePopup"
+        
     />
 </TransitonAppear>
 </template>

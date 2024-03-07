@@ -1,5 +1,8 @@
 <template>
-    <NuxtLoadingIndicator />
+<!--     <NuxtLoadingIndicator 
+        :duration="200"
+        color="red"
+    /> -->
     <NuxtPage />
 </template>
 
