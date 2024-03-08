@@ -1,83 +1,32 @@
 <script setup lang="ts" >
-import type { Category } from '@prisma/client';
-
 const props = defineProps<{
-    fileExtensions: string[]
-    createdAt: Date
-    updatedAt: Date
-    title: string
-    description: string
-    categorys: Category[]
+    build: NoServerFunctionErrors<ServerFunctionResult<"findBuild">>
 
-    showHover: () => void
-    hideHover: () => void
 }>()
 
-const categoryX = ref("")
-const categoryY = ref("")
-const categoryId = ref<number | null>(null)
-const popup = ref(false)
 
-let closeTimeout: null | NodeJS.Timeout = null
-
-function closePopup() {
-    closeTimeout = setTimeout(() => {
-        popup.value = false
-        props.hideHover()
-    }, 250)
-}
-
-function clearCloseTimeout() {
-    props.showHover()
-    if(closeTimeout) {
-        clearTimeout(closeTimeout)
-    }
-}
-
-watchEffect(() => {
-    console.log(categoryX.value, categoryY.value, categoryId.value)
-})
 </script>
 
 <template>
-<SystemFlex class="hoverCard"
-    width="18.75rem"
-    direction="column"
-    background="dark" 
-    padding="normal" 
-    gap="small"
-    radius="outer"
-    shadow="on"
-
-    @mouseenter="showHover"
-    @mouseleave="hideHover"
->
-    <h2>{{ title }}</h2>
+<div class="hoverCard">
+    <h2>{{ build?.name }}</h2>
     <span class="grey">
-        Created at: <span class="greyThick">{{ useDateFormat(createdAt, "MMM D, YYYY").value }}</span>
+        Created at: <span class="greyThick">{{ useDateFormat(build?.createdAt, "MMM D, YYYY").value }}</span>
     </span>
     <span class="grey">
-        Last changed: <span class="greyThick">{{ useDateFormat(createdAt, "MMM D, YYYY").value }}</span>
+        Last changed: <span class="greyThick">{{ useDateFormat(build?.updatedAt, "MMM D, YYYY").value }}</span>
     </span>
     <span class="grey">
         Categoryies: 
-        <BuildCategoryText v-for="item in categorys" 
+        <BuildCategoryText v-for="item in build?.category" 
             :name="item.name" 
             :id="item.id"
-            @popup="(x, y, id) => {
-                categoryX = `${x + 272}px`
-                categoryY = `${y + 64 + 20}px`
-                categoryId = id
-                popup = true
-            }"
-
-            @close="closePopup"
         />
     </span>
     
-    <span class="light-greyThick description">{{ description }}</span>
+    <span class="light-greyThick description">{{ build?.description }}</span>
     <span class="grey">
-        Avalible in: <span class="greyThick" v-for="item in fileExtensions">{{ item }}, </span>
+        Avalible in: <!-- <span class="greyThick" v-for="item in fileExtensions">{{ item }}, </span> -->
     </span>
 
 
@@ -97,28 +46,29 @@ watchEffect(() => {
 
         <SystemIcon src="/icons/arrowRight.svg" size="medium" ratio="width"/>
     </SystemFlex>
-</SystemFlex>
-
-<TransitonAppear>
-    <BuildCategoryPopup v-if="popup"
-        class="popup"
-        :id="categoryId"
-        @mouseenter="clearCloseTimeout"
-        @mouseleave="closePopup"
-        
-    />
-</TransitonAppear>
+</div>
 </template>
 
 <style scoped lang="scss">
 .hoverCard {
     min-height: 15.5rem;
-    overflow: hidden;
+    
 
     position: absolute;
     top: 4rem;
     left: 17rem;
     z-index: 100;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-small);
+    
+    width: 18.75rem;
+    padding: var(--pad-normal);
+    border-radius: var(--rad-outer);
+    
+    background-color: var(--dark); 
+    box-shadow: var(--shadow);
 
 
 
@@ -155,13 +105,5 @@ watchEffect(() => {
         }
     }
 
-}
-
-.popup {
-    position: absolute;
-    z-index: 100;
-
-    top: v-bind(categoryY);
-    left: v-bind(categoryX);
 }
 </style>

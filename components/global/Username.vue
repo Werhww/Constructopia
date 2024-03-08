@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { UseDarkOptions } from '@vueuse/core';
-
 interface Props {
     username: string | undefined
     userId: number | undefined

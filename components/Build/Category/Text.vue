@@ -1,62 +1,57 @@
 <script setup lang="ts">
 interface Props {
     name: string
-    id: number
     tag?: string
+    id: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
     tag: "span"
 })
 
-const emit = defineEmits<{
-    popup: [x:number, y:number, id: number]
-    close: []
-}>()
-
-const element = ref<HTMLElement | null>(null)
-
-let timeout: null | NodeJS.Timeout = null
-
-function mouseover() {
-    timeout = setTimeout(() => {
-        const top = element.value?.offsetTop
-        const left = element.value?.offsetLeft
-        emit("popup", left || 0, top || 0, props.id)
-        timeout = null
-    }, 500)
-}
-
-function mouseout() {
-    if(timeout) {
-        clearTimeout(timeout)
-    }
-    emit("close")
-}
 
 </script>
 
 <template>
-<component 
-    class="category light-greyThick" 
-    ref="element" 
-    :is="tag"
+<SystemAwaitHover v-slot="{ show }" >
+    <div class="category">
+        <component 
+            class="categoryText light-greyThick" 
+            ref="element" 
+            :is="tag"
+        >
+            {{ name }},
+        </component>
 
-    @mouseover="mouseover"
-    @mouseout="mouseout"
->
-    {{ name }},
-</component>
+        <BuildCategoryPopup
+            class="popup"
+            :id="id"
+            v-if="show"
+        />
+    </div>
+</SystemAwaitHover>
 </template>
 
 <style scoped lang="scss">
 .category {
+    width: fit-content;
+    height: fit-content;
+
     position: relative;
-    cursor: pointer;
     transition: all 0.2s ease-in-out;
-        
-    &:hover {
-        color: var(--red);
+    .categoryText {
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+
+        &:hover {
+            color: var(--red);
+        }
+    }
+
+    .popup {
+        position: absolute;
+        z-index: 100;
+        top: 1.5rem;
     }
 }
 </style>

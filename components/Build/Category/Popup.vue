@@ -3,13 +3,12 @@ const props = defineProps<{
     id: number | null
 }>()
 
-const info = ref({
-    name: "test",
-    description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus ab nesciunt alias, excepturi qui officiis inventore. Molestiae dolore totam doloremque? Fuga provident eum dolorum reprehenderit praesentium veniam architecto, omnis quis!",
-    createdAt: new Date(),
-    createdBy: "eokemos",
-    creatorId: 132
-})
+if(props.id === null) throw createError("No id provided")
+
+const data = await serverFunction("findCategory", props.id)
+if (isServerError(data)) throw createError("Category not found")
+
+
 </script>
 
 <template>
@@ -22,15 +21,15 @@ const info = ref({
     shadow="on"
     width="18.75rem"
 >
-    <h2>{{ info.name }}</h2>
+    <h2>{{ data?.name }}</h2>
     <span class="grey">
-        Created by: <span class="greyThick">{{ useDateFormat(info.createdAt, "MMM D, YYYY").value }}</span>
+        Created by: <span class="greyThick">{{ useDateFormat(data?.createdAt, "MMM D, YYYY").value }}</span>
     </span>
     <span class="grey">
-        Made by: <BuildUsername class="light-greyThick" :username="info.createdBy" :user-id="info.creatorId" />
+        Made by: <Username class="light-greyThick" :username="data?.user.minecraftName" :user-id="data?.createdBy" />
     </span>
     <span class="light-greyThick description">
-        {{ info.description }}
+        {{ data?.description }}
     </span>
     <SystemFlex
         width="100%"
@@ -48,6 +47,7 @@ const info = ref({
         cursor: pointer;
     }
 }
+
 .description {
     display: -webkit-box;
     -webkit-line-clamp: 4;

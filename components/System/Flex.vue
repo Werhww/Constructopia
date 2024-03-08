@@ -20,8 +20,7 @@ interface FlexTypes {
     flex?: string
 
     width?: string
-    height?: string
-}
+    height?: string}
 
 const props = withDefaults(defineProps<FlexTypes>(), {
     tag: "div",
@@ -42,7 +41,7 @@ const props = withDefaults(defineProps<FlexTypes>(), {
 
     flex: "unset",
     height: "auto",
-    width: "auto"
+    width: "auto",
 })
 
 const gap = computed(() => {

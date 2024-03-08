@@ -1,29 +1,5 @@
 <script setup lang="ts">
 
-
-interface OldProps {
-    name: string
-    description: string
-    
-    views: number
-    blocks: number
-    downloads: number
-
-    username: string
-    userId: string
-
-    size: string
-    difficulty: string
-
-    fileExtensions: string[]
-    images: string[]
-
-    categorys: {
-        name: string
-        id: string
-    }[]
-}
-
 const props = defineProps<{
     id: number
 }>()
@@ -31,25 +7,6 @@ const props = defineProps<{
 const data = await serverFunction("findBuild", props.id)
 if (isServerError(data)) throw createError("Build not found")
 
-let hoverTimeout: NodeJS.Timeout | null  = null
-const buildHover = ref(false)
-
-function showHover() {
-    if(hoverTimeout) clearTimeout(hoverTimeout)
-    hoverTimeout = setTimeout(() => {
-        console.log("show")
-        buildHover.value = true
-    }, 250)
-}
-
-function hideHover() {
-    if(hoverTimeout) clearTimeout(hoverTimeout)
-
-    hoverTimeout = setTimeout(() => {
-        console.log("hide")
-        buildHover.value = false
-    }, 250)
-}
 </script>
 
 <template>
@@ -60,9 +17,6 @@ function hideHover() {
         padding="normal" 
         background="dark" 
         radius="outer"
-    
-        @mouseenter="showHover"
-        @mouseleave="hideHover"
     
         width="16.375rem"
     >
@@ -88,7 +42,7 @@ function hideHover() {
         <SystemFlex
             gap="small"
         >
-            <BuildUsername :username="data?.user.minecraftName" :user-id="data?.user.id" />
+            <Username :username="data?.user.minecraftName" :user-id="data?.user.id" />
             <SystemFlex 
                 align-items="center"
                 gap="4px"   
@@ -100,16 +54,11 @@ function hideHover() {
         </SystemFlex>
     </SystemFlex>
 
-    <BuildHover v-if="buildHover"
-        :title="data?.name!"
-        :description="data?.description!"
-        :categorys="data?.category!"
-        :file-extensions="['ntb']"
-        :createdAt="new Date(data?.createdAt!)"
-        :updatedAt="new Date(data?.updatedAt!)"
+    <BuildHover 
+        :build="data"
 
-        :showHover="showHover"
-        :hideHover="hideHover"
+
+        
     />
 </div>
 </template>
