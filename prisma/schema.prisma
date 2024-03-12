@@ -61,12 +61,6 @@ model User {
   dislikes    Dislike[]
 }
 
-enum Role {
-  USER
-  MODERATOR
-  ADMIN
-}
-
 model Build {
   username  String
   user      User     @relation(fields: [username], references: [minecraftName])
@@ -94,92 +88,4 @@ model Build {
 
   favorites Favorite[]
   reports   Report[]
-}
-
-model File {
-  id        Int      @id @default(autoincrement())
-  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-  file      Bytes
-  extension FileExtension
-}
-
-enum FileExtension {
-  Litematic
-  Schematic
-  NBT
-  MCSctructure
-}
-
-model likeCounter {
-  id        Int      @id @default(autoincrement())
-  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int      @unique
-  
-  likeCount Int      @default(0)
-  dislikeCount Int   @default(0)
-
-  likes     Like[]
-  dislikes  Dislike[]
-}
-
-enum Difficulty {
-  Easy
-  Normal
-  Hard
-}
-
-enum Size {
-  Small
-  Medium
-  Large
-  Huge
-}
-
-model Item {
-  id        Int      @id @default(autoincrement())
-  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-  name      String
-  count     Int
-}
-
-model Like {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  build     likeCounter    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-}
-
-model Dislike {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  build     likeCounter    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-}
-
-model Favorite {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-}
-
-model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  description String
-  createdAt DateTime @default(now())
-  createdBy Int
-  user      User     @relation(fields: [createdBy], references: [id])
-
-  builds    Build[]
 }
