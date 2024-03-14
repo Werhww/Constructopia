@@ -43,22 +43,29 @@ enum ReportAction {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   minecraftId String   @unique
   minecraftName String @unique
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  role        Role     @default(USER)
+  role      Role     @default(USER)
 
-  builds      Build[]
-  favorites   Favorite[]
+  builds    Build[]
+  favorites Favorite[]
   createdCategories Category[]
 
-  reports     Report[]
+  reports   Report[]
   createdReports Report[] @relation("ReportCreator")
 
-  likes       Like[]
-  dislikes    Dislike[]
+  likes     Like[]
+  dislikes  Dislike[]
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
 }
 
 model Build {
@@ -70,22 +77,90 @@ model Build {
   updatedAt DateTime @updatedAt
   name      String
   description String
-  
   difficulty Difficulty
   size Size
-  
-  files File[]
-
-  images    String[]
+  litematic Bytes
+  images    Bytes[]
   views     Int      @default(0)
-  downloads Int      @default(0)
   imageCount Int
   blockCount Int
   inventory Item[]
-  categorys  Category[]
+  category  Category[]
 
   likeCount likeCounter?
 
   favorites Favorite[]
   reports   Report[]
+}
+
+model likeCounter {
+  id        Int      @id @default(autoincrement())
+  build     Build    @relation(fields: [buildId], references: [id])
+  buildId   Int      @unique
+  
+  likeCount Int      @default(0)
+  dislikeCount Int   @default(0)
+
+  likes     Like[]
+  dislikes  Dislike[]
+}
+
+enum Difficulty {
+  EASY
+  NORMAL
+  HARD
+}
+
+enum Size {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+model Item {
+  id        Int      @id @default(autoincrement())
+  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  buildId   Int
+  name      String
+  count     Int
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  build     likeCounter    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  buildId   Int
+}
+
+model Dislike {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  build     likeCounter    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  buildId   Int
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  buildId   Int
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  description String
+  createdAt DateTime @default(now())
+  createdBy Int
+  user      User     @relation(fields: [createdBy], references: [id])
+
+  builds    Build[]
 }
