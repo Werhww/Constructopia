@@ -1,34 +1,146 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Report {
-  id        Int      @id @default(autoincrement())
-  buildId   Int
-  build     Build    @relation(fields: [buildId], references: [id])
-  userId    Int
-  user      User     @relation("ReportCreator", fields: [userId], references: [id])
-  reportedBy Int
-  reported  User     @relation(fields: [reportedBy], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  reason    ReportReason
-  otherDescription String?
+generator client {
+  provider = "prisma-client-js"
+}
 
+model User {
+  id  Int @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+
+  name  String  @unique
+  mcID  String  @unique
+
+  builds  Build[]
+  favorites Build[] @relation("favorite")
+  categorys Category[]
+  interactions Interaction[]
+
+  reports Report[]  @relation("reportCreator")
+  createdReports  Report[]
+}
+
+
+model Interaction {
+  id  Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  userId  Int
+  user  User  @relation(fields: [userId], references: [id])
+
+  type  InteractionType
+
+  buildId Int
+  build Build @relation(fields: [buildId], references: [id])
+}
+
+
+model Build {
+  id  Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  username String
+  user  User  @relation(fields: [username], references: [name])
+
+  title String
   description String
-  
-  handled   Boolean  @default(false)
-  action    ReportAction?
-  handledBy Int?
+  difficulty BuildDifficulty
+  size BuildSize
+
+  images  String[]
+  files   BuildFiles[]
+  inventory BuildInventory[]
+  categorys Category[]
+  favorites User[] @relation("favorite")
+  interactions Interaction[]
+
+  reports Report[]
+}
+
+model BuildFiles {
+  id  Int @id @default(autoincrement())
+
+  buildId Int
+  build Build @relation(fields: [buildId], references: [id])
+
+  format  BuildFileFormat
+  file  String
+}
+
+
+model BuildInventory {
+  id  Int @id @default(autoincrement())
+
+  buildId Int
+  build Build @relation(fields: [buildId], references: [id])
+
+  block String
+  count Int
+}
+
+model Category {
+  id  Int @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  active  Boolean   @default(false)
+
+  title String  @unique
+  description String  
+
+  createdBy String
+  user  User  @relation(fields: [createdBy], references: [name])
+
+  builds Build[]
+}
+
+model Report {
+  id  Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  reportedBy String
+  user  User  @relation("reportCreator", fields: [reportedBy], references: [name])
+
+  reported  String
+  user User   @relation(fields: [reported], references: [name])
+
+  buildId Int
+  build Build @relation(fields: [buildId], references: [id])
+}
+
+
+// Enums
+enum InteractionType {
+  Like
+  DisLike
+  Download
+  View
+}
+
+enum BuildDifficulty {
+  Easy
+  Normal
+  Hard
+  Advanced
+  Pro
+}
+
+enum BuildSize {
+  Small
+  Medium
+  Large
+  Huge
+}
+
+enum BuildFileFormat {
+  NBT
+  Litematic
+  Schematic
+  MCSctructure
 }
 
 enum ReportReason {
@@ -40,127 +152,4 @@ enum ReportReason {
 enum ReportAction {
   DELETE
   KEEP
-}
-
-model User {
-  id        Int      @id @default(autoincrement())
-  minecraftId String   @unique
-  minecraftName String @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  role      Role     @default(USER)
-
-  builds    Build[]
-  favorites Favorite[]
-  createdCategories Category[]
-
-  reports   Report[]
-  createdReports Report[] @relation("ReportCreator")
-
-  likes     Like[]
-  dislikes  Dislike[]
-}
-
-enum Role {
-  USER
-  MODERATOR
-  ADMIN
-}
-
-model Build {
-  username  String
-  user      User     @relation(fields: [username], references: [minecraftName])
-
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  description String
-  difficulty Difficulty
-  size Size
-  litematic Bytes
-  images    Bytes[]
-  views     Int      @default(0)
-  imageCount Int
-  blockCount Int
-  inventory Item[]
-  category  Category[]
-
-  likeCount likeCounter?
-
-  favorites Favorite[]
-  reports   Report[]
-}
-
-model likeCounter {
-  id        Int      @id @default(autoincrement())
-  build     Build    @relation(fields: [buildId], references: [id])
-  buildId   Int      @unique
-  
-  likeCount Int      @default(0)
-  dislikeCount Int   @default(0)
-
-  likes     Like[]
-  dislikes  Dislike[]
-}
-
-enum Difficulty {
-  EASY
-  NORMAL
-  HARD
-}
-
-enum Size {
-  SMALL
-  MEDIUM
-  LARGE
-}
-
-model Item {
-  id        Int      @id @default(autoincrement())
-  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-  name      String
-  count     Int
-}
-
-model Like {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  build     likeCounter    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-}
-
-model Dislike {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  build     likeCounter    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-}
-
-model Favorite {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
-  buildId   Int
-}
-
-model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  description String
-  createdAt DateTime @default(now())
-  createdBy Int
-  user      User     @relation(fields: [createdBy], references: [id])
-
-  builds    Build[]
 }
