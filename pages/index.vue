@@ -1,14 +1,21 @@
-<script setup lang="ts" >
-const datePickerValue = ref()
+<script setup lang="ts">
+const loading = ref(true);
+const precentage = ref(0);
 
-watch(datePickerValue, (newVal, oldVal) => {
-    console.log('newVal', newVal)
-})
+const eplle = setInterval(() => {
+  precentage.value += 10;
+
+  if (precentage.value === 100) {
+    clearInterval(eplle);
+    loading.value = false;
+  }
+}, 500);
+
 </script>
 
 <template>
-    <div class="test">
-        <Suspense>
+  <div class="test">
+    <!-- <Suspense>
             <BuildCard
                 :id="1"  
             />
@@ -17,12 +24,20 @@ watch(datePickerValue, (newVal, oldVal) => {
                 <div>Loading...</div>   
             </template>
         </Suspense>
+ -->
 
-    </div>
+    <QBtn color="primary" icon="sym_r_toggle_on" label="primary" />
+    <QBtn color="secondary" icon="sym_r_toggle_on" label="secondary"   />
+    <QBtn color="accent" icon="sym_r_toggle_on" label="accent" />
+    <QBtn color="positive" text-color="dark" icon="sym_r_toggle_on" label="positive" />
+    <QBtn color="negative" icon="sym_r_toggle_on" label="negative" />
+    <QBtn color="info" icon="sym_r_toggle_on" label="info" />
+    <QBtn color="warning" text-color="dark" icon="sym_r_toggle_on" label="warning"  />
+  </div>
 </template>
 
 <style scoped lang="scss">
 .test {
-    padding: 10rem;
+  padding:  0rem;
 }
 </style>
