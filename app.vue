@@ -5,25 +5,34 @@ const search = ref("");
 
 <template>
   <QLayout view="hHh lpr fFf">
-    <QHeader
-        reveal 
-        class="bg-dark"
-    >
-      <QToolbar>
+    <QHeader reveal class="bg-dark">
+      <QToolbar class="q-pt-md q-pb-md">
         <QToolbarTitle class="text-h3">{{ pageName }}</QToolbarTitle>
 
-        <QInput dark dense standout v-model="search" input-class="text-right">
+        <QInput
+          dark
+          dense
+          standout
+          v-model="search"
+          input-class="text-right"
+          class="col-3"
+        >
           <template v-slot:append>
             <QIcon v-if="search === ''" name="sym_r_search" />
-            <QIcon v-else name="sym_r_clear" class="cursor-pointer" @click="search = ''" />
+            <QIcon
+              v-else
+              name="sym_r_clear"
+              class="cursor-pointer"
+              @click="search = ''"
+            />
           </template>
         </QInput>
 
         <QBtn round flat dense :debounce="100" size="lg">
-            <QIcon name="sym_r_person" size="lg" />
+          <QIcon name="sym_r_person" size="lg" />
 
           <QMenu dark>
-            <QList style="min-width: 200px;">
+            <QList style="min-width: 200px">
               <QItem clickable v-ripple>
                 <QItemSection class="text-body1">Profile</QItemSection>
                 <QItemSection avatar>
@@ -33,7 +42,7 @@ const search = ref("");
 
               <QSeparator dark />
 
-              <QItem clickable v-ripple >
+              <QItem clickable v-ripple>
                 <QItemSection class="text-body1">Builds</QItemSection>
                 <QItemSection avatar>
                   <QIcon name="sym_r_home_work" size="sm" />
@@ -42,7 +51,7 @@ const search = ref("");
 
               <QSeparator dark />
 
-              <QItem clickable v-ripple >
+              <QItem clickable v-ripple>
                 <QItemSection class="text-body1">Favorite</QItemSection>
                 <QItemSection avatar>
                   <QIcon name="sym_r_star" size="sm" />
@@ -51,7 +60,7 @@ const search = ref("");
 
               <QSeparator dark />
 
-              <QItem clickable v-ripple >
+              <QItem clickable v-ripple>
                 <QItemSection class="text-body1">New build</QItemSection>
                 <QItemSection avatar>
                   <QIcon name="sym_r_note_add" size="sm" />
@@ -74,7 +83,7 @@ const search = ref("");
     </QHeader>
 
     <q-page-container>
-        <NuxtPage />
+      <NuxtPage />
     </q-page-container>
 
     <QFooter class="bg-dark">

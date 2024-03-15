@@ -2,10 +2,10 @@ import { prisma } from "../server"
 
 
 export function createUser(user: {
-    minecraftId: string;
-    minecraftName: string;
+    name: string;
+    mcID: string;
 }) {
   return prisma.user.create({
     data: user,
-  });
+  }).catch((e) => 201)
 }

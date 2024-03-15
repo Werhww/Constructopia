@@ -2,11 +2,48 @@ import { prisma } from "../server";
 
 
 export async function findBuild(id: number) {
-  return await prisma.build.findUnique({
+  const build =  await prisma.build.findUnique({
     where: { id },
     include: {
-      category: true,
-      user: true,
+      categorys: true,
     }
-  }).catch((e) => 201)
+  })
+
+  if(!build) throw new Error("Build not found") 
+
+  const views = await prisma.interaction.count({
+    where: {
+      buildId: id,
+      type: "View"
+    }
+  })
+
+  const downloads = await prisma.interaction.count({
+    where: {
+      buildId: id,
+      type: "Download"
+    }
+  })
+
+  const likes = await prisma.interaction.count({
+    where: {
+      buildId: id,
+      type: "Like"
+    }
+  })
+
+  const dislikes = await prisma.interaction.count({
+    where: {
+      buildId: id,
+      type: "DisLike"
+    }
+  })
+
+  return {
+    ...build,
+    views,
+    downloads,
+    likes,
+    dislikes
+  }
 }

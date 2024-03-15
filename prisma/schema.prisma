@@ -55,6 +55,8 @@ model Build {
   images  String[]
   files   BuildFiles[]
   inventory BuildInventory[]
+  blockCount Int
+
   categorys Category[]
   favorites User[] @relation("favorite")
   interactions Interaction[]
@@ -102,14 +104,21 @@ model Report {
   createdAt DateTime @default(now())
   updatedAt  DateTime  @updatedAt
 
-  reportedBy String
-  user  User  @relation("reportCreator", fields: [reportedBy], references: [name])
+  reporterId String
+  reporter  User  @relation("reportCreator", fields: [reporterId], references: [name])
 
-  reported  String
-  user User   @relation(fields: [reported], references: [name])
+  accusedId  String
+  accused User   @relation(fields: [accusedId], references: [name])
 
   buildId Int
   build Build @relation(fields: [buildId], references: [id])
+
+  reason ReportReason
+  description String
+
+  action ReportAction?
+  actionDescription String 
+  handled Boolean @default(false)
 }
 
 
