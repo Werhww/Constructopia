@@ -8,10 +8,20 @@ export default defineNuxtConfig({
   quasar: { 
     iconSet: 'material-symbols-rounded',
     extras: {
+      fontIcons: [
+        'material-symbols-rounded',
+        'material-symbols-outlined',
+        'material-symbols-sharp'
+      ],
+
       svgIcons: [
         'material-symbols-rounded',
+        'material-symbols-outlined',
+        'material-symbols-sharp'
       ],
     },
+
+    sassVariables: "assets/css/quasar.variables.scss",
 
     config: {
       brand: {
