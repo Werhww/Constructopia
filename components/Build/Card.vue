@@ -9,7 +9,7 @@ if (isServerError(data)) throw createError("Build not found");
 
 <template>
   <QCard flat dark bordered class="cursor-pointer">
-    <QImg :src="data.images[0]" height="200px" width="250px">
+    <QImg :src="data.images[0]" height="200px" width="250px" @click="$router.push(`build/${data.id}`)">
       <div class="absolute-bottom text-subtitle2 ellipsis">
         {{ data.title }}
       </div>

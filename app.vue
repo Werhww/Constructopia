@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const pageName = ref("Home");
 const search = ref("");
+const searchLoading = ref(false);
 </script>
 
 <template>
@@ -10,17 +11,18 @@ const search = ref("");
         <QToolbarTitle class="text-h3">{{ pageName }}</QToolbarTitle>
 
         <QInput
+          type="search"
           dark
-          dense
-          standout
+          borderless
           v-model="search"
           input-class="text-right"
-          class="col-3"
+          :loading="searchLoading"
+          debounce="500"
         >
           <template v-slot:append>
-            <QIcon v-if="search === ''" name="sym_r_search" />
+            <QIcon v-if="search === '' && !searchLoading" name="sym_r_search" />
             <QIcon
-              v-else
+              v-if="search != '' && !searchLoading"
               name="sym_r_clear"
               class="cursor-pointer"
               @click="search = ''"
