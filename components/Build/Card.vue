@@ -58,28 +58,32 @@ if (isServerError(data)) throw createError("Build not found");
         </QCardSection>
 
         <QCardSection class="q-pt-none q-pb-xs">
-          <div class="row q-gutter-xl text-body2 text-grey-6">
+          <div
+            class="row no-wrap justify-between text-body2 text-grey-6"
+          >
             <div>Created at</div>
-            <QSpace />
             <div class="text-weight-bold">
               {{ useDateFormat(data.createdAt, "D MMM YYYY").value }}
             </div>
           </div>
-          <div class="row q-gutter-xl text-body2 text-grey-6">
+          <div
+            class="row no-wrap justify-between text-body2 text-grey-6"
+          >
             <div>Last change</div>
-            <QSpace />
             <div class="text-weight-bold">
               {{ useDateFormat(data.updateAt, "D MMM YYYY").value }}
             </div>
           </div>
-          <div class="row q-gutter-xl text-body2 text-grey-6">
+          <div
+            class="row no-wrap justify-between text-body2 text-grey-6"
+          >
             <div>Download</div>
-            <QSpace />
             <div class="text-weight-bold">{{ data.downloads }}</div>
           </div>
-          <div class="row q-gutter-xl text-body2 text-grey-6">
+          <div
+            class="row no-wrap justify-between text-body2 text-grey-6"
+          >
             <div>Views</div>
-            <QSpace />
             <div class="text-weight-bold">{{ data.views }}</div>
           </div>
         </QCardSection>
