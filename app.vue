@@ -2,6 +2,13 @@
 const pageName = ref("Home");
 const search = ref("");
 const searchLoading = ref(false);
+
+watch(search, () => {
+  searchLoading.value = true;
+  setTimeout(() => {
+    searchLoading.value = false;
+  }, 1000);
+});
 </script>
 
 <template>
@@ -20,12 +27,13 @@ const searchLoading = ref(false);
           debounce="500"
         >
           <template v-slot:append>
-            <QIcon v-if="search === '' && !searchLoading" name="sym_r_search" />
+            <QIcon color="white" v-if="search === '' && !searchLoading" name="sym_r_search" />
             <QIcon
               v-if="search != '' && !searchLoading"
               name="sym_r_clear"
               class="cursor-pointer"
               @click="search = ''"
+              color="white"
             />
           </template>
         </QInput>
@@ -33,7 +41,7 @@ const searchLoading = ref(false);
         <QBtn round flat dense :debounce="100" size="lg">
           <QIcon name="sym_r_person" size="lg" />
 
-          <QMenu dark>
+          <QMenu dark auto-close>
             <QList style="min-width: 200px">
               <QItem clickable v-ripple>
                 <QItemSection class="text-body1">Profile</QItemSection>
@@ -42,8 +50,6 @@ const searchLoading = ref(false);
                 </QItemSection>
               </QItem>
 
-              <QSeparator dark />
-
               <QItem clickable v-ripple>
                 <QItemSection class="text-body1">Builds</QItemSection>
                 <QItemSection avatar>
@@ -51,18 +57,14 @@ const searchLoading = ref(false);
                 </QItemSection>
               </QItem>
 
-              <QSeparator dark />
-
-              <QItem clickable v-ripple>
+              <QItem clickable>
                 <QItemSection class="text-body1">Favorite</QItemSection>
                 <QItemSection avatar>
                   <QIcon name="sym_r_star" size="sm" />
                 </QItemSection>
               </QItem>
 
-              <QSeparator dark />
-
-              <QItem clickable v-ripple>
+              <QItem clickable>
                 <QItemSection class="text-body1">New build</QItemSection>
                 <QItemSection avatar>
                   <QIcon name="sym_r_note_add" size="sm" />
@@ -72,7 +74,7 @@ const searchLoading = ref(false);
               <QSeparator dark />
               <QSeparator dark />
 
-              <QItem clickable v-ripple dense>
+              <QItem clickable dense>
                 <QItemSection>Logout</QItemSection>
                 <QItemSection avatar>
                   <QIcon name="sym_r_logout" size="sm" />
