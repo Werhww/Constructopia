@@ -12,8 +12,8 @@ watch(search, () => {
 </script>
 
 <template>
-  <QLayout view="hHh Lpr fff">
-    <QHeader class="bg-dark" elevated>
+  <QLayout view="hHh LpR lff">
+    <QHeader class="bg-dark" dense elevated>
       <QToolbar class="q-pt-md q-pb-md q-pl-xl q-pr-xl">
         <QToolbarTitle class="text-h3">{{ pageName }}</QToolbarTitle>
 
@@ -65,7 +65,14 @@ watch(search, () => {
       </QToolbar>
     </QHeader>
 
-    <QDrawer class="bg-dark" elevated  side="left">
+    <QDrawer
+      class="bg-dark"
+      no-swipe-close
+      show-if-above
+      persistent
+      side="left"
+      elevated
+    >
       <!-- drawer content -->
     </QDrawer>
 
@@ -89,7 +96,6 @@ $positive: #25e61e;
 $negative: #ef3a3a;
 $info: #1826f3;
 $warning: #ffc400;
-
 
 body {
   overflow-x: hidden;
