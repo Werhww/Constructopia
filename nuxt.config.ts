@@ -22,19 +22,22 @@ export default defineNuxtConfig({
     },
 
     sassVariables: "assets/css/quasar.variables.scss",
-
     config: {
+      dark: true,
+
       brand: {
         primary: '#EC8489',
         secondary: '#921818',
         accent: '#EF3A3A',
 
-        dark: '#1F1F1F',
+        dark: '#121212',
 
         positive: '#1ad914',
         negative: '#EF3A3A',
         info: '#1826F3',
-        warning: '#ffc400'
+        warning: '#ffc400',
+
+        "dark-page": "#121212"
       }
     }
   }

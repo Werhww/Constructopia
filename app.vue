@@ -9,12 +9,15 @@ watch(search, () => {
     searchLoading.value = false;
   }, 1000);
 });
+
+const padding = getReactiveSidePadding()
+
 </script>
 
 <template>
   <QLayout view="hHh LpR lff">
-    <QHeader class="bg-dark" dense elevated>
-      <QToolbar class="q-pt-md q-pb-md q-pl-xl q-pr-xl">
+    <QHeader class="bg-dark shadow-2" dense elevated>
+      <QToolbar :class="padding + 'q-pt-md q-pb-md'">
         <QToolbarTitle class="text-h3">{{ pageName }}</QToolbarTitle>
 
         <QBtn round flat dense :debounce="100" size="lg">
@@ -66,12 +69,12 @@ watch(search, () => {
     </QHeader>
 
     <QDrawer
-      class="bg-dark"
       no-swipe-close
       show-if-above
       persistent
       side="left"
       elevated
+      class="shadow-14"
     >
       <!-- drawer content -->
     </QDrawer>

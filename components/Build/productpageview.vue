@@ -4,18 +4,21 @@ defineProps<{
 }>();
 
 const slide = ref(0);
+
+const caruselHeight = createReactiveComputed("30rem", "25rem", "15rem");
+
 </script>
 
 <template>
   <div class="row">
-    <main class="col-10 column q-gutter-y-md">
+    <main class="col-12 col-md-10 column q-gutter-y-md">
       <QCarousel
         swipeable
         animated
         v-model="slide"
         thumbnails
         infinite
-        height="40rem"
+        :height="caruselHeight"
         control-color="dark"
         class="rounded-borders overflow-hidden"
       >
@@ -27,9 +30,11 @@ const slide = ref(0);
       </QCarousel>
       <h1 class="text-h2">{{ data.title }}</h1>
     </main>
-    <aside>
-      
-    </aside>
+    <aside
+      class="col  gt-md"
+    >
+    eple
+  </aside>
   </div>
 </template>
 
