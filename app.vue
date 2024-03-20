@@ -12,31 +12,10 @@ watch(search, () => {
 </script>
 
 <template>
-  <QLayout view="hHh lpr fFf">
-    <QHeader reveal class="bg-dark">
-      <QToolbar class="q-pt-md q-pb-md">
+  <QLayout view="hHh Lpr fff">
+    <QHeader class="bg-dark" elevated>
+      <QToolbar class="q-pt-md q-pb-md q-pl-xl q-pr-xl">
         <QToolbarTitle class="text-h3">{{ pageName }}</QToolbarTitle>
-
-        <QInput
-          type="search"
-          dark
-          borderless
-          v-model="search"
-          input-class="text-right"
-          :loading="searchLoading"
-          debounce="500"
-        >
-          <template v-slot:append>
-            <QIcon color="white" v-if="search === '' && !searchLoading" name="sym_r_search" />
-            <QIcon
-              v-if="search != '' && !searchLoading"
-              name="sym_r_clear"
-              class="cursor-pointer"
-              @click="search = ''"
-              color="white"
-            />
-          </template>
-        </QInput>
 
         <QBtn round flat dense :debounce="100" size="lg">
           <QIcon name="sym_r_person" size="lg" />
@@ -86,20 +65,19 @@ watch(search, () => {
       </QToolbar>
     </QHeader>
 
-    <q-page-container>
-      <NuxtPage />
-    </q-page-container>
+    <QDrawer class="bg-dark" elevated  side="left">
+      <!-- drawer content -->
+    </QDrawer>
 
-    <QFooter class="bg-dark">
-      <QToolbar>
-        <QSpace />
-        <QToolbarTitle class="text-h6">© 2021</QToolbarTitle>
-      </QToolbar>
-    </QFooter>
+    <QPageContainer>
+      <NuxtPage />
+    </QPageContainer>
   </QLayout>
 </template>
 
 <style lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 /* Colors */
 $primary: #ec8489;
 $secondary: #921818;
@@ -112,8 +90,8 @@ $negative: #ef3a3a;
 $info: #1826f3;
 $warning: #ffc400;
 
+
 body {
-  background-color: $dark;
   overflow-x: hidden;
 }
 
@@ -122,61 +100,5 @@ body {
   padding: 0;
   font-family: "Inter", sans-serif;
   box-sizing: border-box;
-}
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-
-:root {
-  --pad-normal: 1rem;
-  --pad-small: 0.5rem;
-
-  --rad-outer: 1rem;
-  --rad-inner: 0.5rem;
-  --rad-small: 0.375rem;
-
-  --gap-big: 2.5rem;
-  --gap-normal: 1rem;
-  --gap-small: 0.375rem;
-  --gap-tiny: 0.25rem;
-}
-
-h1 {
-  font-size: 3rem;
-  font-weight: 500;
-}
-
-h2 {
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-p {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-span {
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.grey {
-  color: var(--grey);
-  font-weight: 400;
-}
-
-.greyThick {
-  color: var(--grey);
-  font-weight: 600;
-}
-
-.light-grey {
-  color: var(--light-grey);
-  font-weight: 400;
-}
-
-.light-greyThick {
-  color: var(--light-grey);
-  font-weight: 600;
 }
 </style>

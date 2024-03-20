@@ -13,9 +13,9 @@ const eplle = setInterval(() => {
 </script>
 
 <template>
-  <div class="fit row q-gutter-y-xl q-gutter-x-md">
+  <div class="row q-gutter-y-xl q-gutter-x-md">
     <Suspense>
-      <BuildCard :id="1" />
+      <buildcarditem :id="1" />
 
       <template #fallback>
         <div class="fit column items-center justify-center">
