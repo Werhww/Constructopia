@@ -1,15 +1,20 @@
 <script setup lang="ts">
 const props = defineProps<{
-  id: number;
-}>();
+  id: number
+}>()
 
-const data = await serverFunction("findBuild", props.id);
-if (isServerError(data)) throw createError("Build not found");
+const data = await serverFunction("findBuild", props.id)
+if (isServerError(data)) throw createError("Build not found")
 </script>
 
 <template>
   <QCard flat dark bordered class="cursor-pointer">
-    <QImg :src="data.images[0]" height="200px" width="250px" @click="$router.push(`build/${data.id}`)">
+    <QImg
+      :src="data.images[0]"
+      height="200px"
+      width="250px"
+      @click="$router.push(`build/${data.id}`)"
+    >
       <div class="absolute-bottom text-subtitle2 ellipsis">
         {{ data.title }}
       </div>
@@ -22,7 +27,7 @@ if (isServerError(data)) throw createError("Build not found");
       class="q-pa-none"
       maxWidth="400px"
     >
-      <QCard flat dark bordered>
+      <QCard flat bordered>
         <QCardSection class="q-pb-none">
           <div class="text-h6 ellipsis-2-lines">{{ data.title }}</div>
           <div class="q-pl-sm text-subtitle2 text-grey-7 text-weight-bold">
@@ -58,31 +63,23 @@ if (isServerError(data)) throw createError("Build not found");
         </QCardSection>
 
         <QCardSection class="q-pt-none q-pb-xs">
-          <div
-            class="row no-wrap justify-between text-body2 text-grey-6"
-          >
+          <div class="row no-wrap justify-between text-body2 text-grey-6">
             <div>Created at</div>
             <div class="text-weight-bold">
               {{ useDateFormat(data.createdAt, "D MMM YYYY").value }}
             </div>
           </div>
-          <div
-            class="row no-wrap justify-between text-body2 text-grey-6"
-          >
+          <div class="row no-wrap justify-between text-body2 text-grey-6">
             <div>Last change</div>
             <div class="text-weight-bold">
               {{ useDateFormat(data.updateAt, "D MMM YYYY").value }}
             </div>
           </div>
-          <div
-            class="row no-wrap justify-between text-body2 text-grey-6"
-          >
+          <div class="row no-wrap justify-between text-body2 text-grey-6">
             <div>Download</div>
             <div class="text-weight-bold">{{ data.downloads }}</div>
           </div>
-          <div
-            class="row no-wrap justify-between text-body2 text-grey-6"
-          >
+          <div class="row no-wrap justify-between text-body2 text-grey-6">
             <div>Views</div>
             <div class="text-weight-bold">{{ data.views }}</div>
           </div>
@@ -94,18 +91,13 @@ if (isServerError(data)) throw createError("Build not found");
           </div>
         </QCardSection>
 
-        <QCardSection class="q-pt-sm q-pb-md">
-          <div class="row items-center q-gutter-xs text-body2 text-grey-6">
-            <div class="text-justify text-center" style="height: 28px">
-              Categorys:
-            </div>
-            <QChip
-              square
-              class="q-pa-sm bg-grey-9 text-grey text-weight-medium"
-              v-for="category in data.categorys"
-              :label="category.title"
-            />
-          </div>
+        <QCardSection
+          class="q-pt-sm q-pb-md row items-center q-gutter-xs text-body2 text-grey-6"
+        >
+          <Categorychip
+            v-for="category in data.categorys"
+            :category="category"
+          />
         </QCardSection>
       </QCard>
     </QTooltip>

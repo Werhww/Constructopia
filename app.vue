@@ -10,16 +10,18 @@ watch(search, () => {
   }, 1000);
 });
 
-const padding = getReactiveSidePadding()
-
+const padding = getReactiveSidePadding();
 </script>
 
 <template>
   <QLayout view="hHh LpR lff">
-    <QHeader class="bg-dark shadow-2" dense elevated>
-      <QToolbar :class="padding + 'q-pt-md q-pb-md'">
+    <QHeader
+      :class="padding + ' q-pt-md q-pb-md bg-dark shadow-2'"
+      dense
+      elevated
+    >
+      <QToolbar>
         <QToolbarTitle class="text-h3">{{ pageName }}</QToolbarTitle>
-
         <QBtn round flat dense :debounce="100" size="lg">
           <QIcon name="sym_r_person" size="lg" />
 

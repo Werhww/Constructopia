@@ -29,10 +29,12 @@ model Interaction {
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 
-  userId  Int
-  user  User  @relation(fields: [userId], references: [id])
+  username  String
+  user  User  @relation(fields: [username], references: [name])
 
   type  InteractionType
+  comment String?
+  rating  Float?
 
   buildId Int
   build Build @relation(fields: [buildId], references: [id])
@@ -128,6 +130,8 @@ enum InteractionType {
   DisLike
   Download
   View
+  Comment
+  Rating
 }
 
 enum BuildDifficulty {

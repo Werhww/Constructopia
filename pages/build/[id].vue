@@ -8,7 +8,7 @@ const padding = getReactiveSidePadding()
 </script>
 
 <template>
-<div :class="padding + ' q-pt-lg'">
+<div :class="`${padding} full-width q-pt-lg`">
   <BuildProductpageview :data="build" />
 </div>
 </template>

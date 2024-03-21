@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       fontIcons: [
         'material-symbols-rounded',
         'material-symbols-outlined',
-        'material-symbols-sharp'
+        'material-symbols-sharp',
       ],
 
       svgIcons: [
