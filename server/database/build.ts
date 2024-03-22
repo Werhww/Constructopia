@@ -1,5 +1,6 @@
 import { prisma } from "../server"
 
+
 export async function findBuild(id: number) {
   const build = await prisma.build.findUnique({
     where: { id },
@@ -8,7 +9,7 @@ export async function findBuild(id: number) {
     },
   })
 
-  if (!build) throw new Error("Build not found")
+  if (!build) throw createError("Build not found")
 
   const views = await prisma.interaction.count({
     where: {
@@ -63,13 +64,23 @@ export async function getBuildRating(buildId: number) {
     },
   })
 
-  const rating =
-    build.reduce((acc, curr) => {
-      const value = curr.rating ? curr.rating : 0
+  let rating = 0
+  for (const interaction of build) {
+    const rate = interaction.rating
+    rating += rate ? rate : 0
+  }
+  
+  rating = rating / build.length
+  return { rating }
+}
 
-      return acc + value
-    }, 0) / build.length
+export async function getBuildComments(buildId: number) {
+  const build = await prisma.interaction.findMany({
+    where: {
+      buildId,
+      type: "Comment",
+    },
+  })
 
-
-  return rating
+  return build
 }

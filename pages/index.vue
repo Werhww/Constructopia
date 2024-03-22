@@ -33,9 +33,3 @@ const eplle = setInterval(() => {
     </Suspense>
   </div>
 </template>
-
-<style scoped lang="scss">
-.test {
-  padding: 0rem;
-}
-</style>
