@@ -14,7 +14,7 @@ const testEditor = ref("")
 </script>
 
 <template>
-  <div :class="`${padding} full-width q-pt-lg`">
+  <div :class="`${padding} full-width q-pt-lg q-pb-xl`">
     <BuildProductpageview :data="build" :comments="comments" />
     <QEditor
       v-model="testEditor"
@@ -56,7 +56,7 @@ const testEditor = ref("")
       min-height="10rem"
     />
 
-    <BuildComment v-for="comment in comments" :data="comment"/>
+    <BuildComment v-for="comment in comments"  :data="comment" :allReplys="comments.filter(curr => curr.type === 'Reply')" />
   </div>
 </template>
 

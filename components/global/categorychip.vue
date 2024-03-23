@@ -23,7 +23,7 @@ defineProps<{
         </QCardSection>
         <QCardSection class="q-pt-none">
           <div class="row justify-between text-body2 text-grey-6">
-            <div>created at</div>
+            <div>Created at</div>
             <div class="text-weight-bold">
               {{ useDateFormat(category.createdAt, "D MMM YYYY").value }}
             </div>

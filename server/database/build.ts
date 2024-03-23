@@ -78,8 +78,10 @@ export async function getBuildComments(buildId: number) {
   const build = await prisma.interaction.findMany({
     where: {
       buildId,
-      type: "Comment",
-    },
+      type: {
+        in: ["Comment", "Reply"],
+      }
+    }
   })
 
   return build

@@ -36,8 +36,13 @@ model Interaction {
   comment String?
   rating  Float?
 
+  replyTo  Int?
+  reply  Interaction? @relation("replyTo", fields: [replyTo], references: [id], onDelete: Cascade)
+
+  replys Interaction[] @relation("replyTo")
+
   buildId Int
-  build Build @relation(fields: [buildId], references: [id])
+  build Build @relation(fields: [buildId], references: [id], onDelete: Cascade)
 }
 
 
@@ -70,7 +75,7 @@ model BuildFiles {
   id  Int @id @default(autoincrement())
 
   buildId Int
-  build Build @relation(fields: [buildId], references: [id])
+  build Build @relation(fields: [buildId], references: [id], onDelete: Cascade)
 
   format  BuildFileFormat
   file  String
@@ -81,7 +86,7 @@ model BuildInventory {
   id  Int @id @default(autoincrement())
 
   buildId Int
-  build Build @relation(fields: [buildId], references: [id])
+  build Build @relation(fields: [buildId], references: [id], onDelete: Cascade)
 
   block String
   count Int
@@ -131,6 +136,7 @@ enum InteractionType {
   Download
   View
   Comment
+  Reply
   Rating
 }
 
