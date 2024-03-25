@@ -46,7 +46,11 @@ const repliesOpen = ref(false)
 
     <QCardActions class="q-pb-none">
       <div class="col-5 col-auto">
-        <QBtn @click="console.log(replies)" round size="sm" icon="sym_r_reply" />
+        <QBtn @click="console.log(replies)" round size="sm" icon="sym_r_reply">
+          <QTooltip >
+            Reply
+          </QTooltip>
+        </QBtn>
       </div>
       <div class="col-2 column items-center">
         <QBtn @click="repliesOpen = !repliesOpen" :class="{ 'rotate-180': repliesOpen}" round size="sm" icon="sym_r_expand_more" />
