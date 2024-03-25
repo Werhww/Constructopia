@@ -6,9 +6,11 @@ const build = await serverFunction("findBuild", buildId)
 if (isServerError(build)) throw createError("Build not found")
 const padding = getReactiveSidePadding()
 
-const comments = await serverFunction("getBuildComments", buildId)
-if (isServerError(comments)) throw createError("Failed to get build comments")
+const allComments = await serverFunction("getBuildComments", buildId)
+if (isServerError(allComments)) throw createError("Failed to get build comments")
 
+const comments = allComments.filter((comment) => comment.type === "Comment")
+const replies = allComments.filter((comment) => comment.type === "Reply")
 
 const testEditor = ref("")
 </script>
@@ -56,7 +58,11 @@ const testEditor = ref("")
       min-height="10rem"
     />
 
-    <BuildComment v-for="comment in comments"  :data="comment" :allReplys="comments.filter(curr => curr.type === 'Reply')" />
+    <BuildComment
+      v-for="comment in comments"
+      :data="comment"
+      :replies="replies.filter((curr) => curr.replyTo === comment.id)"
+    />
   </div>
 </template>
 
